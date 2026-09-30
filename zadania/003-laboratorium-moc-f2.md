@@ -2,9 +2,9 @@
 id: 003
 tytul: laboratorium symulacji i rachunek mocy dla porównania prognoz zmienności
 typ: badawcze
-status: czeka_na_decyzje
+status: w_toku
 zlecil: orkiestrator
-decyzja_uzytkownika: "brak (PRD D2 — kolejność filarów)"
+decyzja_uzytkownika: "2026-09-30: „Rób co chcesz, ma działać” — zgoda na rekomendacje D2 i D4"
 utworzono: 2026-09-30
 zalezy_od: [001]
 budzet: "Opus, 1–2 sesje"

@@ -2,9 +2,9 @@
 id: 002
 tytul: dane OHLCV 5m i 1d dla top-20/50 od 2021 z manifestem i raportem jakości
 typ: zbieranie_danych
-status: czeka_na_decyzje
+status: nowe
 zlecil: orkiestrator
-decyzja_uzytkownika: "brak (PRD D4)"
+decyzja_uzytkownika: "2026-09-30: „Rób co chcesz, ma działać” — zgoda na rekomendację D4"
 utworzono: 2026-09-30
 zalezy_od: [001]
 budzet: "Sonnet, 1 sesja"
@@ -33,4 +33,4 @@ Manifest w repo; raport jakości w `runs/`; kontrola pozytywna: znany dzień (np
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-09-30: zablokowane — polityka sieci środowiska odrzuca `data.binance.vision` (CONNECT 403). Potrzebne dodanie domeny do dozwolonych w ustawieniach środowiska.

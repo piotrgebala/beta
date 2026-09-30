@@ -64,7 +64,7 @@ def main() -> None:
         f"\nŁącznie fałszywe alarmy (bez peek): {alarmy}/80 = {100 * alarmy / 80:.1f} % "
         f"[Wilson 95 %: {100 * lo:.1f}; {100 * hi:.1f}] — alpha NC1: 4/120 = 3,3 % [1,3; 8,3]"
     )
-    print("\nt_neff per losowanie (ziarno: R-TS, R-XS, R-TS peek, R-XS peek):")
+    print("\nt_neff per losowanie (ziarno: " + ", ".join(wyniki) + "):")
     for i, seed in enumerate(SEEDS):
         print(f"  {seed:2d}: " + ", ".join(f"{wyniki[k][i]:+.2f}" for k in wyniki))
     print(f"\nczas: {time.time() - t0:.0f} s")

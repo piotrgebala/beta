@@ -13,7 +13,11 @@
 
 ## Bieżące zadania
 
-Tablica: [`zadania/`](zadania/). Następne: 001 → 002 → 003.
+Tablica: [`zadania/`](zadania/).
+
+- **001** — `do_przegladu` (2026-09-30): port `miara` z parytetem alpha, loader, CI zielone, NC1B zaliczona.
+  Do zamknięcia E0 brakuje manifestu danych (zadanie 002) i Twojej decyzji „E0 zamknięty”.
+- **002** i **003** — `czeka_na_decyzje` (D4, D2).
 
 ## Ryzyka
 

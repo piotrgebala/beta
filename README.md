@@ -8,7 +8,7 @@ ogona, sekwencyjna ocena dowodów, portfel, tor ML na nowe dane. Następca metod
 
 | etap | zakres | status |
 |---|---|---|
-| E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | ⏳ zadanie 001 |
+| E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | 🔍 zadanie 001 do przeglądu (manifest danych → 002) |
 | E1 | laboratorium symulacji + rachunek mocy | — |
 | E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | — |
 | E3 | dowody sekwencyjne dla dziennika alpha (przed 2026-12-24) | — |
@@ -18,8 +18,9 @@ ogona, sekwencyjna ocena dowodów, portfel, tor ML na nowe dane. Następca metod
 
 ## Status
 
-2026-09-30 — repo założone (decyzja użytkownika: „osobne repo i niech nazywa się beta”). Kodu badawczego
-jeszcze nie ma; zero odczytów historii.
+2026-09-30 — repo założone (decyzja użytkownika: „osobne repo i niech nazywa się beta”). Tego samego dnia:
+przyrząd `miara` przeniesiony z alpha z testem parytetu (132 wektory, tolerancja 1e-12), CI, kontrola
+negatywna NC1B zaliczona. Zero odczytów historii.
 
 ## Zastrzeżenie
 

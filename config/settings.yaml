@@ -1,0 +1,6 @@
+# Jedno źródło prawdy parametrów (zasada B16 w CLAUDE.md).
+data:
+  min_start: "2021-01-01"   # decyzja użytkownika 2026-09-23 (alpha, zasada 20)
+  alpha_repo: "../alpha"     # tylko odczyt: dziennik, likwidacje, funding, OI, rejestr odczytów
+universe:
+  top_n: [20, 50]

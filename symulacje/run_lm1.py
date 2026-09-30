@@ -46,7 +46,7 @@ def straty(p: dict) -> dict:
         "wyrocznia": p["sigma2"],
         "stala": p["sigma2"] * 0 + 0.04**2,
     }
-    return {k: qlike(rv, v).iloc[30:].to_numpy() for k, v in f.items()}
+    return {k: qlike(rv.iloc[30:], v.iloc[30:]) for k, v in f.items()}
 
 
 def acf1(x: np.ndarray) -> float:

@@ -2,7 +2,7 @@
 
 ## Stan wiedzy — skrót
 
-Jedna runda kalibracyjna (NC1B — przyrząd `miara` zaliczył kontrolę negatywną; 0 wariantów). Stan wiedzy odziedziczony: `alpha/runs/INDEX.md` (wnioski 1–111) i `docs/PRD.md` §2.
+Dwie rundy kalibracyjne (0 wariantów): NC1B — przyrząd `miara` zaliczył kontrolę negatywną; LM1 — test DM na QLIKE ma poprawny rozmiar, a F2-1 jest mierzalna tylko warunkowo (MDE 0,066 przy N_eff/n 0,78, ale 0,10–0,11 przy 0,3 — przeliczyć na prawdziwym kształcie strat przed startem). Stan wiedzy odziedziczony: `alpha/runs/INDEX.md` (wnioski 1–111) i `docs/PRD.md` §2.
 
 ## Liczniki
 
@@ -17,3 +17,4 @@ Jedna runda kalibracyjna (NC1B — przyrząd `miara` zaliczył kontrolę negatyw
 | ID | data | katalog | opis | licznik | wynik |
 |---|---|---|---|---|---|
 | NC1B | 2026-09-30 | [nc1b-kontrola-negatywna-miara](2026-09-30_nc1b-kontrola-negatywna-miara/README.md) | Kontrola negatywna i czułości przyrządu `miara` na generatorze alpha (40 losowań × 20 monet × 2 000 dni), reguły trend 7 dni i przekrój top/bottom 5; pre-rejestracja `45c0b1b` | **0 — POZA licznikami** (kalibracja, dane syntetyczne) | **ZALICZONA:** śr. t −0,28 / −0,24, alarmy 2/80 = 2,5 % [0,7; 8,7] (alpha 3,3 %); czułość t +6,9…+40,4 w 40/40. **Ready** |
+| LM1 | 2026-09-30 | [lm1-moc-dm-qlike](2026-09-30_lm1-moc-dm-qlike/README.md) | Laboratorium F1: rozmiar i moc DM (QLIKE, HAC) dla kryterium F2 (≥ 16/20 monet t > 1,96), generator GARCH(1,1)-t z RV, bootstrap stacjonarny, n × ρ; pre-rejestracja `0efaedb` | **0 — POZA licznikami** (dane syntetyczne) | **MIERZALNA wg reguły (MDE 0,066 ≤ 0,10), Caveats:** kontrole DM ✓ (3,8 % / 4,9 %; 99,8 %); przy N_eff/n ≈ 0,3 MDE 0,10–0,11 → warunek: przeliczyć na prawdziwym kształcie strat |

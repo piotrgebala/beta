@@ -2,7 +2,7 @@
 id: 003
 tytul: laboratorium symulacji i rachunek mocy dla porównania prognoz zmienności
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-09-30: „Rób co chcesz, ma działać” — zgoda na rekomendacje D2 i D4"
 utworzono: 2026-09-30
@@ -36,4 +36,12 @@ NIEMIERZALNA dla rundy F2-1.
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-09-30, runda LM1 (`runs/2026-09-30_lm1-moc-dm-qlike/`), werdykt **Caveats**.
+
+- `miara/dm.py` (QLIKE, MSE log RV, HAC NW = statsmodels do 1e-10, DM), `symulacje/garch_panel.py`,
+  `symulacje/moc_dm.py`; 16 testów w `tests/test_dm_symulacje.py`.
+- Kontrola negatywna DM: 3,8 % [2,8; 5,2] (n 2 100) i 4,9 % [3,7; 6,4] (n 500); pozytywna 99,8 %.
+- Tabela MDE × n × ρ w README rundy; MDE kryterium przy n 2 100: 0,063–0,066 → MIERZALNA wg reguły.
+- Zastrzeżenie (diagnostyka po przebiegu): przy N_eff/n ≈ 0,3 MDE 0,10–0,11 — przed F2-1 przeliczyć na
+  centrowanej różnicy strat z prawdziwych danych (wymaga zadania 002).
+- Bez bootstrapu na PRAWDZIWYCH zwrotach (brak danych) — generator zamiast tego.

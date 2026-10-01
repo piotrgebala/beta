@@ -1,0 +1,35 @@
+LM1 — moc DM (QLIKE, HAC Newey–West) dla kryterium F2: t > 1,96 w ≥ 80 % z 20 monet,
+żadna t < −1,96. Źródło kształtu różnicy strat: okno 30 dni − wyrocznia σ², centrowane.
+
+1. Panele źródłowe (20 monet × 20 000 dni) — momenty i efekty w świecie generatora
+ rho | vol   | kurt | acf r² | korel. zwr. | δ wyrocznia | δ EWMA | acf1 D | korel. D | N_eff/n
+ 0.0 | 0.0397 | 11.2 | 0.176  | -0.00        | 0.118       | 0.112  | 0.045  | -0.00     | 0.776
+ 0.5 | 0.0402 | 10.3 | 0.152  | 0.37        | 0.111       | 0.108  | 0.037  | 0.00     | 0.786
+ 0.8 | 0.0386 | 11.8 | 0.165  | 0.60        | 0.124       | 0.116  | 0.043  | 0.01     | 0.755
+
+2. Kontrole przyrządu DM (50 paneli × 20 monet, rho = 0)
+ n = 2100: NEGATYWNA (bliźniacze prognozy) |t| > 1,96: 38/1000 = 3.8 % [Wilson 2.8; 5.2] (śr. t -0.026, sd 0.995) — w [2,5; 7,5] %: TAK
+           POZYTYWNA (wyrocznia vs stała) t > 1,96: 998/1000 = 99.8 % (mediana t 7.5) — ≥ 95 %: TAK
+           opis: wyrocznia vs okno 30 t > 1,96: 995/1000 = 99.5 % (mediana t 5.40)
+ n = 500: NEGATYWNA (bliźniacze prognozy) |t| > 1,96: 49/1000 = 4.9 % [Wilson 3.7; 6.4] (śr. t +0.020, sd 1.019) — w [2,5; 7,5] %: TAK
+           opis: wyrocznia vs okno 30 t > 1,96: 865/1000 = 86.5 % (mediana t 2.83)
+
+3. Moc i MDE (bootstrap stacjonarny, blok 30, 1000 losowań, siatka δ co 0,005)
+ rho |    n | MDE kryterium | MDE 1 moneta | moc kryt. przy δ 0,10 | moc 1 monety przy δ 0,10 | P(kryt.) przy δ 0
+ 0.0 |  500 |         0.116 |        0.110 |                 0.235 |                    0.704 | 0.000
+ 0.0 | 1000 |         0.088 |        0.083 |                 0.991 |                    0.930 | 0.000
+ 0.0 | 2100 |         0.064 |        0.061 |                 1.000 |                    0.994 | 0.000
+ 0.5 |  500 |         0.114 |        0.107 |                 0.374 |                    0.738 | 0.000
+ 0.5 | 1000 |         0.086 |        0.081 |                 0.991 |                    0.931 | 0.000
+ 0.5 | 2100 |         0.063 |        0.059 |                 1.000 |                    0.992 | 0.000
+ 0.8 |  500 |         0.118 |        0.112 |                 0.231 |                    0.680 | 0.000
+ 0.8 | 1000 |         0.090 |        0.085 |                 0.957 |                    0.923 | 0.000
+ 0.8 | 2100 |         0.066 |        0.061 |                 1.000 |                    0.997 | 0.000
+
+   wrażliwość na długość bloku (n = 2100, rho = 0.8):
+   blok 10: MDE kryterium 0.064
+   blok 60: MDE kryterium 0.067
+
+4. Reguła z pre-rejestracji: MDE kryterium (n = 2100, rho = 0.8) = 0.066 ≤ 0.1 → MIERZALNA
+
+czas: 17 s

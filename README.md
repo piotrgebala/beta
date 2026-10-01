@@ -8,18 +8,19 @@ ogona, sekwencyjna ocena dowodów, portfel, tor ML na nowe dane. Następca metod
 
 | etap | zakres | status |
 |---|---|---|
-| E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | ⏳ zadanie 001 |
-| E1 | laboratorium symulacji + rachunek mocy | — |
-| E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | — |
-| E3 | dowody sekwencyjne dla dziennika alpha (przed 2026-12-24) | — |
+| E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | 🔍 zadanie 001 do przeglądu (manifest danych → 002) |
+| E1 | laboratorium symulacji + rachunek mocy | 🔍 zadanie 003 do przeglądu (LM1: Caveats) |
+| E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | ⏳ zadanie 005: kod F2-1 gotowy, czeka na dane |
+| E3 | dowody sekwencyjne dla dziennika alpha (przed 2026-12-24) | 🔍 zadanie 004 do przeglądu; czeka na D3 |
 | E4 | portfel i wielkość pozycji | — |
 | E5 | tor ML na nowe dane (likwidacje, Hyperliquid) | — |
 | E6 | meta-labeling (warunkowo) | — |
 
 ## Status
 
-2026-09-30 — repo założone (decyzja użytkownika: „osobne repo i niech nazywa się beta”). Kodu badawczego
-jeszcze nie ma; zero odczytów historii.
+2026-09-30 — repo założone (decyzja użytkownika: „osobne repo i niech nazywa się beta”). Tego samego dnia:
+przyrząd `miara` przeniesiony z alpha z testem parytetu (132 wektory, tolerancja 1e-12), CI, kontrola
+negatywna NC1B zaliczona. Zero odczytów historii.
 
 ## Zastrzeżenie
 

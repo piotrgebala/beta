@@ -23,6 +23,15 @@ Tablica: [`zadania/`](zadania/).
 - **003** — `do_przegladu`: runda LM1 — test DM działa poprawnie; F2-1 mierzalna tylko warunkowo
   (przeliczyć MDE na prawdziwym kształcie strat, gdy będą dane z 002).
 - **004** — `do_przegladu`: reporter F3 (`python -m dowody.raport`) + LD1; czeka na D3.
+- **005** — `czeka_na_dane`: runda F2-1 (HAR vs zmienność dziennika) — kod i pre-rejestracja gotowe,
+  przebieg na serwerze po 002.
+
+## Plan sesji na serwerze (z internetem)
+
+1. `python -m dane.binance_vision --tf 5m 1d --uniwersum ../alpha/data/raw/universe_full --top 20` (zadanie 002),
+   commit manifestu i składu.
+2. `python -m modele.run_f21 > runs/2026-10-01_f21-har-vs-dziennik/raw_output.txt` (zadanie 005), domknięcie rundy.
+3. `python -m dowody.raport` na aktualnym dzienniku alpha (opisowo).
 
 ## Ryzyka
 

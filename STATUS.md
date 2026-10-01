@@ -22,6 +22,7 @@ Tablica: [`zadania/`](zadania/).
   (instrukcja w karcie zadania) — chmura nie dopuszcza `data.binance.vision`.
 - **003** — `do_przegladu`: runda LM1 — test DM działa poprawnie; F2-1 mierzalna tylko warunkowo
   (przeliczyć MDE na prawdziwym kształcie strat, gdy będą dane z 002).
+- **004** — `do_przegladu`: reporter F3 (`python -m dowody.raport`) + LD1; czeka na D3.
 
 ## Ryzyka
 

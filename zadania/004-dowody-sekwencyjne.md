@@ -2,7 +2,7 @@
 id: 004
 tytul: reporter F3 — e-procesy i Bayes dla dziennika alpha + laboratorium fałszywych alarmów
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-01: „zrób to, co możesz bez dostępu do Internetu”; D3 otwarta — reporter zgodny z opcją (a)"
 utworzono: 2026-10-01
@@ -34,4 +34,9 @@ Testy (postać zamknięta = całka, martyngał, kierunki, zgodność stałych z 
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-01: `dowody/` (e-procesy, Bayes, stałe nóg, CLI `python -m dowody.raport`) + 16 testów; runda LD1
+(`runs/2026-10-01_ld1-eproces-dziennik/`): fałszywe alarmy ≤ 0,54 % (bramka 1 ✓), moc w rok ≤ 0,9 %
+wobec 3–11 % odczytów ADR-09 (bramka 2 ✗) → reporter opisowy; rekomendacja D3-a. Raport na migawce
+dziennika z 2026-09-30 (6 dni): wszystkie E ≈ 1, brak dowodu w żadną stronę.
+
+Do decyzji użytkownika przed 2026-12-24: D3 (rekomendacja: (a) tylko reporter).

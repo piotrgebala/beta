@@ -18,7 +18,8 @@ Tablica: [`zadania/`](zadania/).
 
 - **001** — `do_przegladu` (2026-09-30): port `miara` z parytetem alpha, loader, CI zielone, NC1B zaliczona.
   Do zamknięcia E0 brakuje manifestu danych (zadanie 002) i Twojej decyzji „E0 zamknięty”.
-- **002** — `nowe`, zablokowane siecią: środowisko nie dopuszcza `data.binance.vision`.
+- **002** — `w_toku`: kod pobierania gotowy i przetestowany bez sieci; uruchomienie na maszynie z internetem
+  (instrukcja w karcie zadania) — chmura nie dopuszcza `data.binance.vision`.
 - **003** — `do_przegladu`: runda LM1 — test DM działa poprawnie; F2-1 mierzalna tylko warunkowo
   (przeliczyć MDE na prawdziwym kształcie strat, gdy będą dane z 002).
 

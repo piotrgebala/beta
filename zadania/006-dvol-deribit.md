@@ -49,3 +49,8 @@ Uwaga do użycia: świeca dnia d zamyka się o 24:00 UTC dnia d — jako cecha d
 znana w chwili prognozy (ta sama pora co RV_d). Pierwsza runda z DVOL = szczebel 5 drabiny F2, osobna
 pre-rejestracja i licznik „nowe źródło danych” (PRD §11.4); tylko BTC i ETH, więc kryterium „16/20 monet”
 z F2-1 nie przenosi się wprost — do ustalenia w pre-rejestracji.
+
+**Kontrola krzyżowa z kopią alpha** (`alpha/data/raw/external/deribit_dvol_{BTC,ETH}_1d.parquet`, tylko odczyt,
+2026-10-05): 2 010 wspólnych dni na walutę, OHLC identyczne we wszystkich poza ostatnim dniem alpha
+(2026-09-23: low/close różne o ≤ 0,69 pkt) — alpha pobrała ten dzień w trakcie doby, nasz skrypt bierze tylko
+pełne dni UTC. Źródło zgodne.

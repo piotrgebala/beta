@@ -7,7 +7,7 @@
 | Autor | Claude (na polecenie użytkownika); decyzje: użytkownik |
 | Gałąź robocza | `claude/hopeful-darwin-qvgutd` (repo `alpha`) |
 | Źródła | `runs/INDEX.md` (wnioski 1–111), `docs/rag/01–13`, `docs/mapa_hipotez_2026-10.md`, skille `clas5-quant` i `quant-strategy-catalog` |
-| Status | Nic z tego dokumentu nie jest jeszcze uruchomione. **D1 i D5 rozstrzygnięte 2026-09-30** (osobne repo `beta`); otwarte: D2, D3, D4, D6 — §15 |
+| Status | Nic z tego dokumentu nie jest jeszcze uruchomione. **D1 i D5 rozstrzygnięte 2026-09-30** (osobne repo `beta`); D2 i D4 przyjęte 2026-09-30, D6 („tylko DVOL”) 2026-10-05 — `STATUS.md`; otwarte: D3 — §15 |
 
 ---
 

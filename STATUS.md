@@ -7,10 +7,13 @@
 - **2026-09-30** — „Rób co chcesz, ma działać”: przyjęte jako zgoda na rekomendacje **D2** (F0 → F1 → F2,
   F3 równolegle) i **D4** (dane 5m top-20 od 2021). D3 i D6 nadal otwarte.
 
+- **2026-10-05** — **D6: tak** — DVOL (Deribit) jako źródło dla modeli zmienności, tylko DVOL (pełne opcje
+  dopiero, gdy F2 pokaże wartość); zadanie 006. Nowa zasada 28 w `CLAUDE.md`: commit i push po każdej
+  większej zmianie.
+
 ## Otwarte decyzje (z PRD §15)
 
 - **D3** — rola oceny sekwencyjnej wobec ADR-09 alpha (rekomendacja: tylko reporter); **termin przed 2026-12-24**.
-- **D6** — DVOL (Deribit) jako źródło dla modeli zmienności (rekomendacja: tak, tylko DVOL).
 
 ## Bieżące zadania
 

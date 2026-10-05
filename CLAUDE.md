@@ -52,6 +52,10 @@ Zasady współpracy z alpha:
     README (pre-rejestracja, wynik, „Co na plus / na minus”, werdykt Ready/Caveats/Revision, użyte skille)
     + `raw_output.txt` + wiersz w `runs/INDEX.md`.
 27. **Rozmowa i raporty prostym językiem** (alpha zasada 17).
+28. **Commit i push po każdej większej zmianie** (decyzja użytkownika 2026-10-05). Skończony kawałek pracy
+    (nowy moduł, poprawka, pre-rejestracja, wynik rundy, manifest danych, zmiana zasad) → testy i lint
+    zielone → commit → `git push` na bieżącą gałąź. Nie odkładać na koniec sesji. Do gita nie trafiają
+    dane (`data/`) ani sekrety; scalenie do `main` nadal przez PR.
 
 ## Skille
 

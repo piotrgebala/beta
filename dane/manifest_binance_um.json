@@ -1,8 +1,8 @@
 {
  "zrodlo": "https://data.binance.vision/data/futures/um/monthly/klines",
  "skrypt": "dane/binance_vision.py",
- "wersja_skryptu": "f1b0e58d141660a16417b96e877968af0b889b8b",
- "utworzono": "2026-10-05T17:55:03+00:00",
+ "wersja_skryptu": "55cfcdb2eae0922922beef81e6a2b235737b4ee4",
+ "utworzono": "2026-10-05T20:20:22+00:00",
  "od": "2021-01",
  "do": "2026-09",
  "pliki": [

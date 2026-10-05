@@ -8,7 +8,7 @@ duplikaty, świece zerowe i skoki raportujemy, nie naprawiamy. Moduł nie liczy 
 więc testy działają bez internetu.
 
     python -m dane.binance_vision --tf 5m 1d --symbole BTCUSDT ETHUSDT --koniec 2026-08
-    python -m dane.binance_vision --tf 5m 1d --uniwersum ../alpha/data/raw/universe_full --top 20
+    python -m dane.binance_vision --tf 5m 1d --uniwersum ../alpha/data/raw/universe_full --top 20 --watki 16
 """
 
 from __future__ import annotations
@@ -18,10 +18,12 @@ import hashlib
 import io
 import json
 import subprocess
+import time
 import urllib.error
 import urllib.request
 import zipfile
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -61,8 +63,8 @@ def miesiace(start: str, koniec: str) -> list[str]:
     return [p.strftime("%Y-%m") for p in pd.period_range(start, koniec, freq="M")]
 
 
-def fetch_http(url: str, proby: int = 4) -> bytes | None:
-    """GET z ponowieniem przy błędach sieci; 404 → None (symbolu nie było w tym miesiącu)."""
+def fetch_http(url: str, proby: int = 5) -> bytes | None:
+    """GET z ponowieniem (backoff 1, 2, 4… s) przy błędach sieci; 404 → None (symbolu nie było w miesiącu)."""
     for k in range(proby):
         try:
             with urllib.request.urlopen(url, timeout=60) as r:
@@ -72,9 +74,10 @@ def fetch_http(url: str, proby: int = 4) -> bytes | None:
                 return None
             if k == proby - 1:
                 raise
-        except urllib.error.URLError:
+        except OSError:  # URLError, timeout w trakcie odczytu, zerwane połączenie
             if k == proby - 1:
                 raise
+        time.sleep(2**k)
     return None
 
 
@@ -226,6 +229,21 @@ def _git_hash() -> str:
         return "nieznany"
 
 
+def _pobierz_i_zapisz(
+    sym: str, tf: str, start: str, koniec: str, out_dir: Path, fetch: Fetch, log
+) -> tuple[pd.DataFrame, list[dict], dict]:
+    """Jedna para (symbol, tf): pobranie, zapis parquet, raport jakości."""
+    df, wpisy = pobierz_symbol(sym, tf, start, koniec, fetch)
+    path = out_dir / tf / f"{sym}.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(path, index=False)
+    q = raport_jakosci(df, tf) if len(df) else {"wiersze": 0}
+    q["parquet"] = str(path.relative_to(out_dir))
+    q["parquet_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    log(f"{sym} {tf}: {q.get('wiersze', 0)} świec, dziury {q.get('dziury', 0)}")
+    return df, wpisy, q
+
+
 def uruchom(
     symbole: list[str],
     tfs: list[str],
@@ -233,8 +251,12 @@ def uruchom(
     out_dir: Path = DATA_DIR,
     fetch: Fetch = fetch_http,
     log=print,
+    watki: int = 1,
 ) -> dict:
-    """Pobiera, zapisuje parquet per (symbol, tf), zwraca manifest z raportem jakości."""
+    """
+    Pobiera, zapisuje parquet per (symbol, tf), zwraca manifest z raportem jakości. `watki` > 1 pobiera
+    pary (symbol, tf) równolegle; kolejność wpisów manifestu jest ta sama co przy pracy sekwencyjnej.
+    """
     start = min_start().strftime("%Y-%m")
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest = {
@@ -247,18 +269,15 @@ def uruchom(
         "pliki": [],
         "jakosc": {},
     }
-    for sym in symbole:
-        for tf in tfs:
-            df, wpisy = pobierz_symbol(sym, tf, start, koniec, fetch)
-            path = out_dir / tf / f"{sym}.parquet"
-            path.parent.mkdir(parents=True, exist_ok=True)
-            df.to_parquet(path, index=False)
+    pary = [(sym, tf) for sym in symbole for tf in tfs]
+
+    def zadanie(para: tuple[str, str]):
+        return _pobierz_i_zapisz(*para, start, koniec, out_dir, fetch, log)
+
+    with ThreadPoolExecutor(max_workers=max(1, watki)) as ex:
+        for (sym, tf), (df, wpisy, q) in zip(pary, ex.map(zadanie, pary), strict=True):
             manifest["pliki"] += wpisy
-            q = raport_jakosci(df, tf) if len(df) else {"wiersze": 0}
-            q["parquet"] = str(path.relative_to(out_dir))
-            q["parquet_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
             manifest["jakosc"][f"{sym}/{tf}"] = q
-            log(f"{sym} {tf}: {q.get('wiersze', 0)} świec, dziury {q.get('dziury', 0)}")
             if sym == "BTCUSDT" and tf == "1d" and len(df):
                 manifest["kontrola_pozytywna_btc_2021_05_19"] = kontrola_pozytywna_btc(df)
     return manifest
@@ -273,10 +292,11 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--top", type=int, default=20)
     ap.add_argument(
         "--koniec",
-        default=(pd.Timestamp.now(tz="UTC") - pd.offsets.MonthBegin(1)).strftime("%Y-%m"),
+        default=(pd.Timestamp.now(tz="UTC").tz_localize(None).to_period("M") - 1).strftime("%Y-%m"),
     )
     ap.add_argument("--out", type=Path, default=DATA_DIR)
     ap.add_argument("--manifest", type=Path, default=ROOT / "dane" / "manifest_binance_um.json")
+    ap.add_argument("--watki", type=int, default=1, help="równoległe pobieranie par (symbol, tf)")
     a = ap.parse_args(argv)
     if a.symbole:
         symbole = sorted(a.symbole)
@@ -287,7 +307,7 @@ def main(argv: list[str] | None = None) -> None:
             json.dumps(sklad, indent=1) + "\n", encoding="utf-8"
         )
     print(f"{len(symbole)} symboli × {a.tf}, {min_start():%Y-%m} → {a.koniec}")
-    manifest = uruchom(symbole, a.tf, a.koniec, a.out)
+    manifest = uruchom(symbole, a.tf, a.koniec, a.out, watki=a.watki)
     a.manifest.write_text(
         json.dumps(manifest, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
     )

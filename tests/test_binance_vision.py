@@ -123,3 +123,72 @@ def test_uruchom_zapisuje_parquet_i_manifest(tmp_path):
     assert q["wiersze"] == 31 and len(q["parquet_sha256"]) == 64
     assert (tmp_path / "1d" / "BTCUSDT.parquet").is_file()
     assert m["kontrola_pozytywna_btc_2021_05_19"]["ok"] is False  # brak maja w atrapie
+
+
+def test_uruchom_rownolegle_daje_ten_sam_manifest(tmp_path):
+    f = Atrapa()
+    for i, sym in enumerate(["BTCUSDT", "ETHUSDT", "SOLUSDT"]):
+        for tf in ("1d", "1h"):
+            for m, start, n in (("2021-01", "2021-01-01", 31), ("2021-02", "2021-02-01", 28)):
+                k = n * (24 if tf == "1h" else 1)
+                f.dodaj(
+                    bv.url_pliku(sym, tf, m), _zip(_swiece(start, k, tf, 100.0 * (i + 1)), True)
+                )
+    cisza = lambda *_: None
+    sek = bv.uruchom(
+        ["BTCUSDT", "ETHUSDT", "SOLUSDT"], ["1d", "1h"], "2021-02", tmp_path / "a", f, cisza
+    )
+    row = bv.uruchom(
+        ["BTCUSDT", "ETHUSDT", "SOLUSDT"],
+        ["1d", "1h"],
+        "2021-02",
+        tmp_path / "b",
+        f,
+        cisza,
+        watki=4,
+    )
+    for m in (sek, row):
+        m.pop("utworzono")
+    assert sek == row
+    assert [(w["symbol"], w["tf"], w["miesiac"]) for w in row["pliki"]][:3] == [
+        ("BTCUSDT", "1d", "2021-01"),
+        ("BTCUSDT", "1d", "2021-02"),
+        ("BTCUSDT", "1h", "2021-01"),
+    ]
+
+
+def test_fetch_http_ponawia_i_404_to_none(monkeypatch):
+    import urllib.error
+
+    wywolania = []
+
+    class Odp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b"ok"
+
+    def urlopen(url, timeout):
+        wywolania.append(url)
+        if url.endswith("404"):
+            raise urllib.error.HTTPError(url, 404, "nie ma", None, None)
+        if len(wywolania) < 3:
+            raise TimeoutError("timeout w trakcie odczytu")
+        return Odp()
+
+    monkeypatch.setattr(bv.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(bv.time, "sleep", lambda s: None)
+    assert bv.fetch_http("https://x/plik.zip") == b"ok" and len(wywolania) == 3
+    assert bv.fetch_http("https://x/404") is None
+    wywolania.clear()
+    monkeypatch.setattr(
+        bv.urllib.request,
+        "urlopen",
+        lambda u, timeout: (_ for _ in ()).throw(ConnectionResetError()),
+    )
+    with pytest.raises(ConnectionResetError):
+        bv.fetch_http("https://x/zawsze-zle", proby=3)

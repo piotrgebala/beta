@@ -192,3 +192,19 @@ def test_fetch_http_ponawia_i_404_to_none(monkeypatch):
     )
     with pytest.raises(ConnectionResetError):
         bv.fetch_http("https://x/zawsze-zle", proby=3)
+
+
+def test_url_koduje_symbol_spoza_ascii():
+    u = bv.url_pliku("币安人生USDT", "1d", "2025-11")
+    assert u.isascii() and "%E5%B8%81" in u and u.endswith("USDT-1d-2025-11.zip")
+    assert bv.url_pliku("BTCUSDT", "1d", "2021-01").endswith("BTCUSDT/1d/BTCUSDT-1d-2021-01.zip")
+
+
+def test_blad_jednej_pary_trafia_do_manifestu_a_reszta_sie_pobiera(tmp_path):
+    f = Atrapa()
+    f.dodaj(bv.url_pliku("BTCUSDT", "1d", "2021-01"), _zip(_swiece("2021-01-01", 31), True))
+    f.dodaj(bv.url_pliku("ETHUSDT", "1d", "2021-01"), _zip(_swiece("2021-01-01", 31), True), True)
+    m = bv.uruchom(["BTCUSDT", "ETHUSDT"], ["1d"], "2021-01", tmp_path, f, lambda *_: None, watki=2)
+    assert m["jakosc"]["BTCUSDT/1d"]["wiersze"] == 31 and "ETHUSDT/1d" not in m["jakosc"]
+    assert m["bledy"] == [{"para": "ETHUSDT/1d", "blad": m["bledy"][0]["blad"]}]
+    assert "SHA-256" in m["bledy"][0]["blad"]

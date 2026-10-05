@@ -20,6 +20,7 @@ import json
 import subprocess
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 from collections.abc import Callable
@@ -55,7 +56,9 @@ Fetch = Callable[[str], bytes | None]  # None = brak pliku (404)
 
 
 def url_pliku(symbol: str, tf: str, miesiac: str) -> str:
-    return f"{BASE_URL}/{symbol}/{tf}/{symbol}-{tf}-{miesiac}.zip"
+    """Adres miesięcznego ZIP-a; symbol kodowany w URL (są symbole spoza ASCII, np. „币安人生USDT”)."""
+    s = urllib.parse.quote(symbol)
+    return f"{BASE_URL}/{s}/{tf}/{s}-{tf}-{miesiac}.zip"
 
 
 def miesiace(start: str, koniec: str) -> list[str]:
@@ -272,10 +275,21 @@ def uruchom(
     pary = [(sym, tf) for sym in symbole for tf in tfs]
 
     def zadanie(para: tuple[str, str]):
-        return _pobierz_i_zapisz(*para, start, koniec, out_dir, fetch, log)
+        try:
+            return _pobierz_i_zapisz(*para, start, koniec, out_dir, fetch, log)
+        # błąd jednej pary (sieć, suma SHA, zły ZIP/CSV) nie kasuje reszty — trafia do manifestu
+        except (OSError, ValueError, zipfile.BadZipFile) as e:
+            log(f"{para[0]} {para[1]}: BŁĄD {type(e).__name__}: {e}")
+            return e
 
     with ThreadPoolExecutor(max_workers=max(1, watki)) as ex:
-        for (sym, tf), (df, wpisy, q) in zip(pary, ex.map(zadanie, pary), strict=True):
+        for (sym, tf), wynik in zip(pary, ex.map(zadanie, pary), strict=True):
+            if isinstance(wynik, Exception):
+                manifest.setdefault("bledy", []).append(
+                    {"para": f"{sym}/{tf}", "blad": f"{type(wynik).__name__}: {wynik}"}
+                )
+                continue
+            df, wpisy, q = wynik
             manifest["pliki"] += wpisy
             manifest["jakosc"][f"{sym}/{tf}"] = q
             if sym == "BTCUSDT" and tf == "1d" and len(df):
@@ -312,6 +326,8 @@ def main(argv: list[str] | None = None) -> None:
         json.dumps(manifest, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     print(f"manifest: {a.manifest} ({len(manifest['pliki'])} plików źródłowych)")
+    if manifest.get("bledy"):
+        raise SystemExit(f"BŁĘDY w {len(manifest['bledy'])} parach — lista w manifeście (`bledy`)")
 
 
 if __name__ == "__main__":

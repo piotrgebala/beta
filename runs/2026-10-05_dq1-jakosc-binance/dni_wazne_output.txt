@@ -1,0 +1,66 @@
+Dni ważne w danych 5m (zadanie 014): min_swiec = 274, wyklucz_po_dziurze = False
+Symboli w danych: 196; monet F2-1: 20
+
+(a) Martwe dni 5m (`martwy`) a DQ1 (`dni_bez_obrotu` z 1d)
+    wolumen0 / rv0 / oba: dni ze świecami z samym wolumenem = 0 / samym rv = 0 / z oboma;
+    tylko_5m / tylko_1d: dni martwe tylko wg 5m / tylko wg 1d; dni_tylko_w_1d: dni z
+    wierszem 1d bez świec 5m; wol_rozny: dni, w których suma wolumenu 5m różni się od
+    wolumenu 1d o > 1e-6 (względnie); ostatni_*: ostatni dzień danych i jego liczba świec
+           martwe  wolumen0  rv0  oba  bez_obrotu_1d  tylko_5m  tylko_1d  dni_tylko_w_1d  wol_rozny ostatni_dzien  ostatni_n_swiec
+symbol                                                                                                                            
+FTMUSDT       632       632  632  632            632         0         0               0          5    2026-09-30              288
+MATICUSDT       7         7    7    7              7         0         0               0          5    2024-09-11              117
+Wszystkie 196 symboli: martwe 5m 13452, dni_bez_obrotu 1d 13452; dni tylko w 5m 0, tylko w 1d 0 (symboli z różnicą: 0)
+  dni obecne tylko w archiwum 1d: 0; dni z samym wolumen = 0 (rv > 0): 0; z samym rv = 0 (wolumen > 0): 0; dni z różnym wolumenem 5m vs 1d: 600 (symboli: 161)
+
+(b) Zgodność z Poprawką 1 F2-1 (dzień ważny = co najmniej 274 świece i rv > 0)
+    20 monet F2-1: liczba dni ważnych (wazne), liczba wg listy Poprawki 1
+    (p1_wazne) i liczba dni, w których obie listy się różnią (p1_roznice)
+              wazne  p1_wazne  p1_roznice
+symbol                                   
+BNBUSDT        2098      2098           0
+BTCUSDT        2098      2098           0
+ETHUSDT        2098      2098           0
+XRPUSDT        2093      2093           0
+SOLUSDT        2093      2093           0
+DOGEUSDT       2098      2098           0
+ADAUSDT        2098      2098           0
+LINKUSDT       2098      2098           0
+AVAXUSDT       2098      2098           0
+LTCUSDT        2093      2093           0
+1000PEPEUSDT   1244      1244           0
+MATICUSDT      1342      1342           0
+SUIUSDT        1246      1246           0
+1000SHIBUSDT   1969      1969           0
+BCHUSDT        2098      2098           0
+DOTUSDT        2098      2098           0
+FTMUSDT        1461      1461           0
+FILUSDT        2093      2093           0
+ETCUSDT        2098      2098           0
+WIFUSDT         986       986           0
+Parytet: 20/20 symboli z identyczną listą dni, suma różnic 0
+
+(c) Dni na symbol (monety F2-1); niepelne zawiera dni bez świec (bez_swiec),
+    wazne_po_dziurze = dni ważne, które wyklucza wyklucz_po_dziurze=True
+                dni  wazne  martwe  po_dziurze  niepelne  bez_swiec  wazne_po_dziurze
+BNBUSDT        2099   2098       0           0         0          0                 0
+BTCUSDT        2099   2098       0           0         0          0                 0
+ETHUSDT        2099   2098       0           0         0          0                 0
+XRPUSDT        2099   2093       0           2         5          5                 2
+SOLUSDT        2099   2093       0           2         5          5                 2
+DOGEUSDT       2099   2098       0           0         0          0                 0
+ADAUSDT        2099   2098       0           0         0          0                 0
+LINKUSDT       2099   2098       0           0         0          0                 0
+AVAXUSDT       2099   2098       0           0         0          0                 0
+LTCUSDT        2099   2093       0           2         5          5                 2
+1000PEPEUSDT   1245   1244       0           0         1          0                 0
+MATICUSDT      1350   1342       7           0         1          0                 0
+SUIUSDT        1247   1246       0           0         1          0                 0
+1000SHIBUSDT   1970   1969       0           0         1          0                 0
+BCHUSDT        2099   2098       0           0         0          0                 0
+DOTUSDT        2099   2098       0           0         0          0                 0
+FTMUSDT        2099   1461     632           2         5          5                 2
+FILUSDT        2099   2093       0           2         5          5                 2
+ETCUSDT        2099   2098       0           0         0          0                 0
+WIFUSDT         987    986       0           0         1          0                 0
+RAZEM         38284  37600     639          10        30         25                10

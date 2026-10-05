@@ -1,9 +1,8 @@
 # KV1 — kontrole R8 przyrządu VaR/ES: rozmiar i moc testów wstecznych (2026-10-05)
 
-> **STATUS: PRE-REJESTRACJA (przed przebiegiem).** Pełny przebieg `python -m symulacje.run_kv1` nie był
-> uruchomiony; kryteria poniżej są zapisane przed obejrzeniem jakiegokolwiek jego wyniku.
-> Sekcje „Wynik”, „Co na plus / na minus” i werdykt (Ready/Caveats/Revision) dopisuje orkiestrator po
-> pełnym przebiegu.
+> **STATUS: ZAKOŃCZONA — ZALICZONA (19/19), Caveats.** Pre-rejestracja (commit `d9f83ed`) była zapisana
+> przed przebiegiem; wynik i werdykt dopisane po pełnym przebiegu `python -m symulacje.run_kv1`
+> (ziarno `20261005`, 56 s na 32 rdzeniach). Wynik jest identyczny bajt w bajt przy 8 procesach (R19).
 
 ## W skrócie — prostym językiem
 
@@ -222,3 +221,85 @@ zerowe Z2 (średnia, sd, 5. percentyl).
   danych.
 - R15: LLM nie występuje w żadnej ścieżce decyzyjnej; przyrząd i skrypt są deterministyczne (R19).
 - Użyte skille: brak (kod i rachunki własne; żaden skill nie był ładowany).
+
+## Wynik
+
+Źródło: `raw_output.txt` (komenda z sekcji Metadane). Odsetek odrzuceń przy poziomie testu 5 % na 5 000 seriach
+na poziom p; w nawiasie przedział Wilsona 95 % (tylko raportowany, decyduje sam odsetek).
+
+**Kontrola negatywna (prognoza prawdziwa) — wszystkie osiem odsetków w paśmie [2,5 %; 7,5 %]:**
+
+| test | p = 1 % (n = 200 000) | p = 5 % (n = 20 000) |
+|---|---|---|
+| Kupiec LR_uc | 4,96 % [4,39; 5,60] | 5,10 % [4,52; 5,75] |
+| Christoffersen ind | 4,62 % [4,07; 5,24] | 4,94 % [4,37; 5,58] |
+| Christoffersen cc | 5,04 % [4,47; 5,68] | 4,96 % [4,39; 5,60] |
+| Acerbi–Székely Z2 | 4,66 % [4,11; 5,28] | 5,00 % [4,43; 5,64] |
+| udział serii z niezdefiniowanym ind | 0 / 5 000 | 0 / 5 000 |
+
+**Kontrole pozytywne (znany błąd) — wszystkie kryteria ≥ 80 %:**
+
+| kontrola | test | p = 1 % | p = 5 % |
+|---|---|---|---|
+| 1: normalna vs prawdziwe t5 | Kupiec | 100,00 % | 98,96 % |
+| 1: normalna vs prawdziwe t5 | Z2 | 100,00 % | (opis: 3,0 %, bez mocy z konstrukcji) |
+| 2: stałe σ vs GARCH | Christoffersen ind | 100,00 % | 99,98 % |
+| 3: dobry VaR, ES za niskie | Z2 | 100,00 % | 99,34 % |
+| 4: normalna vs prawdziwe t5 | Christoffersen cc | 100,00 % | 97,68 % |
+
+**Kryteria spełnione: 19/19. Reguła z pre-rejestracji → ZALICZONA.**
+
+**Zgodność z rachunkami zapisanymi PRZED przebiegiem** (nie są kryteriami, ale potwierdzają, że przyrząd
+liczy to, co teoria): trafienia normalnej prognozy przy t5: 1,499 % (rachunek 1,499 %) i 4,358 %
+(4,356 %); moc Kupca przy p = 5 %: 98,96 % (rachunek ≈ 99,0 %); moc cc: 97,68 % (≈ 97,6 %);
+E[Z2] dla normalnej prognozy: −0,7541 (rachunek −0,754) i +0,0145 (+0,015); dla zaniżonego ES: −0,1549
+(−0,155) i −0,1440 (−0,144). Rozkłady zerowe Z2 mają średnią ≈ 0 (|średnia| ≤ 0,0004) i sd 0,022–0,033.
+
+**Opis (nie kryteria), rzeczy warte zapamiętania:**
+- **Z2 przy p = 5 % nie widzi „normalnej prognozy przy t5”:** odrzuca 3,0 %, bo błąd VaR i błąd ES się
+  kasują (średnie Z2 = +0,0145). Tak przewidywała pre-rejestracja. Ten sam błąd przy p = 1 % Z2 widzi w 100 %.
+- **Z2 jest lewostronny:** przy stałym σ i p = 5 % średnie Z2 = +0,073 (tail raczej przeszacowany), a mimo to
+  11,1 % serii jest odrzucanych — przyczyny (rozrzut Z2 przy grupowaniu zmienności) nie badano; nie
+  traktować tego jako mocy.
+- **Test niezależności (ind) nie wykrywa błędu pokrycia:** przy normalnej prognozie odrzuca 5,6 % / 4,6 %
+  (trafienia są niezależne, tylko za częste). Każdy z testów widzi inną wadę — do oceny prognozy trzeba
+  ich razem (Kupiec + cc + Z2).
+- Kupiec przy stałym σ vs GARCH: 87,0 % / 87,8 % (trafień 1,11 % / 4,29 %) — wykrywa też to.
+
+## Co na plus (+) / Co na minus (−)
+
+**(+)** Przyrząd ma poprawny rozmiar wszystkich czterech testów na dużych próbach (4,6–5,1 % przy
+nominalnych 5 %), 0 serii z niezdefiniowanym testem, a każdy znany błąd wykrywa w ≥ 97,7 % przypadków.
+Rachunki zamknięte zapisane przed przebiegiem zgadzają się z wynikiem do trzeciego miejsca po przecinku.
+Wynik nie zależy od liczby procesów (R19). Pre-rejestracja była zamrożona w gicie przed przebiegiem.
+**(−)** (1) KV1 sprawdza rozmiar przy n = 20 000 i 200 000 dni (n·p² ≥ 20), a prawdziwe dane mają
+ok. 600–2 100 dni na monetę (n·p² ≈ 0,06–0,2 przy p = 1 %): rozmiar LR_ind i p-wartości przy takim n
+nie są tu zweryfikowane — to zadanie LV1 (009). (2) Prognoza to „wyrocznia” σ_t z generatora; błąd
+estymacji zmienności prognosty (okno, model) nie jest sprawdzony. (3) ρ = 0: serie niezależne,
+korelacja między monetami (R12) czeka na LV1. (4) Pasmo negatywne [2,5 %; 7,5 %] to ok. ±8 błędów
+standardowych — kontrola wychwytuje tylko duże wady rozmiaru; dokładność wzorów pilnują testy
+jednostkowe. (5) Dane syntetyczne GARCH-t (ν = 5): prawdziwy rynek ma grubsze ogony i skoki.
+
+## Werdykt
+
+**Caveats.** Reguła z pre-rejestracji: **ZALICZONA** (19/19) — `miara/var_es.py` jest dopuszczony do rundy
+z pre-rejestracją na danych **po** LV1 (karta 009), nie wcześniej. Warunki (Caveats), które wynikają z (−):
+1. rozmiar i moc przy prawdziwych n (600–2 100 dni) i korelacji między monetami mierzy LV1 — dopóki jej nie ma,
+   żadnej prognozy VaR/ES na prawdziwych danych nie oceniamy;
+2. Z2 nigdy samodzielnie — zawsze razem z Kupcem (i cc);
+3. LR_ind przy n·p² ≲ 1 czytać jako orientacyjny.
+
+## Wniosek
+
+**Prostym językiem:** nasz „miernik jakości prognoz ryzyka” działa tak, jak powinien. Gdy prognoza jest
+dobra, pomyli się tylko w ok. 5 % przypadków (tyle, ile zakładamy). Gdy prognoza jest zła — za cienkie
+ogony, nieuwzględniona zmienność w czasie, zaniżona średnia strata — wykrywa to w niemal każdym przypadku.
+Sprawdziliśmy go na bardzo długich sztucznych seriach. Na prawdziwych danych mamy ich dużo mniej (setki
+do ok. 2 000 dni), więc następny krok (LV1, karta 009) pokaże, czy przy takich ilościach miernik nadal
+rozróżnia dobrą prognozę od złej — dopiero potem wolno go użyć na prawdziwych cenach.
+
+## Użyte skille
+
+Brak wczytanych skilli (rachunki i kod własne; procedura rundy wg CLAUDE.md beta, zasady 25–26). Trzech
+niezależnych recenzentów (workflow wieloagentowy z testami mutacyjnymi) przejrzało kod i pre-rejestrację
+PRZED przebiegiem; ich zmiany opisane w sekcji pre-rejestracji.

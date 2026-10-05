@@ -2,45 +2,45 @@
  "zrodlo": "https://www.deribit.com/api/v2/public/get_volatility_index_data",
  "rozdzielczosc": "1D",
  "skrypt": "dane/deribit_dvol.py",
- "wersja_skryptu": "870c617b56ab2474cd344c3b8d3dfe993930f789",
- "utworzono": "2026-10-05T17:41:39+00:00",
+ "wersja_skryptu": "dc056a8db3da8885643936e2d4dca5582a68494a",
+ "utworzono": "2026-10-05T20:19:22+00:00",
  "od": "2021-01-01",
  "do_wylacznie": "2026-10-05",
  "strony": [
   {
    "waluta": "BTC",
    "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1791158399999&resolution=1D",
-   "sha256": "492e0d1187678ba5ce6cca457bf259fe945ddff739d2e25feaad8c61513f6b3c",
+   "sha256": "0a5893f602fae274185c0c209dc2c24f08d5d1a2a506079a2d76a23588894ce3",
    "wiersze": 1000
   },
   {
    "waluta": "BTC",
    "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1704672000000&resolution=1D",
-   "sha256": "ac05c970c2c6c204b0f8729d7ed5c8a24fae7a1e276b6706199691e4d3b34b76",
+   "sha256": "3f50834509e8c85ddfc9ea29a92798c37a1e1b555400d4b91fe5cec597f85b80",
    "wiersze": 1000
   },
   {
    "waluta": "BTC",
    "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1618272000000&resolution=1D",
-   "sha256": "63f80931ac8ba902b552770f33359976ca429099b15c2d9dce9ebf480c21b0f5",
+   "sha256": "fc13f0958b4fc04d07805998f7c86f9797d903ef773627876ce103b914b52a1f",
    "wiersze": 21
   },
   {
    "waluta": "ETH",
    "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1791158399999&resolution=1D",
-   "sha256": "a25c1636f66a5ec7b35ba313644fd3a735b0fdf87876af792cf7f01eb121bf47",
+   "sha256": "bcdd8479398765df985bbd44b21c144da961efde9fd1f0fa17c56e837e2335fb",
    "wiersze": 1000
   },
   {
    "waluta": "ETH",
    "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1704672000000&resolution=1D",
-   "sha256": "5b535a63de255c854027aaec0299306f759781421977729e1c63dcceec6de2ae",
+   "sha256": "84f2f38212e712c9b4ddf78deccddbd7c3fb54955489a3e278a61f66c5252358",
    "wiersze": 1000
   },
   {
    "waluta": "ETH",
    "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1618272000000&resolution=1D",
-   "sha256": "a9d3d69d4ccf328525fcbb94396a6afbf59026c91e0994e15325aff7f57c5819",
+   "sha256": "f1da35708a745eab181bee67a56c0494546b9d66354ccb0005b6c9defcdf06c7",
    "wiersze": 21
   }
  ],

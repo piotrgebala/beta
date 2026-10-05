@@ -21,24 +21,51 @@
 
 ## Bieżące zadania
 
-Tablica: [`zadania/`](zadania/).
+Tablica: [`zadania/`](zadania/). Stan na 2026-10-05.
 
-- **001** — `do_przegladu` (2026-09-30): port `miara` z parytetem alpha, loader, CI zielone, NC1B zaliczona.
-  Manifest danych jest (002) — do zamknięcia E0 brakuje tylko Twojej decyzji „E0 zamknięty”.
-- **002** — `do_przegladu` (2026-10-05): 196 symboli top-20 × 5m/1d od 2021 pobrane, manifest + skład w repo,
-  raport jakości DQ1 (Ready): 33 symbole z „martwym ogonem” po wycofaniu, wspólne dziury 2022-02/04.
-- **003** — `do_przegladu`: runda LM1 — test DM działa poprawnie; F2-1 mierzalna tylko warunkowo
-  (przeliczyć MDE na prawdziwym kształcie strat, gdy będą dane z 002).
-- **004** — `do_przegladu`: reporter F3 (`python -m dowody.raport`) + LD1; czeka na D3.
-- **005** — `do_przegladu` (2026-10-05): runda F2-1 **NIEMIERZALNA** na progu (MDE 0,103 > 0,10); test DM
-  nieuruchomiony, licznik 0; pięć monet z krótką historią zjada zapas kryterium 16/20 → decyzja w 011.
-- **006** — `do_przegladu` (2026-10-05): DVOL BTC/ETH 1D od 2021-03-24 pobrany, czysty, kontrola pozytywna ✓.
+**Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
-## Plan sesji na serwerze (2026-10-05)
+- **001** — fundament: przyrząd `miara` zgodny z alpha (132 wektory), loader z `min_start`, CI, NC1B zaliczona.
+  Razem z 002 zamyka E0 — brakuje tylko Twojej decyzji „E0 zamknięty”.
+- **002** — dane: 196 symboli top-20 × 5m/1d od 2021, manifest + skład w repo, raport jakości DQ1 (Ready).
+- **003** — laboratorium LM1: test porównania prognoz (DM) działa poprawnie.
+- **004** — reporter F3 dla dziennika alpha + LD1; jego rola czeka na D3.
+- **005** — runda F2-1: **NIEMIERZALNA** na progu (MDE 0,103 > 0,10), licznik 0 → dalej 011.
+- **006** — DVOL BTC/ETH od 2021-03-24, zgodny z kopią alpha.
+- **007** — raport tygodniowy (`python -m raporty.tydzien`), pierwszy: `raporty/tygodnie/2026-W41.md`.
 
-Wykonane: 002 (dane + DQ1), 006 (DVOL), 005 (F2-1 NIEMIERZALNA), reporter F3 na dzienniku (10–11 dni, e ≈ 1).
-Następne (plan zaakceptowany 2026-10-05): karty 007–012 → 007 raport tygodniowy → 008 przyrząd VaR/ES →
-009 laboratorium LV1 → 010 rejestr cech.
+**Do zrobienia:**
+
+| id | zadanie | status | zależy od |
+|---|---|---|---|
+| 008 | przyrząd VaR/ES (Kupiec, Christoffersen, Acerbi–Szekely) z kontrolami | `nowe` | — |
+| 009 | laboratorium LV1: czy testy VaR/ES mają moc przy naszej historii | `nowe` | 008 |
+| 010 | rejestr cech + automatyczny test przecieku | `nowe` | — |
+| 011 | następny krok F2: F2-1b (monety z pełną historią) albo tylko ES/likwidacje | `czeka_na_decyzje` | 005, 014 |
+| 012 | automat: DVOL codziennie, Binance co miesiąc, raport w niedzielę | `nowe` | 007 |
+| 013 | bundle na GitHubie (4 nowe repo) — **Twój krok**, potem push | `czeka_na_decyzje` | — |
+| 014 | wspólna obsługa martwych ogonów i dziur archiwum w danych 5m | `nowe` | 002 |
+
+## Kolejka
+
+**008 → 009 → 014 → 010 → 012.** Warunkowo: F2-1b po decyzji 011 = (a) (po 014). Po Twoim kroku w 013:
+push 4 repo bundla. Linię crona dla 012 dodajesz Ty.
+
+## Decyzje czekające na Ciebie
+
+1. **E0 zamknięty?** — wszystko z listy jest (001 + 002). Rekomendacja: tak.
+2. **011** — F2-1b czy tylko ES/likwidacje. Rekomendacja: F2-1b (VaR/ES idzie i tak).
+3. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
+4. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (testy: 229 zielonych).
+5. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
+
+## Backlog (bez kart)
+
+- Migracja `beta/miara` → pakiet `miara` — po E2 (ADR `bundle/0001` pkt 3; Poprawka w alpha).
+- Migracja `beta/dane` → repo `kolektory` — po 013, osobną decyzją.
+- Top-50 (FR-01) — gdy runda będzie tego potrzebować (`--top 50`).
+- Tor F5 (likwidacje, Hyperliquid) — magazyn cech point-in-time; pierwszy odczyt najwcześniej 2027-09.
+- F4 portfel — po E2.
 
 ## Ryzyka
 

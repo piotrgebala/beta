@@ -15,10 +15,10 @@ dowodach i portfelu. Zleceń nie składa — to rola zamrożonego repo `wykonani
 
 | etap | zakres | status |
 |---|---|---|
-| E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | 🔍 zadanie 001 do przeglądu (manifest danych → 002) |
-| E1 | laboratorium symulacji + rachunek mocy | 🔍 zadanie 003 do przeglądu (LM1: Caveats) |
-| E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | ⏳ zadanie 005: kod F2-1 gotowy, czeka na dane |
-| E3 | dowody sekwencyjne dla dziennika alpha (przed 2026-12-24) | 🔍 zadanie 004 do przeglądu; czeka na D3 |
+| E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | ✅ gotowe (001, 002) — czeka na Twoje „E0 zamknięty” |
+| E1 | laboratorium symulacji + rachunek mocy | 🔍 do przeglądu (003 LM1: Caveats; 004 LD1) |
+| E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | 🔄 dane są (002, 006); F2-1 NIEMIERZALNA (005) → 011; dalej VaR/ES (008, 009) |
+| E3 | dowody sekwencyjne dla dziennika alpha (przed 2026-12-24) | ✅ reporter gotowy (004); czeka na D3 |
 | E4 | portfel i wielkość pozycji | — |
 | E5 | tor ML na nowe dane (likwidacje, Hyperliquid) | — |
 | E6 | meta-labeling (warunkowo) | — |

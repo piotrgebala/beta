@@ -26,16 +26,15 @@ Tablica: [`zadania/`](zadania/).
 - **003** — `do_przegladu`: runda LM1 — test DM działa poprawnie; F2-1 mierzalna tylko warunkowo
   (przeliczyć MDE na prawdziwym kształcie strat, gdy będą dane z 002).
 - **004** — `do_przegladu`: reporter F3 (`python -m dowody.raport`) + LD1; czeka na D3.
-- **005** — `czeka_na_dane`: runda F2-1 (HAR vs zmienność dziennika) — kod i pre-rejestracja gotowe,
-  przebieg na serwerze po 002.
+- **005** — `do_przegladu` (2026-10-05): runda F2-1 **NIEMIERZALNA** na progu (MDE 0,103 > 0,10); test DM
+  nieuruchomiony, licznik 0; pięć monet z krótką historią zjada zapas kryterium 16/20 → decyzja w 011.
 - **006** — `do_przegladu` (2026-10-05): DVOL BTC/ETH 1D od 2021-03-24 pobrany, czysty, kontrola pozytywna ✓.
 
-## Plan sesji na serwerze (z internetem)
+## Plan sesji na serwerze (2026-10-05)
 
-1. `python -m dane.binance_vision --tf 5m 1d --uniwersum ../alpha/data/raw/universe_full --top 20` (zadanie 002),
-   commit manifestu i składu.
-2. `python -m modele.run_f21 > runs/2026-10-01_f21-har-vs-dziennik/raw_output.txt` (zadanie 005), domknięcie rundy.
-3. `python -m dowody.raport` na aktualnym dzienniku alpha (opisowo).
+Wykonane: 002 (dane + DQ1), 006 (DVOL), 005 (F2-1 NIEMIERZALNA), reporter F3 na dzienniku (10–11 dni, e ≈ 1).
+Następne (plan zaakceptowany 2026-10-05): karty 007–012 → 007 raport tygodniowy → 008 przyrząd VaR/ES →
+009 laboratorium LV1 → 010 rejestr cech.
 
 ## Ryzyka
 

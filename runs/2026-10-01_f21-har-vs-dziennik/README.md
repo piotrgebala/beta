@@ -1,7 +1,9 @@
 # F2-1 — HAR-RV vs prognoza zmienności dziennika alpha (QLIKE, 1 dzień, 20 monet)
 
-> **STATUS: PRE-REJESTRACJA (zapisana 2026-10-01, PRZED pobraniem danych) + Poprawka 1 (2026-10-05, przed przebiegiem).** Przebieg na serwerze z danymi
-> z zadania 002: `python -m modele.run_f21 > runs/2026-10-01_f21-har-vs-dziennik/raw_output.txt`.
+> **STATUS: ZAMKNIĘTA 2026-10-05 — NIEMIERZALNA (MDE 0,103 > 0,10), test DM NIE uruchomiony, licznik
+> „zmienność 2021+” bez zmian (0).** Pre-rejestracja 2026-10-01 (przed danymi) + Poprawka 1 (2026-10-05,
+> `cc4cea1`, przed przebiegiem). Przebieg: `python -m modele.run_f21 > raw_output.txt` na kodzie `cc4cea1`,
+> dane: manifest `dane/manifest_binance_um.json` (skrypt `f1b0e58`).
 
 ## W skrócie — prostym językiem
 
@@ -69,3 +71,52 @@ w historii gita (commit „F2-1 Poprawka 1”) — przebieg dopiero po nim.
 - W świecie generatora LM1 HAR bije EWMA 60 o δ ≈ 0,09–0,12 (5 monet × 20 000 dni), N_eff/n ≈ 0,5–0,64.
 - Przy danych od 2021-01 i 365 dniach treningu OOS ma ~1 600 dni (mniej niż ~2 100 ze szkicu PRD), więc
   MDE ≈ 2,8 / √(1 600 · N_eff/n) ≈ 0,09–0,12 — wynik bramki może wypaść po każdej stronie progu.
+
+## Wynik (2026-10-05)
+
+Pełny wydruk: `raw_output.txt`. Walidacja (skill `data:validate-data`): `walidacja_bramki.py` →
+`walidacja_output.txt` — wszystko na centrowanych różnicach strat, bez informacji, który model jest lepszy.
+
+| | wartość |
+|---|---|
+| monety | 20 (BNB, BTC, ETH, XRP, SOL, DOGE, ADA, LINK, AVAX, LTC, PEPE, MATIC, SUI, SHIB, BCH, DOT, FTM, FIL, ETC, WIF) |
+| dni OOS | 1 703 (13 monet), 1 698 (5 monet z dziurami archiwum), krótkie: WIF 591, PEPE 849, SUI 851, MATIC 947, FTM 1 066, SHIB 1 574 |
+| dni kalendarza / wspólne wszystkim | 1 703 / 0 |
+| N_eff/n (średnio) | 0,78 |
+| korelacja różnic strat między monetami | 0,19 |
+| **MDE kryterium (16/20)** | **0,103** (próg 0,10) → **NIEMIERZALNA** |
+| MDE jednej monety (średnio) | 0,088 |
+
+**Walidacja (opis, werdykt bez zmian):**
+1. *Błąd Monte Carlo.* Na ziarnach 1–5 MDE = 0,100–0,102 (ziarno z pre-rejestracji: 0,103). Wynik leży na
+   samym progu; o werdykcie rozstrzyga ziarno zapisane z góry. Nie powtarzamy losowania „do skutku”.
+2. *Skąd wysoki próg.* MDE pojedynczej monety przy jej własnej długości: 13 monet z pełnym OOS 0,055–0,093,
+   SHIB 0,093, a pięć krótkich: MATIC 0,115, PEPE 0,119, FTM 0,120, SUI 0,127, WIF 0,150. Kryterium 16/20
+   dopuszcza najwyżej 4 „porażki” — pięć krótkich monet zjada cały zapas. To ograniczenie projektu rundy
+   (dobór monet po liczbie miesięcy w top-20, a nie po długości danych), nie danych.
+3. *Dane.* Liczby dni zgadzają się z kalendarzem; jedyne braki to wspólne dziury archiwum (2022-02-26…28,
+   2022-04-01…02, DQ1); wszystkie straty skończone.
+
+## Co na plus / na minus
+
+- **+** Bramka zadziałała tak, jak miała: nie odpaliliśmy testu, który nie miałby mocy — licznik nietknięty.
+- **+** Poprawka 1 zapisana przed przebiegiem; wyłapała martwe ogony i rozłączne okresy, które wywróciłyby
+  skrypt albo dały fałszywe liczby.
+- **+** Oczekiwanie z pre-rejestracji („MDE ≈ 0,09–0,12, może wypaść po każdej stronie progu”) sprawdziło się.
+- **−** Wynik na granicy (0,100–0,103 zależnie od ziarna) — rozstrzyga reguła, ale to słaby werdykt.
+- **−** Projekt doboru monet był zły dla tej rundy: monety z krótką historią podnoszą próg kryterium „16/20”.
+- **−** Dzień po dziurze archiwum ma zawyżoną RV (pierwszy zwrot obejmuje kilka dni) — 2 dni na monetę
+  w 5 monetach; pomijalne.
+
+## Werdykt
+
+**Caveats** — NIEMIERZALNA według reguły zapisanej z góry; pytanie „czy HAR bije prognozę dziennika” zostaje
+OTWARTE (nie: „HAR nie działa”). Licznik „zmienność 2021+”: **0** (bez odczytu).
+
+**Co dalej (decyzja użytkownika, zadanie 011):** reguła STOP z pre-rejestracji kieruje F2 do ES/likwidacji —
+to i tak robimy (zadania 008–009). Rekomendacja: równolegle **F2-1b** — nowy wariant z monetami dobranymi po
+długości danych (pełny OOS ~1 700 dni), z bramką MDE liczoną na ślepo przed testem. Bramka nie zdradza wyniku,
+więc to uczciwy rachunek mocy, a nie łowienie; zmiana populacji (tylko monety z długą historią) musi być
+opisana jako ograniczenie.
+
+Użyte skille: `data:validate-data` (walidacja bramki).

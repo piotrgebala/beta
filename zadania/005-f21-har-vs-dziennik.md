@@ -2,7 +2,7 @@
 id: 005
 tytul: runda F2-1 — HAR-RV vs zmienność dziennika (kod + pre-rejestracja; przebieg na serwerze)
 typ: badawcze
-status: czeka_na_dane
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-01: „zrób to, co możesz bez dostępu do Internetu; później odpalę sesję zdalną na serwerze”"
 utworzono: 2026-10-01
@@ -31,4 +31,8 @@ Potem: wynik w README rundy, wiersz w `runs/INDEX.md`, licznik „zmienność 20
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-05 (serwer): Poprawka 1 przed przebiegiem (`cc4cea1`: martwe dni RV = 0 nieważne; bramka po kalendarzu
+z brakami, bo okresy 20 monet nie mają części wspólnej). Przebieg: **NIEMIERZALNA** — MDE kryterium 0,103 > 0,10
+(walidacja: ziarna 1–5 → 0,100–0,102), test DM nie uruchomiony, licznik „zmienność 2021+” = 0. Przyczyna: pięć
+monet z krótkim OOS (WIF, SUI, FTM, PEPE, MATIC; MDE 0,115–0,150) przy kryterium 16/20. Werdykt **Caveats**,
+pytanie otwarte. Dalszy krok F2 → zadanie 011 (decyzja użytkownika).

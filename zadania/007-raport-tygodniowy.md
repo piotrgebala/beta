@@ -2,7 +2,7 @@
 id: 007
 tytul: raport tygodniowy (FR-40) — jedna strona prostym językiem
 typ: infra
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-05: „rozpisz sobie kolejne taski, zaplanuj i zacznij realizować” + akceptacja planu (007–012)"
 utworzono: 2026-10-05
@@ -35,4 +35,6 @@ Testy na atrapie repo (git log, INDEX, karty); pierwszy raport 2026-W41 wygenero
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-05: `raporty/tydzien.py` + 4 testy (`tests/test_raport_tydzien.py`: tydzień ISO, rundy z INDEX, karty,
+decyzje, komentarz przetrwa ponowne generowanie). Pierwszy raport: `raporty/tygodnie/2026-W41.md` z kartami
+decyzji E0, 011, D3 i PR #1. Uruchomienie: `python -m raporty.tydzien` (automat w niedzielę — zadanie 012).

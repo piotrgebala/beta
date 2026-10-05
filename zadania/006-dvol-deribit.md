@@ -2,7 +2,7 @@
 id: 006
 tytul: DVOL (Deribit) BTC i ETH — dzienne dane z manifestem i raportem jakości
 typ: zbieranie_danych
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-05: D6 — „dodaj [...] dane o oczekiwanych wahaniach z giełdy Deribit” (rekomendacja PRD: tylko DVOL)"
 utworzono: 2026-10-05
@@ -38,4 +38,14 @@ Testy bez sieci (atrapa API), manifest `dane/manifest_deribit_dvol.json` w repo,
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-05 (serwer): `dane/deribit_dvol.py` + 6 testów bez sieci (`tests/test_deribit_dvol.py`, stronicowanie,
+błąd API, raport jakości, tylko pełne dni UTC, kontrola pozytywna). Przebieg na prawdziwym API
+(skrypt `870c617`): BTC i ETH po **2 021 dni, 2021-03-24 → 2026-10-04**, dziury 0, duplikaty 0, wartości poza
+0–400: 0, niespójne OHLC: 0. **Kontrola pozytywna zaliczona:** DVOL BTC 2021-05-19 high 144,6 (close 124,8).
+Manifest: `dane/manifest_deribit_dvol.json` (SHA-256 stron API i plików parquet). Świece w
+`data/deribit_dvol/` (poza gitem). Odświeżenie: `python -m dane.deribit_dvol`.
+
+Uwaga do użycia: świeca dnia d zamyka się o 24:00 UTC dnia d — jako cecha do prognozy RV dnia d+1 jest
+znana w chwili prognozy (ta sama pora co RV_d). Pierwsza runda z DVOL = szczebel 5 drabiny F2, osobna
+pre-rejestracja i licznik „nowe źródło danych” (PRD §11.4); tylko BTC i ETH, więc kryterium „16/20 monet”
+z F2-1 nie przenosi się wprost — do ustalenia w pre-rejestracji.

@@ -28,6 +28,7 @@ Tablica: [`zadania/`](zadania/).
 - **004** — `do_przegladu`: reporter F3 (`python -m dowody.raport`) + LD1; czeka na D3.
 - **005** — `czeka_na_dane`: runda F2-1 (HAR vs zmienność dziennika) — kod i pre-rejestracja gotowe,
   przebieg na serwerze po 002.
+- **006** — `do_przegladu` (2026-10-05): DVOL BTC/ETH 1D od 2021-03-24 pobrany, czysty, kontrola pozytywna ✓.
 
 ## Plan sesji na serwerze (z internetem)
 

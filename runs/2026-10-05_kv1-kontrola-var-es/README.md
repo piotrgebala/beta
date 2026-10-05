@@ -22,8 +22,8 @@ naprawimy (a progów po fakcie nie zmieniamy).
 
 ## Metadane
 
-- **Pre-rejestracja zamrożona w commicie:** `(hash wpisze orkiestrator; commit z README, kodem
-  i testami musi poprzedzić pełny przebieg, a przebieg idzie z zatwierdzonego stanu)`.
+- **Pre-rejestracja zamrożona w commicie:** `d9f83ed` (README, kod i testy; pełny przebieg idzie z tego
+  stanu kodu).
 - Zadanie 008 (`zadania/008-przyrzad-var-es.md`, PRD FR-32, cel G2). Runda kalibracyjna, nie hipoteza
   rynkowa: **R1 — brak mechanizmu** (nic nie przewidujemy, kalibrujemy przyrząd).
 - Kod: `miara/var_es.py` (test Kupca LR_uc, Christoffersena LR_ind i LR_cc, test ES Acerbiego–Szekelya Z2

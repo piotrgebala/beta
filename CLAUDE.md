@@ -7,6 +7,8 @@ Następca metodologii CLAS-5 z repo `alpha`. **Nie przewidujemy kierunku ceny z 
 zamknęła to dowodem braku (p = 50,27 %, n = 7 687; WF1; AU2). Filary: przyrząd (`miara`), laboratorium
 symulacji, zmienność i ryzyko ogona, dowody sekwencyjne dla dziennika alpha, portfel, tor ML na nowe dane.
 Pełny plan: `docs/PRD.md`. Stan prac i decyzje: `STATUS.md`. Wyniki rund: `runs/INDEX.md`.
+Bundle repozytoriów (mapa, wspólne zasady, układ serwera): repo `bundle` (`~/bundle`, ADR 0001) — `miara`
+(docelowo wspólny przyrząd), `kolektory` (docelowo dane), `wykonanie` (zamrożone).
 
 ## Zasady nienaruszalne
 

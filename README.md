@@ -4,6 +4,13 @@ Program badawczy: **modele matematyczne i uczenie maszynowe na perpetualach kryp
 ogona, sekwencyjna ocena dowodów, portfel, tor ML na nowe dane. Następca metodologii CLAS-5
 (repo `alpha`). Plan: [`docs/PRD.md`](docs/PRD.md). Zasady: [`CLAUDE.md`](CLAUDE.md).
 
+## Miejsce w bundlu
+
+beta jest jednym z repozytoriów programu CLAS-5 (mapa i wspólne zasady: repo `bundle`, ADR
+`bundle/docs/adr/0001-bundle-repozytoriow.md`). Docelowo: przyrząd pomiarowy przechodzi do pakietu `miara`
+(po E2), pobieranie danych (`dane/`) do repo `kolektory`; beta zostaje przy modelach, laboratorium,
+dowodach i portfelu. Zleceń nie składa — to rola zamrożonego repo `wykonanie`.
+
 ## Kamienie milowe
 
 | etap | zakres | status |

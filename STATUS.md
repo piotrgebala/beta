@@ -20,9 +20,9 @@
 Tablica: [`zadania/`](zadania/).
 
 - **001** — `do_przegladu` (2026-09-30): port `miara` z parytetem alpha, loader, CI zielone, NC1B zaliczona.
-  Do zamknięcia E0 brakuje manifestu danych (zadanie 002) i Twojej decyzji „E0 zamknięty”.
-- **002** — `w_toku`: kod pobierania gotowy i przetestowany bez sieci; uruchomienie na maszynie z internetem
-  (instrukcja w karcie zadania) — chmura nie dopuszcza `data.binance.vision`.
+  Manifest danych jest (002) — do zamknięcia E0 brakuje tylko Twojej decyzji „E0 zamknięty”.
+- **002** — `do_przegladu` (2026-10-05): 196 symboli top-20 × 5m/1d od 2021 pobrane, manifest + skład w repo,
+  raport jakości DQ1 (Ready): 33 symbole z „martwym ogonem” po wycofaniu, wspólne dziury 2022-02/04.
 - **003** — `do_przegladu`: runda LM1 — test DM działa poprawnie; F2-1 mierzalna tylko warunkowo
   (przeliczyć MDE na prawdziwym kształcie strat, gdy będą dane z 002).
 - **004** — `do_przegladu`: reporter F3 (`python -m dowody.raport`) + LD1; czeka na D3.

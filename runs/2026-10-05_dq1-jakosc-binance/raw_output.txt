@@ -1,0 +1,58 @@
+Manifest: 17380 plików źródłowych, 392 par, skrypt f1b0e58, 2021-01 → 2026-09
+Błędy pobierania: 0
+Kontrola pozytywna BTC 2021-05-19: {'ok': True, 'low': 28688.0, 'high': 43615.93}
+
+Suma po interwałach (świece zerowe = wolumen 0 albo high == low):
+    par  par_z_dziurami   wiersze  duplikaty  dziury  brakujace_interwaly  swiece_zerowe  niespojne_ohlc  skoki_k_sigma
+tf                                                                                                                     
+1d  196              36    261929          0      73                  198          13452               0           1221
+5m  196              37  75415849          0      74                57291        3900031               0         299192
+
+Największe braki (5m), top 10:
+  symbol  brakujace_interwaly najwieksza_dziura                        od                        do
+ BNXUSDT                 7665  21 days 14:50:00 2022-04-01 03:30:00+00:00 2026-09-30 23:55:00+00:00
+ FILUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+ FLMUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+ FTMUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+ GRTUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+HBARUSDT                 1440   3 days 00:05:00 2021-03-17 07:00:00+00:00 2026-09-30 23:55:00+00:00
+ KNCUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+ KSMUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+LINAUSDT                 1440   3 days 00:05:00 2021-03-19 07:00:00+00:00 2026-09-30 23:55:00+00:00
+ LRCUSDT                 1440   3 days 00:05:00 2021-01-01 00:00:00+00:00 2026-09-30 23:55:00+00:00
+
+Martwe ogony (dni z wolumenem 0 na końcu historii — kontrakt wycofany): 33 z 196 symboli
+      symbol  dni_martwe_na_koncu  martwe_od  dni_bez_obrotu
+    LUNAUSDT                    1 2022-05-13               1
+     FTTUSDT                 1416 2022-11-15            1416
+     HNTUSDT                  435 2023-03-21             435
+    TOMOUSDT                  196 2023-11-15             196
+   WAVESUSDT                  841 2024-06-12             841
+    AGIXUSDT                  827 2024-06-26             827
+   OCEANUSDT                  827 2024-06-26             827
+    RNDRUSDT                   14 2024-07-17              14
+   FRONTUSDT                   19 2024-08-24              19
+   MATICUSDT                    7 2024-09-05               7
+    KLAYUSDT                  708 2024-10-23             708
+    UNFIUSDT                  700 2024-10-31             700
+     BLZUSDT                  646 2024-12-24             646
+     FTMUSDT                  632 2025-01-07             632
+    REEFUSDT                  616 2025-01-23             616
+    STMXUSDT                  586 2025-02-22             586
+     BNXUSDT                  562 2025-03-18             562
+    LINAUSDT                  552 2025-03-28             552
+  ALPACAUSDT                  518 2025-05-01             518
+     MKRUSDT                  387 2025-09-09             387
+NEIROETHUSDT                  369 2025-09-27             369
+  UXLINKUSDT                  369 2025-09-27             369
+    BAKEUSDT                  362 2025-10-04             362
+     FLMUSDT                  313 2025-11-22             313
+    PERPUSDT                  313 2025-11-22             313
+   VOXELUSDT                  294 2025-12-11             294
+      OMUSDT                  219 2026-02-24             219
+     LRCUSDT                  190 2026-03-25             190
+     FUNUSDT                  168 2026-04-16             168
+    HIGHUSDT                  111 2026-06-12             111
+     TONUSDT                   99 2026-06-24              99
+      IPUSDT                   94 2026-06-29              94
+   STORJUSDT                   35 2026-08-27              35

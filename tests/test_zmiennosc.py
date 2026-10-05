@@ -112,3 +112,37 @@ def test_f21_koniec_w_koniec_na_atrapie(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "Krok 1" in out and "MDE kryterium" in out
     assert ("NIEMIERZALNA" in out) or ("Kryterium F2" in out)
+
+
+def test_f21_poprawka1_martwe_dni_i_rozlaczne_okresy(tmp_path, capsys):
+    """P1: martwy ogon (stała cena) nie psuje HAR; P2: monety bez wspólnych dni OOS — bramka liczy się."""
+    import json
+
+    from modele import run_f21
+
+    rng = np.random.default_rng(7)
+    p = generuj_panel(700, 3, seed=8)
+    syms = ["AAAUSDT", "BBBUSDT", "CCCUSDT"]
+    (tmp_path / "5m").mkdir()
+    for j, s in enumerate(syms):
+        var = np.repeat(p["sigma2"].iloc[:, j].to_numpy(), 288) / 288
+        lr = rng.standard_normal(len(var)) * np.sqrt(var)
+        ts = pd.date_range("2021-01-01", periods=len(var), freq="5min", tz="UTC")
+        close = 100 * np.exp(np.cumsum(lr))
+        df = pd.DataFrame({"timestamp": ts, "close": close})
+        if s == "AAAUSDT":  # wycofana po 330 dniach: dalej świece, ale cena stoi (jak FTM)
+            df.loc[330 * 288 :, "close"] = close[330 * 288 - 1]
+        if s == "CCCUSDT":  # notowana dopiero od dnia 400 (jak WIF)
+            df = df.iloc[400 * 288 :]
+        df.to_parquet(tmp_path / "5m" / f"{s}.parquet")
+        if s == "AAAUSDT":
+            st = run_f21.straty_monety(df, min_trening=120)
+            assert st.index.max() < pd.Timestamp("2021-01-01", tz="UTC") + pd.Timedelta(days=331)
+            assert np.isfinite(st[["q_dz", "q_har"]].to_numpy()).all()
+    (tmp_path / "sklad.json").write_text(json.dumps({"2021-01-01": syms}))
+    run_f21.main(
+        ["--dane", str(tmp_path / "5m"), "--sklad", str(tmp_path / "sklad.json"), "--reps", "30"]
+        + ["--min-trening", "120"]
+    )
+    out = capsys.readouterr().out
+    assert "wspólne wszystkim monetom 0" in out and "MDE kryterium" in out

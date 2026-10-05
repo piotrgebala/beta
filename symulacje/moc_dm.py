@@ -92,6 +92,59 @@ def moc_kryterium(
     }
 
 
+def moc_kryterium_braki(
+    D: np.ndarray,
+    deltas: np.ndarray,
+    reps: int,
+    mean_block: float,
+    seed: int = 0,
+    share: float = 0.8,
+    min_n: int = 30,
+) -> dict:
+    """
+    `moc_kryterium` dla monet o RÓŻNYCH okresach OOS (F2-1, Poprawka 1 — część wspólna 20 monet pusta).
+
+    D to kalendarz (suma dni OOS) × k z NaN tam, gdzie monety nie ma. Losujemy indeksy kalendarza długości
+    len(D) — te same dla wszystkich monet (korelacja przekrojowa zostaje tam, gdzie monety żyją razem);
+    każda moneta liczy t ze SWOICH obecnych wierszy losowania (n_j ≈ jej długość OOS, lag Neweya–Westa
+    z n_j). Moneta z < `min_n` wierszami w losowaniu: t = NaN (nie przechodzi, nie jest „gorsza”).
+    Bez braków wynik = `moc_kryterium(D, n=len(D))` (test).
+    """
+    D = np.asarray(D, dtype=float)
+    Dc = D - np.nanmean(D, axis=0)
+    sd = np.nanstd(Dc, axis=0)
+    n_cal, k = D.shape
+    need = int(np.ceil(share * k - 1e-12))
+    rng = np.random.default_rng(seed)
+    deltas = np.asarray(deltas, dtype=float)
+    pass_c = np.zeros(len(deltas))
+    pass_1 = np.zeros(len(deltas))
+    worse = np.zeros(len(deltas))
+    for _ in range(reps):
+        idx = stationary_bootstrap_indices(n_cal, n_cal, mean_block, rng)
+        x = Dc[idx]
+        mean = np.full(k, np.nan)
+        se = np.full(k, np.nan)
+        for j in range(k):
+            xj = x[:, j][~np.isnan(x[:, j])]
+            if len(xj) < min_n:
+                continue
+            mean[j] = xj.mean()
+            se[j] = np.sqrt(hac_variance(xj, newey_west_lag(len(xj))) / len(xj))
+        t = (mean[None, :] + deltas[:, None] * sd[None, :]) / se[None, :]
+        good = (t > Z).sum(axis=1)
+        bad = (t < -Z).any(axis=1)
+        pass_c += (good >= need) & ~bad
+        pass_1 += (t > Z).mean(axis=1)
+        worse += bad
+    return {
+        "deltas": deltas,
+        "moc_kryterium": pass_c / reps,
+        "moc_moneta": pass_1 / reps,
+        "alarm_gorsza": worse / reps,
+    }
+
+
 def mde(deltas: np.ndarray, power: np.ndarray, target: float = 0.8) -> float:
     """Najmniejsze δ z mocą ≥ target (interpolacja liniowa między węzłami); NaN gdy nieosiągalne."""
     deltas = np.asarray(deltas, dtype=float)

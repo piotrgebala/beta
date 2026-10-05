@@ -11,7 +11,12 @@ from hypothesis import strategies as st
 
 from miara.dm import diebold_mariano, dm_t, hac_variance, mse_log, newey_west_lag, qlike
 from symulacje.garch_panel import generuj_panel, momenty, prognoza_ewma, prognoza_okno
-from symulacje.moc_dm import mde, moc_kryterium, stationary_bootstrap_indices
+from symulacje.moc_dm import (
+    mde,
+    moc_kryterium,
+    moc_kryterium_braki,
+    stationary_bootstrap_indices,
+)
 
 
 def test_qlike_zero_tylko_przy_trafieniu():
@@ -150,3 +155,29 @@ def test_mde_interpolacja():
     assert mde(np.array([0.0, 0.1, 0.2]), np.array([0.0, 0.6, 1.0])) == pytest.approx(0.15)
     assert np.isnan(mde(np.array([0.0, 0.1]), np.array([0.0, 0.5])))
     assert mde(np.array([0.1, 0.2]), np.array([0.9, 1.0])) == 0.1
+
+
+def test_moc_braki_bez_brakow_rowna_sie_moc_kryterium():
+    rng = np.random.default_rng(11)
+    D = rng.standard_normal((400, 4)) + 0.3 * rng.standard_normal((400, 1))
+    deltas = np.array([0.0, 0.1, 0.2, 0.4])
+    a = moc_kryterium(D, len(D), deltas, reps=100, mean_block=5, seed=3)
+    b = moc_kryterium_braki(D, deltas, reps=100, mean_block=5, seed=3)
+    for k in ("moc_kryterium", "moc_moneta", "alarm_gorsza"):
+        np.testing.assert_allclose(a[k], b[k], atol=1e-12)
+
+
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")  # kolumna z samych NaN (przypadek brzegowy)
+def test_moc_braki_rozlaczne_okresy():
+    """Dwie monety bez ani jednego wspólnego dnia (jak MATIC i WIF): moc liczona, nie pada."""
+    rng = np.random.default_rng(12)
+    D = rng.standard_normal((1200, 3))
+    D[600:, 0] = np.nan  # moneta 0 żyje tylko w pierwszej połowie
+    D[:700, 1] = np.nan  # moneta 1 tylko w drugiej
+    out = moc_kryterium_braki(D, np.array([0.0, 0.3]), reps=200, mean_block=5, seed=1)
+    assert out["moc_moneta"][0] == pytest.approx(0.025, abs=0.02)  # H0: ~2,5 % w prawo
+    assert out["moc_kryterium"][1] > 0.9  # δ = 0,3 przy n ≈ 500–1200 → prawie zawsze
+    tylko_nan = D.copy()
+    tylko_nan[:, 2] = np.nan
+    out2 = moc_kryterium_braki(tylko_nan, np.array([0.5]), reps=20, mean_block=5, seed=1)
+    assert out2["moc_moneta"][0] <= 2 / 3 + 1e-12  # moneta bez danych nigdy nie przechodzi

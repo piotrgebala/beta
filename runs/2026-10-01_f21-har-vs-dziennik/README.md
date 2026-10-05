@@ -1,6 +1,6 @@
 # F2-1 — HAR-RV vs prognoza zmienności dziennika alpha (QLIKE, 1 dzień, 20 monet)
 
-> **STATUS: PRE-REJESTRACJA (zapisana 2026-10-01, PRZED pobraniem danych).** Przebieg na serwerze z danymi
+> **STATUS: PRE-REJESTRACJA (zapisana 2026-10-01, PRZED pobraniem danych) + Poprawka 1 (2026-10-05, przed przebiegiem).** Przebieg na serwerze z danymi
 > z zadania 002: `python -m modele.run_f21 > runs/2026-10-01_f21-har-vs-dziennik/raw_output.txt`.
 
 ## W skrócie — prostym językiem
@@ -39,6 +39,30 @@ zwrotu alpha. Zanim spojrzymy na wynik, skrypt sprawdza, czy test w ogóle jest 
   bez zmian (pytanie o prognozę zmienności, nie o zwrot strategii).
 - **STOP:** wynik niepozytywny → F2 wraca do ES/likwidacji (PRD E1); wynik pozytywny NIE zmienia dziennika —
   wpięcie = Poprawka w alpha + decyzja użytkownika (zasada 23); wartość ekonomiczna tylko prospektywnie.
+
+## Poprawka 1 — 2026-10-05, PRZED przebiegiem (bez wglądu w straty)
+
+Po pobraniu danych (zadanie 002, DQ1) i przed jakimkolwiek liczeniem strat wyszły dwie rzeczy, których
+pre-rejestracja nie przewidziała. Sprawdzone były tylko daty i liczba ważnych dni — żadna strata ani różnica
+strat nie była liczona ani oglądana.
+
+- **P1 — martwe dni.** Po wycofaniu kontraktu archiwum Binance publikuje świece ze stałą ceną i wolumenem 0.
+  Wśród 20 monet: FTMUSDT 632 takie dni od 2025-01-07, MATICUSDT 7 dni od 2024-09-05 (zamiana na POL). Taka
+  doba ma pełne 288 świec, ale RV = 0 → log RV = −∞ psuje dopasowanie HAR. **Zmiana:** doba z RV = 0 jest
+  nieważna, tak jak doba z < 274 świecami (`straty_monety`). Zestaw 20 monet bez zmian — FTM i MATIC mają po
+  prostu krótszy OOS (do 2025-01-06 i 2024-09-04).
+- **P2 — brak wspólnych dni.** Okresy OOS 20 monet nie mają części wspólnej: WIFUSDT zaczyna OOS 2025-02-17,
+  MATICUSDT kończy 2024-09-04 (PEPE i SUI od 2024-06). Bramka „na różnicy strat wspólnych dni” nie ma więc na
+  czym liczyć. **Zmiana:** bootstrap stacjonarny (blok 30, 1 000 losowań, ziarno 2101) idzie po kalendarzu
+  SUMY dni OOS z brakami (`symulacje.moc_dm.moc_kryterium_braki`): te same indeksy dni dla wszystkich monet
+  (korelacja zostaje tam, gdzie monety żyją razem), każda moneta liczy t ze swoich obecnych dni (n_j ≈ jej
+  długość OOS, lag Neweya–Westa z n_j). Bez braków funkcja daje to samo co `moc_kryterium` (test
+  `test_moc_braki_bez_brakow_rowna_sie_moc_kryterium`). N_eff/n i korelacja różnic — per moneta / parami.
+  Próg MDE ≤ 0,10, krok 2 (DM per moneta na jej dniach) i kryterium 16/20 — **bez zmian**.
+
+Kod poprawki: `modele/run_f21.py`, `symulacje/moc_dm.py`, testy `tests/test_zmiennosc.py`
+(`test_f21_poprawka1_martwe_dni_i_rozlaczne_okresy`), `tests/test_dm_symulacje.py`. Hash commita poprawki:
+w historii gita (commit „F2-1 Poprawka 1”) — przebieg dopiero po nim.
 
 ## Oczekiwania zapisane z góry (opis, nie kryterium)
 

@@ -34,7 +34,7 @@ bez testu. To pytanie o ryzyko, nie o zysk, więc nie zużywa wspólnego budżet
   - `python -m modele.run_f21b > runs/2026-10-06_f21b-har-vs-dziennik-dlugie/raw_output.txt`: pełny
     przebieg, robi go orkiestrator po commicie tej pre-rejestracji;
   - `python -m modele.run_f21b --smoke`: cały przebieg na syntetycznym panelu GARCH.
-- **Hash commita pre-rejestracji:** `________` (wpisuje orkiestrator; przebieg dopiero po tym commicie).
+- **Hash commita pre-rejestracji:** `674eada` (README, kod i testy; przebieg z tego stanu kodu).
 
 ## Karta hipotezy (R1–R4)
 

@@ -2,7 +2,7 @@
 id: 015
 tytul: pobieranie Binance przyrostowe (tylko nowe miesiące) i aktualizacja składu top-20 po 2026-06
 typ: infra
-status: nowe
+status: do_przegladu
 zlecil: orkiestrator
 decyzja_uzytkownika: "brak (wniosek z zadania 012: automat miesięczny pobiera całą historię od nowa)"
 utworzono: 2026-10-05
@@ -43,4 +43,23 @@ sprzed zmiany bez różnic.
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-06: `dane/binance_vision.py --przyrostowo` + zapis atomowy (plik tymczasowy + `os.replace`, z zachowaniem
+uprawnień) także w trybie pełnym; blokada katalogu danych (drugi równoczesny bieg kończy się błędem „zajęty”);
+`narzedzia/automat.sh miesiac` używa trybu przyrostowego. 19 nowych testów bez sieci; cały zestaw 851 zielonych.
+
+- **Zasada:** miesiąc uznany za pobrany tylko wtedy, gdy parquet na dysku ma SHA-256 z manifestu. Inaczej para
+  trafia do `bledy` i zostaje nietknięta (bez cichej naprawy). Pobierane są tylko miesiące po ostatnim wpisie
+  danej pary. Nakładające się świece = błąd pary, bez deduplikacji. Gdy nic nowego, manifest i pliki zostają bez
+  zmian, więc automat nie robi commita.
+- **Dowód na prawdziwych danych:** (1) bieg przyrostowy na prawdziwym manifeście do 2026-09 trwał 25 s
+  (zamiast 32 min), pobrał 0 plików, a manifest ma ten sam SHA-256. (2) Na kopiach: stan „do 2026-08”
+  (3 monety, 5m+1d) uzupełniony przyrostowo o 2026-09 daje 6 parquetów **bajt w bajt identycznych** z `data/`
+  oraz te same wpisy manifestu. Drugi bieg nic nie pobiera.
+- Przegląd: 2 niezależnych recenzentów (eksperyment na kopiach danych, mutacje). Najpoważniejsze znalezisko:
+  podmiana pliku przed policzeniem raportu i sumy. Poprawione, z testem.
+- **Do wiedzy:** (1) przerwany bieg (kill, brak pamięci, limit czasu) może zostawić podmienione parquety bez
+  nowego manifestu. Wtedy następny bieg zgłosi błąd SHA, a naprawą jest ręczny bieg pełny (bez
+  `--przyrostowo`, ~32 min). (2) Tryb przyrostowy nie zauważy, że Binance poprawił już pobrany miesiąc; widzi
+  to tylko bieg pełny. (3) **Skład top-20 nadal kończy się na 2026-06** (`alpha/.../universe_full`): monety,
+  które weszły do top-20 później, nie są pobierane. Zmiana wymaga Poprawki w alpha, czyli Twojej decyzji.
+  (4) Identyczność bajtowa zależy od wersji pandas/pyarrow (zablokowane w `requirements-lock.txt`).

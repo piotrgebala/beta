@@ -217,12 +217,17 @@ przygotuj_tryb() {
       OPIS_COMMITA="Dane: manifest DVOL BTC/ETH z $DZIEN (automat)"
       ;;
     miesiac)
-      # Downloader nie jest przyrostowy: każdy bieg pobiera całą historię od data.min_start do
-      # --koniec (weryfikacja SHA-256, nadpisanie parquet i manifestu) — idempotentne, ale ciężkie.
+      # Bieg przyrostowy (zadanie 015): tylko miesiące po ostatnim w manifeście (zwykle jeden nowy
+      # miesiąc, kilka minut), doklejone do parquetów; zapis atomowy. Parquet niezgodny z SHA-256
+      # w manifeście = błąd pary (bez cichej naprawy). Nic nowego = manifest bez zmian, brak commita.
+      # Przerwany bieg (limit kroku, kill) albo świeca nachodząca na granicy miesięcy = błędy par
+      # co miesiąc, aż ktoś uruchomi ręcznie pełny bieg (bez --przyrostowo, ~32 min).
+      # Lista symboli = suma składów top-20 z alpha universe_full (kończy się na 2026-06: nowe
+      # wejścia po tej dacie nie są pobierane, dopóki alpha go nie odświeży — decyzja użytkownika).
       MODULY="dane.binance_vision, yaml, narzedzia"
       OPIS_KROKU="Binance top-20 (5m, 1d) do $MIESIAC"
       KROK_CMD=("$PY" -m dane.binance_vision --tf 5m 1d --uniwersum "$UNIWERSUM" --top 20
-        --watki 16 --koniec "$MIESIAC")
+        --watki 16 --przyrostowo --koniec "$MIESIAC")
       WYNIKI=(dane/manifest_binance_um.json dane/sklad_top20.json)
       OPIS_COMMITA="Dane: manifest Binance top-20 do $MIESIAC (automat)"
       ;;

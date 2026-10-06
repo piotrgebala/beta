@@ -441,7 +441,7 @@ def test_dry_run_pliki_wyniku_i_polecenie(srodowisko, tryb):
     oczekiwane = {
         "codziennie": [python, "-m", "dane.deribit_dvol", "--koniec", "2026-10-06"],
         "miesiac": [python, "-m", "dane.binance_vision", "--tf", "5m", "1d", "--uniwersum"]
-        + [uniwersum, "--top", "20", "--watki", "16", "--koniec", "2026-09"],
+        + [uniwersum, "--top", "20", "--watki", "16", "--przyrostowo", "--koniec", "2026-09"],
         "niedziela": [python, "-m", "raporty.tydzien", "--data", "2026-10-11"],
     }[tryb]
     assert polecenie_z_logu(log) == oczekiwane
@@ -887,7 +887,7 @@ def test_miesiac_zatwierdza_manifest_i_sklad_ale_nie_data(srodowisko):
     assert s.wywolania_krokow() == [
         "-m dane.binance_vision --tf 5m 1d --uniwersum "
         + uniwersum
-        + " --top 20 --watki 16 --koniec 2026-09"
+        + " --top 20 --watki 16 --przyrostowo --koniec 2026-09"
     ]
     assert any(w.endswith("dane/sklad_top20.json 2026-09") for w in s.wywolania())
 

@@ -13,10 +13,11 @@
 # cron z Ubuntu/Debiana nie obsługuje CRON_TZ, więc po zmianie strefy serwera harmonogram się
 # przesunie):
 #   codziennie 06:10   DVOL BTC/ETH + manifest, commit i push manifestu
-#   3. dnia 06:30      Binance top-20 za poprzedni miesiąc + manifest, commit i push (długi bieg:
-#                      downloader nie jest przepisywany przyrostowo — każdy bieg pobiera całą
-#                      historię od 2021-01 i nadpisuje pliki w data/ w miejscu; limit kroku 6 h.
-#                      W tym oknie nie uruchamiaj rund czytających data/)
+#   3. dnia 06:30      Binance top-20 za poprzedni miesiąc + manifest, commit i push (bieg
+#                      przyrostowy: pobiera tylko nowy miesiąc i dokleja go do plików w data/
+#                      zapisem atomowym; zwykle kilka minut, limit kroku nadal 6 h. Lista symboli
+#                      z alpha universe_full, który kończy się na 2026-06 — nowe wejścia do top-20
+#                      po tej dacie nie są pobierane bez odświeżenia alpha)
 #   niedziela 18:00    raport tygodniowy raporty/tygodnie/<RRRR-Www>.md, commit i push; gdy raport
 #                      ma niezatwierdzone zmiany (np. komentarz w trakcie pisania), automat odmawia
 #

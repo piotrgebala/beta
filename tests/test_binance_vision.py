@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import io
+import json
 import zipfile
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -208,3 +210,325 @@ def test_blad_jednej_pary_trafia_do_manifestu_a_reszta_sie_pobiera(tmp_path):
     assert m["jakosc"]["BTCUSDT/1d"]["wiersze"] == 31 and "ETHUSDT/1d" not in m["jakosc"]
     assert m["bledy"] == [{"para": "ETHUSDT/1d", "blad": m["bledy"][0]["blad"]}]
     assert "SHA-256" in m["bledy"][0]["blad"]
+
+
+# --- zadanie 015: tryb przyrostowy i zapis atomowy ---
+
+SYMBOLE = ["BTCUSDT", "ETHUSDT"]
+TFS = ["1d", "1h"]
+MIESIACE = ["2021-01", "2021-02", "2021-03"]
+
+
+def _cisza(*_):
+    return None
+
+
+class Licznik(Atrapa):
+    """Atrapa, która liczy pobrania ZIP-ów (bez .CHECKSUM)."""
+
+    def __init__(self):
+        super().__init__()
+        self.zipy: list[str] = []
+
+    def __call__(self, url: str):
+        if url.endswith(".zip"):
+            self.zipy.append(url)
+        return super().__call__(url)
+
+
+def _archiwum(symbole=SYMBOLE, tfs=TFS, miesiace=MIESIACE, pomin=()) -> Licznik:
+    f = Licznik()
+    for i, sym in enumerate(symbole):
+        for tf in tfs:
+            for m in miesiace:
+                if (sym, m) in pomin:
+                    continue
+                okres = pd.Period(m, freq="M")
+                n = okres.days_in_month * (24 if tf == "1h" else 1)
+                rows = _swiece(f"{m}-01", n, tf, 100.0 * (i + 1) + okres.month)
+                f.dodaj(bv.url_pliku(sym, tf, m), _zip(rows, True))
+    return f
+
+
+def _pliki(katalog) -> dict[str, tuple[bytes, int]]:
+    return {
+        str(p.relative_to(katalog)): (p.read_bytes(), p.stat().st_mtime_ns)
+        for p in sorted(katalog.rglob("*"))
+        if p.is_file()
+    }
+
+
+def test_drugi_bieg_przyrostowy_nic_nie_pobiera_i_nic_nie_zmienia(tmp_path):
+    f = _archiwum()
+    pelny = bv.uruchom(SYMBOLE, TFS, "2021-03", tmp_path, f, _cisza)
+    przed = _pliki(tmp_path)
+    f.zipy.clear()
+    m = bv.uruchom(SYMBOLE, TFS, "2021-03", tmp_path, f, _cisza, poprzedni=pelny)
+    assert m is pelny  # nic nowego = ten sam obiekt, main nie przepisuje manifestu
+    assert f.zipy == []  # wszystkie pary kończą się na --koniec: zero pobrań
+    assert _pliki(tmp_path) == przed  # bajty i mtime parquetów bez zmian
+    # nowy miesiąc jeszcze nieopublikowany (404) — jedno zapytanie na parę, nadal bez zmian
+    m = bv.uruchom(SYMBOLE, TFS, "2021-04", tmp_path, f, _cisza, poprzedni=pelny)
+    assert m is pelny and len(f.zipy) == len(SYMBOLE) * len(TFS)
+    assert all(u.endswith("-2021-04.zip") for u in f.zipy)
+    assert _pliki(tmp_path) == przed
+
+
+def test_main_przyrostowo_nie_przepisuje_manifestu_gdy_nic_nowego(tmp_path, monkeypatch):
+    f = _archiwum()
+    pelny = bv.uruchom(SYMBOLE, TFS, "2021-03", tmp_path / "d", f, _cisza)
+    mpath = tmp_path / "manifest.json"
+    mpath.write_text(json.dumps(pelny, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    przed = (mpath.read_bytes(), mpath.stat().st_mtime_ns)
+    oryginalny = bv.uruchom
+    monkeypatch.setattr(bv, "uruchom", lambda *a, **k: oryginalny(*a, fetch=f, log=_cisza, **k))
+    argv = ["--tf", *TFS, "--symbole", *SYMBOLE, "--koniec", "2021-03", "--przyrostowo"]
+    bv.main([*argv, "--out", str(tmp_path / "d"), "--manifest", str(mpath)])
+    assert (mpath.read_bytes(), mpath.stat().st_mtime_ns) == przed
+    with pytest.raises(SystemExit, match="nie mogę odczytać manifestu"):
+        bv.main([*argv, "--out", str(tmp_path / "d"), "--manifest", str(tmp_path / "brak.json")])
+
+
+def test_pelny_do_m_minus_1_plus_przyrostowy_do_m_rowna_sie_pelnemu_do_m(tmp_path):
+    f = _archiwum(pomin={("ETHUSDT", "2021-01")})  # ETH wchodzi w lutym
+    ref = bv.uruchom(SYMBOLE, TFS, "2021-03", tmp_path / "ref", f, _cisza)
+    stary = bv.uruchom(SYMBOLE, TFS, "2021-02", tmp_path / "inc", f, _cisza)
+    f.zipy.clear()
+    inc = bv.uruchom(SYMBOLE, TFS, "2021-03", tmp_path / "inc", f, _cisza, watki=3, poprzedni=stary)
+    assert sorted(f.zipy) == sorted(bv.url_pliku(s, t, "2021-03") for s in SYMBOLE for t in TFS)
+    assert inc["pliki"] == ref["pliki"]
+    assert inc["jakosc"] == ref["jakosc"]  # w tym parquet_sha256: to_parquet jest deterministyczny
+    assert inc["do"] == "2021-03" and "bledy" not in inc
+    for tf in TFS:
+        for sym in SYMBOLE:
+            a = (tmp_path / "ref" / tf / f"{sym}.parquet").read_bytes()
+            b = (tmp_path / "inc" / tf / f"{sym}.parquet").read_bytes()
+            assert a == b
+    assert not list((tmp_path / "inc").rglob("*.tmp"))
+
+
+def test_niezgodny_sha_parquetu_to_blad_pary_a_plik_nietkniety(tmp_path):
+    f = _archiwum()
+    stary = bv.uruchom(SYMBOLE, TFS, "2021-02", tmp_path, f, _cisza)
+    zly = tmp_path / "1d" / "BTCUSDT.parquet"
+    zly.write_bytes(zly.read_bytes() + b"x")
+    przed = zly.read_bytes()
+    f.zipy.clear()
+    m = bv.uruchom(SYMBOLE, TFS, "2021-03", tmp_path, f, _cisza, poprzedni=stary)
+    assert [b["para"] for b in m["bledy"]] == ["BTCUSDT/1d"]
+    assert "SHA-256" in m["bledy"][0]["blad"]
+    assert zly.read_bytes() == przed
+    assert not any("BTCUSDT/1d/" in u for u in f.zipy)  # nic nie pobrano po cichu
+    # stare wpisy i jakość pary zostają, pozostałe pary dostały marzec
+    assert m["jakosc"]["BTCUSDT/1d"] == stary["jakosc"]["BTCUSDT/1d"]
+    btc = [w["miesiac"] for w in m["pliki"] if w["symbol"] == "BTCUSDT" and w["tf"] == "1d"]
+    assert btc == ["2021-01", "2021-02"]
+    assert m["jakosc"]["ETHUSDT/1d"]["do"].startswith("2021-03-31")
+    kontrola = "kontrola_pozytywna_btc_2021_05_19"  # BTC/1d bez zmian: kontrola przeniesiona
+    assert m[kontrola] == stary[kontrola]
+    # brak pliku opisanego w manifeście — też błąd pary
+    zly.unlink()
+    m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=stary)
+    assert "brak pliku parquet" in m["bledy"][0]["blad"] and not zly.exists()
+
+
+def test_nachodzace_znaczniki_czasu_to_blad_pary(tmp_path):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    stary = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza)
+    sciezka = tmp_path / "1d" / "BTCUSDT.parquet"
+    przed = sciezka.read_bytes()
+    # marcowy plik zaczyna się od 2021-02-28 (nachodzi na ostatnią istniejącą świecę)
+    f.dodaj(bv.url_pliku("BTCUSDT", "1d", "2021-03"), _zip(_swiece("2021-02-28", 32), True))
+    m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=stary)
+    assert m["bledy"][0]["para"] == "BTCUSDT/1d" and "nachodzą" in m["bledy"][0]["blad"]
+    assert sciezka.read_bytes() == przed
+    assert m["pliki"] == stary["pliki"]
+
+
+def test_wyjatek_w_trakcie_zapisu_zostawia_stary_plik(tmp_path, monkeypatch):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    stary = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza)
+    sciezka = tmp_path / "1d" / "BTCUSDT.parquet"
+    przed = sciezka.read_bytes()
+    oryginalny = pd.DataFrame.to_parquet
+
+    def polowa(self, path, *a, **k):
+        oryginalny(self, path, *a, **k)
+        dane = Path(path).read_bytes()
+        Path(path).write_bytes(dane[: len(dane) // 2])
+        raise OSError("dysk pełny (symulacja)")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", polowa)
+    for poprzedni in (stary, None):  # przyrostowo i pełny bieg
+        m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=poprzedni)
+        assert "dysk pełny" in m["bledy"][0]["blad"]
+        assert sciezka.read_bytes() == przed
+        assert sorted(p.name for p in (tmp_path / "1d").iterdir()) == ["BTCUSDT.parquet"]
+
+
+def test_zapisz_atomowo_przy_przerwaniu_usuwa_plik_tymczasowy(tmp_path):
+    cel = tmp_path / "m.json"
+    bv.zapisz_tekst_atomowo(cel, "stary\n")
+
+    def przerwany(tmp):
+        tmp.write_text("pół", encoding="utf-8")
+        raise KeyboardInterrupt
+
+    with pytest.raises(KeyboardInterrupt):
+        bv.zapisz_atomowo(cel, przerwany)
+    assert cel.read_text(encoding="utf-8") == "stary\n"
+    assert [p.name for p in tmp_path.iterdir()] == ["m.json"]
+
+
+def test_para_bez_wpisow_pobiera_wszystko(tmp_path):
+    f = _archiwum()
+    stary = bv.uruchom(["BTCUSDT"], TFS, "2021-02", tmp_path / "inc", f, _cisza)
+    f.zipy.clear()
+    m = bv.uruchom(SYMBOLE, TFS, "2021-02", tmp_path / "inc", f, _cisza, poprzedni=stary)
+    assert sorted(f.zipy) == sorted(
+        bv.url_pliku("ETHUSDT", t, mm) for t in TFS for mm in ("2021-01", "2021-02")
+    )
+    ref = bv.uruchom(SYMBOLE, TFS, "2021-02", tmp_path / "ref", f, _cisza)
+    assert m["pliki"] == ref["pliki"] and m["jakosc"] == ref["jakosc"]
+    # para bez danych w ogóle (same 404): pusty parquet i jakość jak w pełnym biegu
+    m2 = bv.uruchom(
+        [*SYMBOLE, "XUSDT"], ["1d"], "2021-02", tmp_path / "inc", f, _cisza, poprzedni=m
+    )
+    assert m2 is not m and m2["jakosc"]["XUSDT/1d"]["wiersze"] == 0
+    assert (
+        bv.uruchom(
+            [*SYMBOLE, "XUSDT"], ["1d"], "2021-02", tmp_path / "inc", f, _cisza, poprzedni=m2
+        )
+        is m2
+    )
+
+
+def test_przyrostowo_odrzuca_cofniecie_konca_i_inny_start(tmp_path):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    stary = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza)
+    with pytest.raises(ValueError, match="wcześniejszy"):
+        bv.uruchom(["BTCUSDT"], ["1d"], "2021-01", tmp_path, f, _cisza, poprzedni=stary)
+    with pytest.raises(ValueError, match="min_start"):
+        bv.uruchom(
+            ["BTCUSDT"],
+            ["1d"],
+            "2021-02",
+            tmp_path,
+            f,
+            _cisza,
+            poprzedni={**stary, "od": "2020-01"},
+        )
+
+
+def test_przyrostowo_zachowuje_pary_spoza_listy_i_czysci_stare_bledy(tmp_path):
+    f = _archiwum()
+    stary = bv.uruchom(SYMBOLE, ["1d"], "2021-02", tmp_path, f, _cisza)
+    stary["bledy"] = [{"para": "ETHUSDT/1h", "blad": "OSError: stary"}]
+    m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza, poprzedni=stary)
+    assert m is not stary and "bledy" not in m  # stare błędy nie przeżywają biegu bez błędów
+    assert list(m["jakosc"]) == ["BTCUSDT/1d", "ETHUSDT/1d"]
+    assert m["pliki"] == stary["pliki"]
+
+
+def test_para_z_wpisami_bez_raportu_jakosci_to_blad(tmp_path):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    stary = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza)
+    sciezka = tmp_path / "1d" / "BTCUSDT.parquet"
+    przed = sciezka.read_bytes()
+    stary["jakosc"] = {}
+    m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=stary)
+    assert "brak raportu jakości" in m["bledy"][0]["blad"]
+    assert sciezka.read_bytes() == przed and m["pliki"] == stary["pliki"]
+
+
+def test_blad_po_pobraniu_a_przed_podmiana_zostawia_plik_i_manifest_spojne(tmp_path, monkeypatch):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    stary = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza)
+    sciezka = tmp_path / "1d" / "BTCUSDT.parquet"
+    przed = sciezka.read_bytes()
+    oryginalny = bv.raport_jakosci
+
+    def zepsuty(*a, **k):
+        raise ValueError("raport (symulacja)")
+
+    monkeypatch.setattr(bv, "raport_jakosci", zepsuty)
+    m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=stary)
+    assert "raport (symulacja)" in m["bledy"][0]["blad"]
+    assert sciezka.read_bytes() == przed  # parquet nie podmieniony przed raportem
+    assert hashlib.sha256(przed).hexdigest() == m["jakosc"]["BTCUSDT/1d"]["parquet_sha256"]
+    monkeypatch.setattr(bv, "raport_jakosci", oryginalny)
+    m2 = bv.uruchom(["BTCUSDT"], ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=m)
+    assert "bledy" not in m2 and m2["jakosc"]["BTCUSDT/1d"]["do"].startswith("2021-03-31")
+
+
+def test_nieoczekiwany_wyjatek_jednej_pary_nie_zostawia_reszty_bez_manifestu(tmp_path, monkeypatch):
+    f = _archiwum()
+    stary = bv.uruchom(SYMBOLE, ["1d"], "2021-02", tmp_path, f, _cisza)
+    oryginalny = bv.pobierz_symbol
+
+    def czasem_zepsuty(sym, *a, **k):
+        if sym == "ETHUSDT":
+            raise TypeError("niespodzianka (symulacja)")
+        return oryginalny(sym, *a, **k)
+
+    monkeypatch.setattr(bv, "pobierz_symbol", czasem_zepsuty)
+    m = bv.uruchom(SYMBOLE, ["1d"], "2021-03", tmp_path, f, _cisza, watki=2, poprzedni=stary)
+    assert m["bledy"] == [{"para": "ETHUSDT/1d", "blad": "TypeError: niespodzianka (symulacja)"}]
+    sciezka = tmp_path / "1d" / "BTCUSDT.parquet"
+    assert (
+        hashlib.sha256(sciezka.read_bytes()).hexdigest()
+        == m["jakosc"]["BTCUSDT/1d"]["parquet_sha256"]
+    )
+    monkeypatch.setattr(bv, "pobierz_symbol", oryginalny)
+    m2 = bv.uruchom(SYMBOLE, ["1d"], "2021-03", tmp_path, f, _cisza, poprzedni=m)
+    assert "bledy" not in m2  # BTC spójny z manifestem, ETH dociągnięty
+
+
+def test_zapisz_atomowo_zachowuje_uprawnienia_i_zwraca_sha(tmp_path):
+    cel = tmp_path / "m.json"
+    sha = bv.zapisz_tekst_atomowo(cel, "a\n")
+    assert sha == hashlib.sha256(b"a\n").hexdigest()
+    assert (cel.stat().st_mode & 0o777) == 0o666 & ~bv._UMASK  # nie 0600 z mkstemp
+    cel.chmod(0o640)
+    bv.zapisz_tekst_atomowo(cel, "b\n")
+    assert (cel.stat().st_mode & 0o777) == 0o640 and cel.read_text(encoding="utf-8") == "b\n"
+
+
+def test_uruchom_usuwa_resztki_plikow_tymczasowych(tmp_path):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    stary = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, _cisza)
+    resztka = tmp_path / "1d" / ".BTCUSDT.parquet.abc123.tmp"
+    resztka.write_bytes(b"pol")
+    log: list[str] = []
+    m = bv.uruchom(["BTCUSDT"], ["1d"], "2021-02", tmp_path, f, log.append, poprzedni=stary)
+    assert m is stary and not resztka.exists() and "plik tymczasowy" in log[0]
+
+
+def test_main_blokada_katalogu_danych(tmp_path):
+    import fcntl
+    import os
+
+    fd = os.open(tmp_path, os.O_RDONLY)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(SystemExit, match="zajęty"):
+            bv.main(["--symbole", "BTCUSDT", "--out", str(tmp_path), "--manifest", "x.json"])
+    finally:
+        os.close(fd)
+
+
+def test_main_uniwersum_nie_przepisuje_skladu_bez_zmian(tmp_path, monkeypatch):
+    f = _archiwum(symbole=["BTCUSDT"], tfs=["1d"])
+    members = {pd.Timestamp("2021-01-01", tz="UTC"): ["BTCUSDT"]}
+    monkeypatch.setattr(bv, "_uniwersum_alpha", lambda *a: (["BTCUSDT"], members))
+    oryginalny = bv.uruchom
+    monkeypatch.setattr(bv, "uruchom", lambda *a, **k: oryginalny(*a, fetch=f, log=_cisza, **k))
+    mpath = tmp_path / "manifest.json"
+    argv = ["--tf", "1d", "--uniwersum", str(tmp_path), "--top", "1", "--koniec", "2021-02"]
+    argv += ["--out", str(tmp_path / "d"), "--manifest", str(mpath)]
+    bv.main(argv)
+    sklad = tmp_path / "sklad_top1.json"
+    assert json.loads(sklad.read_text(encoding="utf-8")) == {"2021-01-01": ["BTCUSDT"]}
+    przed = (sklad.read_bytes(), sklad.stat().st_mtime_ns, mpath.stat().st_mtime_ns)
+    bv.main([*argv, "--przyrostowo"])
+    assert (sklad.read_bytes(), sklad.stat().st_mtime_ns, mpath.stat().st_mtime_ns) == przed

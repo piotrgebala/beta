@@ -1,8 +1,8 @@
 # F2-1b — HAR-RV vs prognoza zmienności dziennika alpha, monety z długą historią (QLIKE, 1 dzień)
 
-> **STATUS: PRE-REJESTRACJA (przed przebiegiem). Wyniku jeszcze nie ma.** Strat, prognoz na prawdziwym
-> RV, bramki MDE ani testu DM nikt jeszcze nie liczył. Na prawdziwych danych policzono tylko dobór
-> monet i liczby dni (sekcja „Co sprawdzono przed zapisem”).
+> **STATUS: ZAKOŃCZONA — MIERZALNA (MDE 0,091), kryterium NIEPOZYTYWNY (11/15 przy wymaganych 12), Caveats.**
+> Przebieg 2026-10-06 z commitu pre-rejestracji `674eada`. Licznik „zmienność 2021+”: 0 → **1**. Wynik
+> i werdykt na końcu pliku; poniżej oryginalna pre-rejestracja bez zmian.
 
 ## W skrócie (prostym językiem)
 
@@ -318,7 +318,76 @@ kryterium. Zmienia się tylko to, kiedy skrypt się zatrzymuje, oraz opis.
 
 ## Wynik
 
-*(do uzupełnienia po przebiegu: `raw_output.txt`, tabela, „Co na plus / na minus”, werdykt
-Ready / Caveats / Revision, użyte skille)*
+Źródło: `raw_output.txt` (przebieg kilka sekund). Kontrole spójności przed stratami: monety, dni OOS
+i odcisk `80001c5c1ca5686c` zgodne z pre-rejestracją; dni strat = dni OOS u wszystkich monet.
 
-Użyte skille (pre-rejestracja): brak. Metodologia wg CLAUDE.md (R2–R8, zasada 22).
+**Krok 1 — bramka:** n (mediana) 1 703, N_eff/n 0,79, korelacja różnic strat 0,16 → **MDE kryterium 0,091
+≤ 0,10 → MIERZALNA** (MDE jednej monety 0,077). Zgodne z oczekiwaniem zapisanym z góry (0,085–0,10).
+
+**Krok 2 — DM na QLIKE (t > 0 = HAR lepszy):**
+
+| moneta | t QLIKE | δ | moneta | t QLIKE | δ |
+|---|---|---|---|---|---|
+| BNB | +3,80 | 0,100 | AVAX | **+0,21** | 0,005 |
+| BTC | +2,29 | 0,057 | LTC | +3,22 | 0,083 |
+| ETH | **+1,46** | 0,036 | BCH | +5,33 | 0,161 |
+| XRP | **+1,20** | 0,031 | DOT | +4,52 | 0,140 |
+| SOL | +2,70 | 0,089 | FIL | +3,13 | 0,083 |
+| DOGE | +3,97 | 0,133 | ETC | +3,65 | 0,105 |
+| ADA | +2,25 | 0,058 | NEAR | +5,27 | 0,154 |
+| LINK | **+1,61** | 0,042 | | | |
+
+**Kryterium: t > 1,96 w 11 z 15 monet (wymagane ≥ 12), t < −1,96 w 0 → NIEPOZYTYWNY.**
+
+**Opis (nie kryterium):**
+- Wszystkie 15 t QLIKE są dodatnie (najmniejsze AVAX +0,21). Mediana δ wynosi 0,083 i jest bliska MDE
+  (0,091), czyli test był ustawiony na efekt mniej więcej takiej wielkości, jaki wyszedł.
+- MSE log RV: t od +6,50 do +9,58 we wszystkich 15 monetach. Kryterium z góry było jednak QLIKE, a MSE log
+  wyolbrzymia też różnicę poziomów (punkt niżej).
+- Stosunek średniego RV do średniej prognozy dziennika wynosi 0,96–1,36 (średnio 1,14): prognoza dziennika
+  (EWMA kwadratów zwrotów dziennych) jest przeciętnie niższa niż RV z 5 minut, najbardziej w dni o dużej
+  zmienności. Część przewagi HAR na QLIKE może więc wynikać
+  z poziomu (kalibracji do celu RV), a nie z lepszego śledzenia zmian. Tego runda nie rozdziela. Stosunek
+  nie układa się jednak z t: BCH (0,99) ma największe t (5,33), a AVAX (1,26) najmniejsze (0,21), więc sam
+  poziom nie tłumaczy widocznie wzoru.
+- „15 z 15 dodatnich” to obserwacja po fakcie. Monety są skorelowane (R12), więc to nie jest 15
+  niezależnych dowodów i nie zastępuje kryterium.
+
+## Co na plus / na minus
+
+- **+** Pre-rejestracja zamrożona przed przebiegiem. Twarde kontrole spójności danych przeszły. Bramka
+  zachowała się zgodnie z oczekiwaniem zapisanym z góry. Nikt nie liczył strat przed commitem.
+- **+** Odpowiedź na pytanie z F2-1 jest teraz uczciwa, a nie „nie wiadomo”: test miał moc i nie dał
+  wyniku POZYTYWNEGO według reguły.
+- **−** Wynik na granicy reguły (11 zamiast 12). Z czterech monet bez istotności trzy mają t 1,2–1,6
+  (blisko progu), a AVAX +0,21 to praktycznie remis.
+- **−** Porównanie miesza dynamikę z poziomem: cel RV z 5 minut kontra prognoza z kwadratów zwrotów
+  dziennych (stosunek ok. 1,15). To było w projekcie od F2-1, ale ogranicza interpretację.
+- **−** Populacja tylko „monety z długą historią” (selekcja ocalałych). Jeden okres 2022–2026.
+
+## Werdykt
+
+**Caveats — NIEPOZYTYWNY według reguły zapisanej z góry.** HAR nie spełnił kryterium „istotnie lepszy
+w ≥ 12 z 15 monet” (11/15), choć w żadnej monecie nie był istotnie gorszy. Licznik „zmienność 2021+”:
+**1** (odczyt wykonany).
+
+**STOP (z pre-rejestracji):** F2 idzie dalej przez ryzyko ogona, VaR/ES (008, 009 → LV2), i likwidacje.
+HAR odkładamy. **Nie robimy F2-1c** z kolejną populacją, innym kryterium ani inną stratą. Wynik nie
+zmienia dziennika alpha.
+
+**Co z tego wynika praktycznie (opis, nie dowód):** „nie wykazano przewagi” to nie to samo co „prognoza
+dziennika jest w porządku”. 11 z 15 monet istotnie wskazuje na HAR, żadna na dziennik; wszystkie 15 ocen
+punktowych są dodatnie (AVAX to praktycznie remis). Reguła nie przeszła o jedną monetę.
+Jeśli kiedyś wrócimy do HAR, to tylko prospektywnie (nowe dane po 2026-09) albo jako cecha w prognozie
+ryzyka (VaR/ES), z nową pre-rejestracją i świadomością, że ten odczyt jest już w liczniku.
+
+## Wniosek (prostym językiem)
+
+Sprawdziliśmy, czy dokładniejszy model zmienności (HAR, liczony z 5-minutowych świec) przewiduje jutrzejsze
+wahania lepiej niż prosty sposób z dziennika alpha. Tym razem test miał wystarczającą czułość. W 11 z 15
+monet HAR był pewnie lepszy, w 3 lepszy, ale niepewnie, w 1 był remis; w żadnej nie był gorszy. Reguła ustalona przed testem wymagała 12.
+Wynik jest więc „nie wykazano przewagi”. Zgodnie z zasadą nie szukamy jej dalej innymi wariantami.
+Przechodzimy do ryzyka dużych strat.
+
+Użyte skille: brak. Metodologia wg CLAUDE.md (R2–R8, zasada 22). Liczby i werdykt sprawdził niezależny weryfikator
+(wszystko zgodne z `raw_output.txt`; sformułowania doprecyzowane).

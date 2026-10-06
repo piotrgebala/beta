@@ -9,7 +9,7 @@ F2-1 (2026-10-05): HAR vs dziennik NIEMIERZALNA na progu (MDE 0,103) — pytanie
 | licznik | baza | odczyty | próg |
 |---|---|---|---|
 | zwroty strategii na historii 2021–2026 | **wspólny z alpha** (`odczyty_historii.csv`) | 40 (stan alpha 2026-09-30) | t ≈ 3,84 (DSR) |
-| prognoza zmienności 2021+ | beta | 0 | t 1,96 + Holm |
+| prognoza zmienności 2021+ | beta | **1** (F2-1b, 2026-10-06) | t 1,96 + Holm |
 | ryzyko ogona (VaR/ES) 2021+ | beta | 0 | testy PRD §10.4 |
 
 ## Tabela rund
@@ -23,3 +23,4 @@ F2-1 (2026-10-05): HAR vs dziennik NIEMIERZALNA na progu (MDE 0,103) — pytanie
 | F2-1 | 2026-10-05 | [f21-har-vs-dziennik](2026-10-01_f21-har-vs-dziennik/README.md) | HAR-RV vs prognoza zmienności dziennika (EWMA 60) na QLIKE, 1 dzień, 20 monet top-20; pre-rejestracja `f92fdc6` + Poprawka 1 `cc4cea1` (martwe dni, rozłączne okresy) | **„zmienność 2021+”: 0** (bramka zamknęła rundę przed testem) | **NIEMIERZALNA, Caveats:** MDE 0,103 > 0,10 (ziarna 1–5: 0,100–0,102); 5 monet z krótkim OOS (MDE 0,115–0,150) zjada zapas kryterium 16/20; pytanie otwarte → 011 (rekomendacja F2-1b po długości danych) |
 | KV1 | 2026-10-05 | [kv1-kontrola-var-es](2026-10-05_kv1-kontrola-var-es/README.md) | Kontrole R8 przyrządu VaR/ES (Kupiec, Christoffersen ind/cc, Acerbi–Székely Z2) na generatorze GARCH(1,1)-t: 19 kryteriów (rozmiar na prawdziwej prognozie, moc przy znanych błędach), p = 1 % i 5 %, 5 000 serii na poziom; pre-rejestracja `d9f83ed` | **0 — POZA licznikami** (kalibracja, dane syntetyczne) | **ZALICZONA 19/19, Caveats:** rozmiar 4,6–5,1 %, moc ≥ 97,7 %, 0 niezdefiniowanych; rozmiar przy prawdziwych n (600–2 100 dni) i ρ > 0 mierzy LV1; Z2 nigdy samodzielnie |
 | LV1 | 2026-10-06 | [lv1-moc-var-es](2026-10-05_lv1-moc-var-es/README.md) | Moc testów VaR/ES przy n = 600–2 100 dni × 20 monet, ρ 0,5/0,8 (GARCH-t); test zbiorczy po dniach (R12) z bootstrapem-t; pre-rejestracja `f8a6a0f`, reguła poprawiona (decyzja użytkownika) | **0 — POZA licznikami** (dane syntetyczne) | **MIERZALNA (1 % i 5 %), Caveats:** rozmiar 3,9 / 4,3 %, MDE zaniżenia σ 0,083 / 0,079 przy n = 1 600, ρ = 0,8; pojedyncza moneta za słaba; realistyczne prognozy (okno 60, EWMA) odrzucane 78–98 % → przed danymi LV2; reguła pierwotna: 5 % NIEMIERZALNA |
+| F2-1b | 2026-10-06 | [f21b-har-vs-dziennik-dlugie](2026-10-06_f21b-har-vs-dziennik-dlugie/README.md) | HAR-RV vs prognoza zmienności dziennika (EWMA 60) na QLIKE, 1 dzień, 15 monet z pełną historią 2021–2026 (dobór po długości danych, `dane.dni`); pre-rejestracja `674eada` | **„zmienność 2021+”: 0 → 1** | **MIERZALNA (MDE 0,091), NIEPOZYTYWNY, Caveats:** t > 1,96 w 11/15 (wymagane 12), 0 z t < −1,96; wszystkie t > 0, MSE log RV t 6,5–9,6 (opis); STOP → ryzyko ogona, bez F2-1c |

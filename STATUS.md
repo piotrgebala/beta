@@ -39,15 +39,17 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-06.
 - **010** — rejestr cech + test przecieku (kontrola pozytywna łapie celowe przecieki).
 - **012** — automat: wszystkie 3 tryby uruchomione z sukcesem; cron włączony 2026-10-06.
 - **014** — `dane/dni.py::dni_wazne`: parytet z Poprawką 1 F2-1 20/20, martwe dni zgodne z DQ1.
+- **009** — LV1: **MIERZALNA** przy p = 1 % i 5 % (Caveats; realistyczne prognozy odrzucane → LV2).
+- **011** — F2-1b: MIERZALNA, **NIEPOZYTYWNY** (11/15 przy wymaganych 12); licznik „zmienność 2021+” = 1; HAR odłożony.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
 
-**W toku:** 009 (LV1 — pełny przebieg), 011 (F2-1b — pre-rejestracja). **Czeka na Ciebie:** 013.
+**Nowe:** 016 — LV2 (testy VaR/ES dla prognoz estymowanych). **Czeka na Ciebie:** 013.
 
 ## Kolejka
 
-Po decyzji w 009: pełny przebieg LV1 (~30 min) → README z werdyktem. Dalej, zależnie od LV1 i 011:
-F2-1b (jeśli 011 = a) albo pre-rejestracja pierwszej rundy VaR/ES na danych (wymaga też kontroli
-rozmiaru przy ESTYMOWANYM modelu — „LV2”, opisane w README LV1).
+**016 LV2** (pre-rejestracja → przebieg) → pierwsza runda VaR/ES na prawdziwych danych (licznik „ryzyko 2021+”,
+warunki z LV1: ≥ 20 monet × ≥ 1 600 dni, VR na danych, pytanie porównawcze/kalibracyjne). Tor likwidacji (F5)
+bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 
 ## Decyzje czekające na Ciebie
 

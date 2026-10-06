@@ -17,7 +17,7 @@ dowodach i portfelu. Zleceń nie składa — to rola zamrożonego repo `wykonani
 |---|---|---|
 | E0 | fundament: repo, CI, przyrząd `miara` z parytetem alpha, manifest danych | ✅ **zamknięty** 2026-10-06 (001, 002; decyzja użytkownika) |
 | E1 | laboratorium symulacji + rachunek mocy | 🔍 do przeglądu (003 LM1: Caveats; 004 LD1) |
-| E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | 🔄 dane są (002, 006); F2-1 NIEMIERZALNA (005) → F2-1b (011 = a); VaR/ES: KV1 zaliczona (008), LV1 w toku (009) |
+| E2 | zmienność i ryzyko ogona (HAR-RV, GARCH, VaR/ES) | 🔄 F2-1b NIEPOZYTYWNY (11/15; licznik zmienności = 1) → HAR odłożony; VaR/ES: KV1 ✓ (008), LV1 MIERZALNA (009) → LV2 (016) |
 | E3 | dowody sekwencyjne dla dziennika alpha (przed 2026-12-24) | ✅ reporter gotowy (004); czeka na D3 |
 | E4 | portfel i wielkość pozycji | — |
 | E5 | tor ML na nowe dane (likwidacje, Hyperliquid) | — |

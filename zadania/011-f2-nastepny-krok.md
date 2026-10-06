@@ -2,9 +2,9 @@
 id: 011
 tytul: następny krok F2 po F2-1 (NIEMIERZALNA) — F2-1b po długości danych albo ES/likwidacje
 typ: badawcze
-status: czeka_na_decyzje
+status: w_toku
 zlecil: orkiestrator
-decyzja_uzytkownika: "brak"
+decyzja_uzytkownika: "2026-10-06: „LV1: poprawiona, 011: a, E0: zamknij”"
 utworzono: 2026-10-05
 zalezy_od: [005, 014]
 budzet: "Opus, 1 sesja"
@@ -28,4 +28,4 @@ Zadania 008–009 idą w obu wariantach. F2-1b korzysta ze wspólnej obsługi dn
 
 ## Wynik
 
-(dopisuje orkiestrator po decyzji)
+2026-10-06: decyzja użytkownika **(a) F2-1b**. Pre-rejestracja w `runs/` (osobna runda), bramka MDE na ślepo przed testem DM.

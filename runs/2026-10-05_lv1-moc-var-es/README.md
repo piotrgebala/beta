@@ -7,8 +7,9 @@
 > **Po przeglądzie (3 recenzentów, 2026-10-06) projekt i dwa progi zmieniono, przed pełnym
 > przebiegiem.** Wszystkie zmiany są w sekcji „Zmiany po przeglądzie, przed pełnym przebiegiem”.
 > Dwie z nich (x\* = 0,10 przy p = 5 % i ii-a tylko przy p = 1 %) zrobiono PO pilotażu i wiadomo,
-> że przestawiają przewidywany wynik dla p = 5 %; to **punkt decyzyjny 7 dla użytkownika** —
-> pełny przebieg startuje dopiero po jego zgodzie.
+> że przestawiają przewidywany wynik dla p = 5 %; to był **punkt decyzyjny 7 dla użytkownika**.
+> **Decyzja użytkownika 2026-10-06: „LV1: poprawiona”** — obowiązuje reguła poprawiona; werdykt według
+> reguły pierwotnej skrypt drukuje obok jako opis (nie werdykt).
 
 ## W skrócie — prostym językiem
 
@@ -45,8 +46,8 @@ najwyżej jedna runda LV1b).
 
 ## Metadane
 
-- **Pre-rejestracja zamrożona w commicie:** (do wpisania przez orkiestratora przed pełnym
-  przebiegiem; README, kod i testy; pełny przebieg idzie z tego stanu kodu).
+- **Pre-rejestracja zamrożona w commicie:** `f8a6a0f` (README, kod i testy; pełny przebieg idzie z tego stanu
+  kodu; decyzja użytkownika w punkcie 7 dopisana w następnym commicie, bez zmian kodu ani progów).
 - Zadanie 009 (`zadania/009-laboratorium-lv1-var-es.md`, PRD FR-32, cel G2). Runda kalibracyjna, nie hipoteza
   rynkowa: **R1 — brak mechanizmu** (nic nie przewidujemy, mierzymy moc przyrządu przy naszych n).
 - Kod: `symulacje/run_lv1.py` (przebieg, reguła, wydruk), `symulacje/moc_var_es.py` (zestaw prognoz
@@ -473,6 +474,8 @@ Każda alternatywa to nowe pytanie z własnym licznikiem (PRD §11.4) i własną
    MIERZALNA. Uzasadnienie jest zamknięte (rachunek, nie liczby pilotażu), ale wybór i tak należy
    do użytkownika. Jeśli użytkownik ich nie zatwierdzi: wracamy do progów pierwotnych (0,05 i ii-a
    przy obu p), a pozostałe zmiany (równe ogony, flagi, warunki przeniesienia, STOP) zostają.
+   **Rozstrzygnięte 2026-10-06 przez użytkownika: reguła poprawiona.** Werdykt według reguły pierwotnej
+   jest drukowany jako opis („OPIS (nie werdykt): reguła PIERWOTNA”).
 
 ## Użyte skille
 

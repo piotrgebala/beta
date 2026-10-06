@@ -2,9 +2,9 @@
 id: 009
 tytul: laboratorium LV1 — moc testów VaR/ES przy n ≈ 1 600 dni × 20 monet
 typ: badawcze
-status: czeka_na_decyzje
+status: w_toku
 zlecil: uzytkownik
-decyzja_uzytkownika: "2026-10-05: „rozpisz sobie kolejne taski, zaplanuj i zacznij realizować” + akceptacja planu (007–012)"
+decyzja_uzytkownika: "2026-10-06: „LV1: poprawiona, 011: a, E0: zamknij”"
 utworzono: 2026-10-05
 zalezy_od: [008]
 budzet: "Opus, 1 sesja, równolegle na 32 rdzeniach"

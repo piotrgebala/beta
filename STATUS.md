@@ -15,6 +15,9 @@
   zaprojektowany (ADR `bundle/docs/adr/0001`), lokalnie założone `~/bundle`, `~/miara`, `~/kolektory`,
   `~/wykonanie` (szkielety). Na GitHubie zakłada je użytkownik (instrukcja w `bundle/README.md`).
 
+- **2026-10-06** — „LV1: poprawiona, 011: a, E0: zamknij”: **E0 zamknięty**; w LV1 obowiązuje reguła
+  poprawiona (x\* = 0,10 przy obu p, ii-a tylko przy 1 %); **011 = (a) F2-1b** (monety z pełną historią).
+
 ## Otwarte decyzje (z PRD §15)
 
 - **D3** — rola oceny sekwencyjnej wobec ADR-09 alpha (rekomendacja: tylko reporter); **termin przed 2026-12-24**.
@@ -38,7 +41,7 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-06.
 - **014** — `dane/dni.py::dni_wazne`: parytet z Poprawką 1 F2-1 20/20, martwe dni zgodne z DQ1.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
 
-**Czekają na Twoją decyzję:** 009 (punkt 7 LV1), 011, 013 — niżej.
+**W toku:** 009 (LV1 — pełny przebieg), 011 (F2-1b — pre-rejestracja). **Czeka na Ciebie:** 013.
 
 ## Kolejka
 
@@ -48,13 +51,10 @@ rozmiaru przy ESTYMOWANYM modelu — „LV2”, opisane w README LV1).
 
 ## Decyzje czekające na Ciebie
 
-1. **E0 zamknięty?** — rekomendacja: tak.
-2. **009 / LV1 punkt 7** — reguła poprawiona (rekomendacja) czy pierwotna; szczegóły w karcie 009.
-3. **011** — F2-1b czy tylko ES/likwidacje. Rekomendacja: F2-1b.
-4. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
-5. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (851 testów zielonych).
-6. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
-7. **Skład top-20 po 2026-06** — lista monet bierze się z `alpha/.../universe_full`, który kończy się
+1. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
+2. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (851 testów zielonych).
+3. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
+4. **Skład top-20 po 2026-06** — lista monet bierze się z `alpha/.../universe_full`, który kończy się
    w czerwcu 2026; nowe wejścia do top-20 nie są pobierane. Aktualizacja = Poprawka w alpha (karta 015).
 
 ## Backlog (bez kart)

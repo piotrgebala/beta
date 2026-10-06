@@ -1,0 +1,40 @@
+# crontab.txt — gotowe linie crona dla narzedzia/automat.sh (zadanie 012).
+#
+# LINIE USTAWIA UŻYTKOWNIK, nie Claude: zabezpieczenie Claude Code nie pozwala mu ustawiać zadań
+# stałych (tak samo jak w alpha). Claude niczego tu nie instaluje.
+#
+# Jak dodać (JEDEN raz; polecenie najpierw usuwa stare linie automatu, więc ponowne uruchomienie
+# niczego nie dubluje i nie kasuje Twoich innych zadań): w katalogu repo uruchom
+#   (crontab -l 2>/dev/null | grep -v 'narzedzia/automat.sh'; grep -v '^#' narzedzia/crontab.txt) \
+#     | crontab -
+# albo `crontab -e` i wklej linie poniżej. Sprawdzenie: `crontab -l`.
+#
+# Co robią (godziny w czasie systemowym serwera, który ma strefę UTC — sprawdź `timedatectl`;
+# cron z Ubuntu/Debiana nie obsługuje CRON_TZ, więc po zmianie strefy serwera harmonogram się
+# przesunie):
+#   codziennie 06:10   DVOL BTC/ETH + manifest, commit i push manifestu
+#   3. dnia 06:30      Binance top-20 za poprzedni miesiąc + manifest, commit i push (bieg
+#                      przyrostowy: pobiera tylko nowy miesiąc i dokleja go do plików w data/
+#                      zapisem atomowym; zwykle kilka minut, limit kroku nadal 6 h. Lista symboli
+#                      z alpha universe_full, który kończy się na 2026-06 — nowe wejścia do top-20
+#                      po tej dacie nie są pobierane bez odświeżenia alpha)
+#   niedziela 18:00    raport tygodniowy raporty/tygodnie/<RRRR-Www>.md, commit i push; gdy raport
+#                      ma niezatwierdzone zmiany (np. komentarz w trakcie pisania), automat odmawia
+#
+# Gdzie widać awarie (stdout idzie do /dev/null, więc patrz tu):
+#   ~/beta_logi/cron_stderr.log          linia „[beta automat] ... BŁĄD ...” przy każdym nieudanym
+#                                        biegu oraz błędy sprzed startu skryptu (np. zły Python)
+#   ~/beta_logi/ostatni_status_<tryb>.txt  jedna linia: kiedy, OK albo BLAD, kod (do odczytu przez
+#                                        raport tygodniowy; brak pliku = tryb nigdy nie ruszył)
+#   ~/beta_logi/<RRRR-MM-DD>_<tryb>.log  pełny log (każda linia z czasem UTC, na końcu STATUS:)
+# `mkdir -p` przed skryptem: bez katalogu logów przekierowanie zawiodłoby przy pierwszym biegu.
+# Poczty z crona (MAILTO) nie używamy: serwer nie ma skonfigurowanej poczty.
+#
+# Pusha robi skrypt na bieżącą gałąź repo (musi istnieć na origin); na main/master odmawia (scalenie
+# przez PR, zasada 28). Gdy repo ma stać na main, dopisz przed ścieżką skryptu AUTOMAT_PUSH_MAIN=1
+# Test bez skutków ubocznych: AUTOMAT_DRY_RUN=1 /home/dantey1/beta/narzedzia/automat.sh codziennie
+# (sprawdza też odczyt origin, czyli klucz SSH).
+
+10 6 * * * /bin/mkdir -p /home/dantey1/beta_logi && /home/dantey1/beta/narzedzia/automat.sh codziennie >/dev/null 2>>/home/dantey1/beta_logi/cron_stderr.log
+30 6 3 * * /bin/mkdir -p /home/dantey1/beta_logi && /home/dantey1/beta/narzedzia/automat.sh miesiac >/dev/null 2>>/home/dantey1/beta_logi/cron_stderr.log
+0 18 * * 0 /bin/mkdir -p /home/dantey1/beta_logi && /home/dantey1/beta/narzedzia/automat.sh niedziela >/dev/null 2>>/home/dantey1/beta_logi/cron_stderr.log

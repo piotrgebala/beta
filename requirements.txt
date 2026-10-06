@@ -11,3 +11,4 @@ pytest>=7.4
 hypothesis>=6.100
 ruff>=0.5
 black>=24.0
+ccxt==4.5.48  # tylko import alpha/data/fetch_universe.py przy odczycie uniwersum (002); wersja jak w alpha

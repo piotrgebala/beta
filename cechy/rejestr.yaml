@@ -1,0 +1,80 @@
+# Rejestr cech beta (FR-13). Cecha bez wpisu tu albo bez testu przecieku nie trafia do modelu (R7).
+#
+# funkcja              ścieżka `moduł.compute_<nazwa>`; musi istnieć i mieć podpis (df)
+# zbior_informacyjny   jakie dane wejściowe: swiece_5m | dvol_1d | funding. Dla swiece_5m funkcja
+#                      dostaje wynik `dane.rv.rv_dzienna`, a bramka przecieku liczy CAŁY łańcuch
+#                      od świec 5m (cięcia na końcu doby), więc obejmuje też agregację 5m → doba
+# formula              zapis formuły łącznie z regułą ważności danych (część definicji wariantu)
+# opoznienie_dni       po ilu dniach wartość dnia d trafia do wiersza; test przecieku zakłóca dane
+#                      już od t − opóźnienie, więc cecha pobierająca świeższe dane nie przejdzie
+# dodano               data dodania (ISO, tekst w cudzysłowie)
+# runda_definicji      runda, w której wariant został zdefiniowany (F2-1 = f21-har-vs-dziennik);
+#                      null = żadna dotąd. To NIE znaczy, że cecha została zmierzona
+# runda                runda, która ją zmierzyła (FR-13); null = żadna dotąd (F2-1 jest
+#                      NIEMIERZALNA, test DM nieuruchomiony, więc rv_* nie są jeszcze zmierzone)
+# progi                absolutne = progów percentylowych na tej cesze i jej surowych danych NIE
+#                      wolno używać (masa punktowa > 20 %, FR-12); percentylowe_dozwolone = brak
+#                      atomu
+# wariant              klucz R2: "<zbior_informacyjny>|<formula>|opoznienie=<dni>" — dwa wpisy z tym
+#                      samym kluczem (bez spacji i wielkości liter) to ten sam wariant pod inną
+#                      nazwą; test rejestru ich odrzuci
+#
+# Dodając cechę: wpis tutaj + `compute_<nazwa>` w `cechy/` + fabryka danych syntetycznych dla jej
+# zbioru informacyjnego w `tests/test_cechy.py` (jeśli zbiór jest nowy). Klucze nie mogą się
+# powtarzać (duplikat klucza w YAML test rejestru odrzuca).
+
+cechy:
+  rv_dzien:
+    funkcja: cechy.zmiennosc.compute_rv_dzien
+    zbior_informacyjny: swiece_5m
+    formula: "log(rv_d | n_swiec>=274 & rv>0)"
+    opoznienie_dni: 0
+    dodano: "2026-10-05"
+    runda_definicji: F2-1
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m|log(rv_d | n_swiec>=274 & rv>0)|opoznienie=0"
+
+  rv_tydzien:
+    funkcja: cechy.zmiennosc.compute_rv_tydzien
+    zbior_informacyjny: swiece_5m
+    formula: "srednia_7d(log(rv_d | n_swiec>=274 & rv>0))"
+    opoznienie_dni: 0
+    dodano: "2026-10-05"
+    runda_definicji: F2-1
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m|srednia_7d(log(rv_d | n_swiec>=274 & rv>0))|opoznienie=0"
+
+  rv_miesiac:
+    funkcja: cechy.zmiennosc.compute_rv_miesiac
+    zbior_informacyjny: swiece_5m
+    formula: "srednia_30d(log(rv_d | n_swiec>=274 & rv>0))"
+    opoznienie_dni: 0
+    dodano: "2026-10-05"
+    runda_definicji: F2-1
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m|srednia_30d(log(rv_d | n_swiec>=274 & rv>0))|opoznienie=0"
+
+  dvol_opozn:
+    funkcja: cechy.zmiennosc.compute_dvol_opozn
+    zbior_informacyjny: dvol_1d
+    formula: "dvol_close_d"
+    opoznienie_dni: 1
+    dodano: "2026-10-05"
+    runda_definicji: null
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "dvol_1d|dvol_close_d|opoznienie=1"
+
+  funding:
+    funkcja: cechy.zmiennosc.compute_funding
+    zbior_informacyjny: funding
+    formula: "srednia_dzienna(funding_rate_8h)"
+    opoznienie_dni: 1
+    dodano: "2026-10-05"
+    runda_definicji: null
+    runda: null
+    progi: absolutne
+    wariant: "funding|srednia_dzienna(funding_rate_8h)|opoznienie=1"

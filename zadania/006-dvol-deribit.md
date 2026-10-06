@@ -1,0 +1,56 @@
+---
+id: 006
+tytul: DVOL (Deribit) BTC i ETH — dzienne dane z manifestem i raportem jakości
+typ: zbieranie_danych
+status: do_przegladu
+zlecil: uzytkownik
+decyzja_uzytkownika: "2026-10-05: D6 — „dodaj [...] dane o oczekiwanych wahaniach z giełdy Deribit” (rekomendacja PRD: tylko DVOL)"
+utworzono: 2026-10-05
+zalezy_od: []
+budzet: "Opus, część sesji na serwerze"
+---
+
+# 006 — DVOL z Deribit
+
+## Po co
+
+DVOL to indeks zmienności oczekiwanej przez rynek opcji Deribit (odpowiednik VIX dla BTC i ETH). W drabinie
+modeli F2 (PRD §8, szczebel 5) to kandydat na zmienną zewnętrzną do HAR-RV. Decyzja D6: tylko DVOL,
+pełne dane opcyjne dopiero, gdy F2 pokaże wartość.
+
+## Zakres
+
+- Publiczne API Deribit `public/get_volatility_index_data`, rozdzielczość 1D (świeca UTC 00:00–24:00,
+  zgodna z dniami Binance), BTC i ETH — tylko te dwie mają ciągły DVOL (SOL był 2022-05…2022-11 i zniknął).
+- Dostępność: od 2021-03-24 (start indeksu); R16 obcina i tak do 2021-01-01.
+- Zapis parquet per waluta poza gitem (`data/deribit_dvol/`), manifest w repo: SHA-256 plików, zakres,
+  źródło, wersja skryptu, raport jakości (dziury, duplikaty, wartości poza 0–400, niespójne OHLC) bez poprawek.
+- Kontrola pozytywna: krach 2021-05-19 — DVOL BTC tego dnia powyżej 100.
+
+## Czego NIE robić
+
+Żadnych modeli ani statystyk przewidywania. Użycie DVOL w modelu = osobna runda z pre-rejestracją
+i licznikiem „nowe źródło danych” (PRD §11.4). Bez pełnych danych opcyjnych (płatne, D6).
+
+## Kryteria odbioru (dowody)
+
+Testy bez sieci (atrapa API), manifest `dane/manifest_deribit_dvol.json` w repo, kontrola pozytywna w manifeście.
+
+## Wynik
+
+2026-10-05 (serwer): `dane/deribit_dvol.py` + 6 testów bez sieci (`tests/test_deribit_dvol.py`, stronicowanie,
+błąd API, raport jakości, tylko pełne dni UTC, kontrola pozytywna). Przebieg na prawdziwym API
+(skrypt `870c617`): BTC i ETH po **2 021 dni, 2021-03-24 → 2026-10-04**, dziury 0, duplikaty 0, wartości poza
+0–400: 0, niespójne OHLC: 0. **Kontrola pozytywna zaliczona:** DVOL BTC 2021-05-19 high 144,6 (close 124,8).
+Manifest: `dane/manifest_deribit_dvol.json` (SHA-256 stron API i plików parquet). Świece w
+`data/deribit_dvol/` (poza gitem). Odświeżenie: `python -m dane.deribit_dvol`.
+
+Uwaga do użycia: świeca dnia d zamyka się o 24:00 UTC dnia d — jako cecha do prognozy RV dnia d+1 jest
+znana w chwili prognozy (ta sama pora co RV_d). Pierwsza runda z DVOL = szczebel 5 drabiny F2, osobna
+pre-rejestracja i licznik „nowe źródło danych” (PRD §11.4); tylko BTC i ETH, więc kryterium „16/20 monet”
+z F2-1 nie przenosi się wprost — do ustalenia w pre-rejestracji.
+
+**Kontrola krzyżowa z kopią alpha** (`alpha/data/raw/external/deribit_dvol_{BTC,ETH}_1d.parquet`, tylko odczyt,
+2026-10-05): 2 010 wspólnych dni na walutę, OHLC identyczne we wszystkich poza ostatnim dniem alpha
+(2026-09-23: low/close różne o ≤ 0,69 pkt) — alpha pobrała ten dzień w trakcie doby, nasz skrypt bierze tylko
+pełne dni UTC. Źródło zgodne.

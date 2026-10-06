@@ -2,17 +2,25 @@
 
 ## Stan wiedzy — skrót
 
-Brak rund. Stan wiedzy odziedziczony: `alpha/runs/INDEX.md` (wnioski 1–111) i `docs/PRD.md` §2.
+F2-1 (2026-10-05): HAR vs dziennik NIEMIERZALNA na progu (MDE 0,103) — pytanie otwarte, licznik nietknięty; DQ1: dane 5m top-20 czyste, 33 martwe ogony. Trzy rundy kalibracyjne (0 wariantów): NC1B — przyrząd `miara` zaliczył kontrolę negatywną; LM1 — test DM na QLIKE ma poprawny rozmiar, a F2-1 jest mierzalna tylko warunkowo (MDE 0,066 przy N_eff/n 0,78, ale 0,10–0,11 przy 0,3 — przeliczyć na prawdziwym kształcie strat przed startem); LD1 — e-procesy dla dziennika alpha poprawne (fałszywe alarmy ≤ 0,5 %), ale w rok prawie ślepe, więc F3 zostaje tylko reporterem (rekomendacja D3-a). Stan wiedzy odziedziczony: `alpha/runs/INDEX.md` (wnioski 1–111) i `docs/PRD.md` §2.
 
 ## Liczniki
 
 | licznik | baza | odczyty | próg |
 |---|---|---|---|
 | zwroty strategii na historii 2021–2026 | **wspólny z alpha** (`odczyty_historii.csv`) | 40 (stan alpha 2026-09-30) | t ≈ 3,84 (DSR) |
-| prognoza zmienności 2021+ | beta | 0 | t 1,96 + Holm |
+| prognoza zmienności 2021+ | beta | **1** (F2-1b, 2026-10-06) | t 1,96 + Holm |
 | ryzyko ogona (VaR/ES) 2021+ | beta | 0 | testy PRD §10.4 |
 
 ## Tabela rund
 
 | ID | data | katalog | opis | licznik | wynik |
 |---|---|---|---|---|---|
+| NC1B | 2026-09-30 | [nc1b-kontrola-negatywna-miara](2026-09-30_nc1b-kontrola-negatywna-miara/README.md) | Kontrola negatywna i czułości przyrządu `miara` na generatorze alpha (40 losowań × 20 monet × 2 000 dni), reguły trend 7 dni i przekrój top/bottom 5; pre-rejestracja `45c0b1b` | **0 — POZA licznikami** (kalibracja, dane syntetyczne) | **ZALICZONA:** śr. t −0,28 / −0,24, alarmy 2/80 = 2,5 % [0,7; 8,7] (alpha 3,3 %); czułość t +6,9…+40,4 w 40/40. **Ready** |
+| LM1 | 2026-09-30 | [lm1-moc-dm-qlike](2026-09-30_lm1-moc-dm-qlike/README.md) | Laboratorium F1: rozmiar i moc DM (QLIKE, HAC) dla kryterium F2 (≥ 16/20 monet t > 1,96), generator GARCH(1,1)-t z RV, bootstrap stacjonarny, n × ρ; pre-rejestracja `0efaedb` | **0 — POZA licznikami** (dane syntetyczne) | **MIERZALNA wg reguły (MDE 0,066 ≤ 0,10), Caveats:** kontrole DM ✓ (3,8 % / 4,9 %; 99,8 %); przy N_eff/n ≈ 0,3 MDE 0,10–0,11 → warunek: przeliczyć na prawdziwym kształcie strat |
+| LD1 | 2026-10-01 | [ld1-eproces-dziennik](2026-10-01_ld1-eproces-dziennik/README.md) | Laboratorium F3: e-procesy obalenia i potwierdzenia przy codziennym zaglądaniu 365 dni vs 3 odczyty ADR-09 (z 2,31), 4 nogi × 3 rozkłady; pre-rejestracja `aea82dd` | **0 — POZA licznikami** (dane syntetyczne) | **Bramka 1 TAK** (fałszywe alarmy ≤ 0,54 %), **bramka 2 NIE** (moc +15 %: ≤ 0,1 % vs 5–10 % ADR-09) → reporter opisowy, D3-a. **Ready** |
+| DQ1 | 2026-10-05 | [dq1-jakosc-binance](2026-10-05_dq1-jakosc-binance/README.md) | Jakość świec Binance USDT-M 5m/1d top-20 point-in-time od 2021 (196 symboli, zadanie 002); manifest `f1b0e58` | **0 — POZA licznikami** (opis danych) | **Ready:** 0 duplikatów, 0 niespójnych OHLC, kontrola BTC ✓; 33 symbole z martwym ogonem po wycofaniu, wspólne dziury 2022-02-26…28 i 2022-04-01…02 |
+| F2-1 | 2026-10-05 | [f21-har-vs-dziennik](2026-10-01_f21-har-vs-dziennik/README.md) | HAR-RV vs prognoza zmienności dziennika (EWMA 60) na QLIKE, 1 dzień, 20 monet top-20; pre-rejestracja `f92fdc6` + Poprawka 1 `cc4cea1` (martwe dni, rozłączne okresy) | **„zmienność 2021+”: 0** (bramka zamknęła rundę przed testem) | **NIEMIERZALNA, Caveats:** MDE 0,103 > 0,10 (ziarna 1–5: 0,100–0,102); 5 monet z krótkim OOS (MDE 0,115–0,150) zjada zapas kryterium 16/20; pytanie otwarte → 011 (rekomendacja F2-1b po długości danych) |
+| KV1 | 2026-10-05 | [kv1-kontrola-var-es](2026-10-05_kv1-kontrola-var-es/README.md) | Kontrole R8 przyrządu VaR/ES (Kupiec, Christoffersen ind/cc, Acerbi–Székely Z2) na generatorze GARCH(1,1)-t: 19 kryteriów (rozmiar na prawdziwej prognozie, moc przy znanych błędach), p = 1 % i 5 %, 5 000 serii na poziom; pre-rejestracja `d9f83ed` | **0 — POZA licznikami** (kalibracja, dane syntetyczne) | **ZALICZONA 19/19, Caveats:** rozmiar 4,6–5,1 %, moc ≥ 97,7 %, 0 niezdefiniowanych; rozmiar przy prawdziwych n (600–2 100 dni) i ρ > 0 mierzy LV1; Z2 nigdy samodzielnie |
+| LV1 | 2026-10-06 | [lv1-moc-var-es](2026-10-05_lv1-moc-var-es/README.md) | Moc testów VaR/ES przy n = 600–2 100 dni × 20 monet, ρ 0,5/0,8 (GARCH-t); test zbiorczy po dniach (R12) z bootstrapem-t; pre-rejestracja `f8a6a0f`, reguła poprawiona (decyzja użytkownika) | **0 — POZA licznikami** (dane syntetyczne) | **MIERZALNA (1 % i 5 %), Caveats:** rozmiar 3,9 / 4,3 %, MDE zaniżenia σ 0,083 / 0,079 przy n = 1 600, ρ = 0,8; pojedyncza moneta za słaba; realistyczne prognozy (okno 60, EWMA) odrzucane 78–98 % → przed danymi LV2; reguła pierwotna: 5 % NIEMIERZALNA |
+| F2-1b | 2026-10-06 | [f21b-har-vs-dziennik-dlugie](2026-10-06_f21b-har-vs-dziennik-dlugie/README.md) | HAR-RV vs prognoza zmienności dziennika (EWMA 60) na QLIKE, 1 dzień, 15 monet z pełną historią 2021–2026 (dobór po długości danych, `dane.dni`); pre-rejestracja `674eada` | **„zmienność 2021+”: 0 → 1** | **MIERZALNA (MDE 0,091), NIEPOZYTYWNY, Caveats:** t > 1,96 w 11/15 (wymagane 12), 0 z t < −1,96; wszystkie t > 0, MSE log RV t 6,5–9,6 (opis); STOP → ryzyko ogona, bez F2-1c |

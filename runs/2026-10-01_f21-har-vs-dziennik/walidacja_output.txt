@@ -1,0 +1,53 @@
+1. Błąd Monte Carlo MDE kryterium (1 000 losowań, różne ziarna; werdykt = ziarno 2101):
+   ziarno 2101: MDE kryterium 0.103
+   ziarno    1: MDE kryterium 0.102
+   ziarno    2: MDE kryterium 0.100
+   ziarno    3: MDE kryterium 0.101
+   ziarno    4: MDE kryterium 0.100
+   ziarno    5: MDE kryterium 0.102
+
+2. MDE pojedynczej monety przy jej własnym n (500 losowań, ziarno 7):
+   BNBUSDT       n  1703  MDE 0.059
+   BTCUSDT       n  1703  MDE 0.080
+   ETHUSDT       n  1703  MDE 0.083
+   XRPUSDT       n  1698  MDE 0.073
+   SOLUSDT       n  1698  MDE 0.067
+   DOGEUSDT      n  1703  MDE 0.089
+   ADAUSDT       n  1703  MDE 0.085
+   LINKUSDT      n  1703  MDE 0.083
+   AVAXUSDT      n  1703  MDE 0.088
+   LTCUSDT       n  1698  MDE 0.055
+   1000PEPEUSDT  n   849  MDE 0.119
+   MATICUSDT     n   947  MDE 0.115
+   SUIUSDT       n   851  MDE 0.127
+   1000SHIBUSDT  n  1574  MDE 0.093
+   BCHUSDT       n  1703  MDE 0.080
+   DOTUSDT       n  1703  MDE 0.084
+   FTMUSDT       n  1066  MDE 0.120
+   FILUSDT       n  1698  MDE 0.078
+   ETCUSDT       n  1703  MDE 0.083
+   WIFUSDT       n   591  MDE 0.150
+
+3. Dni OOS vs kalendarz:
+   BNBUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   BTCUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   ETHUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   XRPUSDT       2022-02-01 → 2026-09-30  dni  1698 kalendarz  1703  brak   5 ['2022-02-26', '2022-02-27', '2022-02-28', '2022-04-01', '2022-04-02']
+   SOLUSDT       2022-02-01 → 2026-09-30  dni  1698 kalendarz  1703  brak   5 ['2022-02-26', '2022-02-27', '2022-02-28', '2022-04-01', '2022-04-02']
+   DOGEUSDT      2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   ADAUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   LINKUSDT      2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   AVAXUSDT      2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   LTCUSDT       2022-02-01 → 2026-09-30  dni  1698 kalendarz  1703  brak   5 ['2022-02-26', '2022-02-27', '2022-02-28', '2022-04-01', '2022-04-02']
+   1000PEPEUSDT  2024-06-04 → 2026-09-30  dni   849 kalendarz   849  brak   0 []
+   MATICUSDT     2022-02-01 → 2024-09-04  dni   947 kalendarz   947  brak   0 []
+   SUIUSDT       2024-06-02 → 2026-09-30  dni   851 kalendarz   851  brak   0 []
+   1000SHIBUSDT  2022-06-10 → 2026-09-30  dni  1574 kalendarz  1574  brak   0 []
+   BCHUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   DOTUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   FTMUSDT       2022-02-01 → 2025-01-06  dni  1066 kalendarz  1071  brak   5 ['2022-02-26', '2022-02-27', '2022-02-28', '2022-04-01', '2022-04-02']
+   FILUSDT       2022-02-01 → 2026-09-30  dni  1698 kalendarz  1703  brak   5 ['2022-02-26', '2022-02-27', '2022-02-28', '2022-04-01', '2022-04-02']
+   ETCUSDT       2022-02-01 → 2026-09-30  dni  1703 kalendarz  1703  brak   0 []
+   WIFUSDT       2025-02-17 → 2026-09-30  dni   591 kalendarz   591  brak   0 []
+
+   wszystkie straty skończone: True

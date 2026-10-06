@@ -1,0 +1,77 @@
+F2-1b — HAR-RV vs prognoza dziennika (QLIKE, 1 dzień), monety dobrane po długości danych
+Krok 0 — dobór monet: miesięcy w składzie top-20 66 (2021-01…2026-06); kandydaci z ≥ 12 mies.: 25
+  warunek: dni ważne (wazny & ~martwy, wyklucz_po_dziurze=True) od ≤ 2021-01-31 do ≥ 2026-09-30, udział ≥ 95% w 2021-01-01…2026-09-30
+ symbol          | mies. | pierwszy   | ostatni    | ważne / dni okresu | udział | kwal.
+ BNBUSDT         |    66 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ BTCUSDT         |    66 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ ETHUSDT         |    66 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ XRPUSDT         |    66 | 2021-01-02 | 2026-09-30 |    2091 / 2099     |  99.6% | tak
+ SOLUSDT         |    62 | 2021-01-02 | 2026-09-30 |    2091 / 2099     |  99.6% | tak
+ DOGEUSDT        |    61 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ ADAUSDT         |    55 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ LINKUSDT        |    45 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ AVAXUSDT        |    40 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ LTCUSDT         |    34 | 2021-01-02 | 2026-09-30 |    2091 / 2099     |  99.6% | tak
+ 1000PEPEUSDT    |    33 | 2023-05-06 | 2026-09-30 |    1244 / 2099     |  59.3% | nie
+ MATICUSDT       |    29 | 2021-01-02 | 2024-09-04 |    1342 / 2099     |  63.9% | nie
+ SUIUSDT         |    27 | 2023-05-04 | 2026-09-30 |    1246 / 2099     |  59.4% | nie
+ 1000SHIBUSDT    |    25 | 2021-05-11 | 2026-09-30 |    1969 / 2099     |  93.8% | nie
+ BCHUSDT         |    20 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ DOTUSDT         |    20 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ FTMUSDT         |    18 | 2021-01-02 | 2025-01-06 |    1459 / 2099     |  69.5% | nie
+ FILUSDT         |    17 | 2021-01-02 | 2026-09-30 |    2091 / 2099     |  99.6% | tak
+ ETCUSDT         |    16 | 2021-01-02 | 2026-09-30 |    2098 / 2099     | 100.0% | tak
+ WIFUSDT         |    16 | 2024-01-19 | 2026-09-30 |     986 / 2099     |  47.0% | nie
+ WLDUSDT         |    16 | 2023-07-25 | 2026-09-30 |    1164 / 2099     |  55.5% | nie
+ EOSUSDT         |    15 | 2021-01-02 | 2025-05-20 |    1600 / 2099     |  76.2% | nie
+ NEARUSDT        |    15 | 2021-01-02 | 2026-09-30 |    2091 / 2099     |  99.6% | tak
+ OPUSDT          |    13 | 2022-06-02 | 2026-09-30 |    1582 / 2099     |  75.4% | nie
+ ENAUSDT         |    12 | 2024-04-03 | 2026-09-30 |     911 / 2099     |  43.4% | nie
+
+  kwalifikuje się 15; K = min(20, 15) = 15
+  monety (15): BNBUSDT, BTCUSDT, ETHUSDT, XRPUSDT, SOLUSDT, DOGEUSDT, ADAUSDT, LINKUSDT, AVAXUSDT, LTCUSDT, BCHUSDT, DOTUSDT, FILUSDT, ETCUSDT, NEARUSDT
+  kryterium kroku 2: t > 1,96 w ≥ ⌈0.8 · 15⌉ = 12 monet, 0 z t < −1,96
+
+Dni OOS (z wzoru braków, bez prognoz na prawdziwym RV):
+  BNBUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  BTCUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  ETHUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  XRPUSDT          1636 dni OOS: 2022-02-01 … 2026-09-30
+  SOLUSDT          1636 dni OOS: 2022-02-01 … 2026-09-30
+  DOGEUSDT         1703 dni OOS: 2022-02-01 … 2026-09-30
+  ADAUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  LINKUSDT         1703 dni OOS: 2022-02-01 … 2026-09-30
+  AVAXUSDT         1703 dni OOS: 2022-02-01 … 2026-09-30
+  LTCUSDT          1636 dni OOS: 2022-02-01 … 2026-09-30
+  BCHUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  DOTUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  FILUSDT          1636 dni OOS: 2022-02-01 … 2026-09-30
+  ETCUSDT          1703 dni OOS: 2022-02-01 … 2026-09-30
+  NEARUSDT         1636 dni OOS: 2022-02-01 … 2026-09-30
+  n (mediana) 1703, min 1636, maks 1703; dni kalendarza (suma) 1703; odcisk dni OOS 80001c5c1ca5686c
+  zgodność z pre-rejestracją (monety, dni OOS, odcisk): tak
+  kontrola: dni strat = dni OOS z wzoru braków u wszystkich monet: tak
+
+Krok 1 — bramka mierzalności (R3): dni kalendarza 1703 (wspólne wszystkim monetom 1636), n (mediana) 1703, N_eff/n 0.79, korel. różnic strat 0.16
+  MDE kryterium 0.091 (1 moneta 0.077); próg 0.1
+  → MIERZALNA: krok 2 (odczyt licznika „zmienność 2021+”: 0 → 1).
+
+Krok 2 — DM na QLIKE (t > 0: HAR lepszy), per moneta:
+ symbol          |    n | od         | t QLIKE |  δ     | t MSE log | RV / prognoza dziennika
+ BNBUSDT         | 1703 | 2022-02-01 |   +3.80 | +0.100 |     +9.58 | 1.15
+ BTCUSDT         | 1703 | 2022-02-01 |   +2.29 | +0.057 |     +6.89 | 1.02
+ ETHUSDT         | 1703 | 2022-02-01 |   +1.46 | +0.036 |     +7.92 | 0.96
+ XRPUSDT         | 1636 | 2022-02-01 |   +1.20 | +0.031 |     +6.83 | 1.07
+ SOLUSDT         | 1636 | 2022-02-01 |   +2.70 | +0.089 |     +6.50 | 1.16
+ DOGEUSDT        | 1703 | 2022-02-01 |   +3.97 | +0.133 |     +7.41 | 1.23
+ ADAUSDT         | 1703 | 2022-02-01 |   +2.25 | +0.058 |     +7.04 | 1.18
+ LINKUSDT        | 1703 | 2022-02-01 |   +1.61 | +0.042 |     +7.12 | 1.17
+ AVAXUSDT        | 1703 | 2022-02-01 |   +0.21 | +0.005 |     +7.72 | 1.26
+ LTCUSDT         | 1636 | 2022-02-01 |   +3.22 | +0.083 |     +8.11 | 1.26
+ BCHUSDT         | 1703 | 2022-02-01 |   +5.33 | +0.161 |     +8.54 | 0.99
+ DOTUSDT         | 1703 | 2022-02-01 |   +4.52 | +0.140 |     +7.43 | 1.36
+ FILUSDT         | 1636 | 2022-02-01 |   +3.13 | +0.083 |     +7.67 | 1.02
+ ETCUSDT         | 1703 | 2022-02-01 |   +3.65 | +0.105 |     +7.40 | 1.10
+ NEARUSDT        | 1636 | 2022-02-01 |   +5.27 | +0.154 |     +8.93 | 1.16
+
+Kryterium F2-1b: t > 1,96 w 11/15 monet (wymagane ≥ 12), t < −1,96: 0 → NIEPOZYTYWNY

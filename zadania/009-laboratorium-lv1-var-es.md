@@ -2,7 +2,7 @@
 id: 009
 tytul: laboratorium LV1 — moc testów VaR/ES przy n ≈ 1 600 dni × 20 monet
 typ: badawcze
-status: nowe
+status: czeka_na_decyzje
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-05: „rozpisz sobie kolejne taski, zaplanuj i zacznij realizować” + akceptacja planu (007–012)"
 utworzono: 2026-10-05
@@ -34,4 +34,19 @@ README rundy z werdyktem, `raw_output.txt`, wiersz w `runs/INDEX.md`.
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-06: pre-rejestracja gotowa i zamrożona w gicie (`f8a6a0f`): `symulacje/run_lv1.py`,
+`symulacje/moc_var_es.py`, `tests/test_lv1.py` (48 testów), `runs/2026-10-05_lv1-moc-var-es/README.md`.
+Trzech niezależnych recenzentów (pilotaże na innych ziarnach, ręczne mutacje — wszystkie wykryte).
+Najważniejsza poprawka: test zbiorczy (dzienne sumy trafień, R12) z bootstrapem-t o równych ogonach.
+Poprzednia wersja prawie nie odrzucała po stronie „za dużo trafień”, czyli przy zaniżonym ryzyku.
+
+**Czeka na Twoją decyzję (punkt 7 w README) przed pełnym przebiegiem (~30 min):**
+- **(a) reguła poprawiona (rekomendacja):** x\* = 0,10 przy obu p; „moc wobec normalnej” jest
+  kryterium tylko przy p = 1 %. Przy 5 % rozkład normalny ZAWYŻA VaR (prognoza ostrożniejsza niż
+  prawda), więc żądanie, by test go odrzucał, mierzyło wykrywanie ostrożności, a nie ryzyka. To ten
+  sam błąd projektu, który w KV1 usunięto przed wynikiem.
+- **(b) reguła pierwotna:** x\* = 0,05 przy 5 % i „normalna” jako kryterium przy obu p.
+
+Zmiany do (a) zrobiono PO pilotażu, który wskazuje, że przestawiają przewidywany wynik dla p = 5 %
+z NIEMIERZALNA na MIERZALNA — dlatego wybór jest Twój. Skrypt drukuje werdykt według obu reguł,
+więc jeden przebieg wystarczy przy każdym wyborze.

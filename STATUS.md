@@ -21,43 +21,41 @@
 
 ## Bieżące zadania
 
-Tablica: [`zadania/`](zadania/). Stan na 2026-10-05.
+Tablica: [`zadania/`](zadania/). Stan na 2026-10-06.
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
-- **001** — fundament: przyrząd `miara` zgodny z alpha (132 wektory), loader z `min_start`, CI, NC1B zaliczona.
-  Razem z 002 zamyka E0 — brakuje tylko Twojej decyzji „E0 zamknięty”.
-- **002** — dane: 196 symboli top-20 × 5m/1d od 2021, manifest + skład w repo, raport jakości DQ1 (Ready).
-- **003** — laboratorium LM1: test porównania prognoz (DM) działa poprawnie.
-- **004** — reporter F3 dla dziennika alpha + LD1; jego rola czeka na D3.
-- **005** — runda F2-1: **NIEMIERZALNA** na progu (MDE 0,103 > 0,10), licznik 0 → dalej 011.
-- **006** — DVOL BTC/ETH od 2021-03-24, zgodny z kopią alpha.
-- **007** — raport tygodniowy (`python -m raporty.tydzien`), pierwszy: `raporty/tygodnie/2026-W41.md`.
+- **001** — fundament: przyrząd `miara` zgodny z alpha, loader z `min_start`, CI, NC1B zaliczona.
+- **002** — dane: 196 symboli top-20 × 5m/1d od 2021, manifest, DQ1 (Ready).
+- **003** — LM1: test porównania prognoz (DM) działa poprawnie.
+- **004** — reporter F3 + LD1; rola czeka na D3.
+- **005** — F2-1: NIEMIERZALNA na progu (MDE 0,103 > 0,10), licznik 0 → 011.
+- **006** — DVOL BTC/ETH od 2021-03-24.
+- **007** — raport tygodniowy.
+- **008** — przyrząd VaR/ES; kontrola KV1 **ZALICZONA 19/19** (Caveats: duże n, ρ = 0).
+- **010** — rejestr cech + test przecieku (kontrola pozytywna łapie celowe przecieki).
+- **012** — automat: wszystkie 3 tryby uruchomione z sukcesem; **linię crona dodajesz Ty** (karta 012).
+- **014** — `dane/dni.py::dni_wazne`: parytet z Poprawką 1 F2-1 20/20, martwe dni zgodne z DQ1.
 
-**Do zrobienia:**
+**Czekają na Twoją decyzję:** 009 (punkt 7 LV1), 011, 013 — niżej.
 
-| id | zadanie | status | zależy od |
-|---|---|---|---|
-| 008 | przyrząd VaR/ES (Kupiec, Christoffersen, Acerbi–Szekely) z kontrolami | `nowe` | — |
-| 009 | laboratorium LV1: czy testy VaR/ES mają moc przy naszej historii | `nowe` | 008 |
-| 010 | rejestr cech + automatyczny test przecieku | `nowe` | — |
-| 011 | następny krok F2: F2-1b (monety z pełną historią) albo tylko ES/likwidacje | `czeka_na_decyzje` | 005, 014 |
-| 012 | automat: DVOL codziennie, Binance co miesiąc, raport w niedzielę | `nowe` | 007 |
-| 013 | bundle na GitHubie (4 nowe repo) — **Twój krok**, potem push | `czeka_na_decyzje` | — |
-| 014 | wspólna obsługa martwych ogonów i dziur archiwum w danych 5m | `nowe` | 002 |
+**Nowe:** 015 — pobieranie Binance przyrostowe (miesięczny automat pobiera dziś całość, 32 min).
 
 ## Kolejka
 
-**008 → 009 → 014 → 010 → 012.** Warunkowo: F2-1b po decyzji 011 = (a) (po 014). Po Twoim kroku w 013:
-push 4 repo bundla. Linię crona dla 012 dodajesz Ty.
+Po decyzji w 009: pełny przebieg LV1 (~30 min) → README z werdyktem. Dalej, zależnie od LV1 i 011:
+F2-1b (jeśli 011 = a) albo pre-rejestracja pierwszej rundy VaR/ES na danych (wymaga też kontroli
+rozmiaru przy ESTYMOWANYM modelu — „LV2”, opisane w README LV1). W tle: 015.
 
 ## Decyzje czekające na Ciebie
 
-1. **E0 zamknięty?** — wszystko z listy jest (001 + 002). Rekomendacja: tak.
-2. **011** — F2-1b czy tylko ES/likwidacje. Rekomendacja: F2-1b (VaR/ES idzie i tak).
-3. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
-4. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (testy: 229 zielonych).
-5. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
+1. **E0 zamknięty?** — rekomendacja: tak.
+2. **009 / LV1 punkt 7** — reguła poprawiona (rekomendacja) czy pierwotna; szczegóły w karcie 009.
+3. **011** — F2-1b czy tylko ES/likwidacje. Rekomendacja: F2-1b.
+4. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
+5. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (834 testy zielone).
+6. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
+7. **Cron** — wklejenie linii z `narzedzia/crontab.txt` (polecenie w karcie 012).
 
 ## Backlog (bez kart)
 
@@ -66,6 +64,7 @@ push 4 repo bundla. Linię crona dla 012 dodajesz Ty.
 - Top-50 (FR-01) — gdy runda będzie tego potrzebować (`--top 50`).
 - Tor F5 (likwidacje, Hyperliquid) — magazyn cech point-in-time; pierwszy odczyt najwcześniej 2027-09.
 - F4 portfel — po E2.
+- Wolumen 5m vs 1d różny w 600 dniach (161 symboli) — przyczyny nie badano (karta 014).
 
 ## Ryzyka
 

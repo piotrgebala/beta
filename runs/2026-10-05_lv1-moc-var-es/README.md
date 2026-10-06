@@ -1,8 +1,9 @@
 # LV1 — laboratorium VaR/ES: czy testy wsteczne odróżnią dobrą prognozę od złej przy n = 600–2 100 dni (2026-10-05)
 
-> **STATUS: PRE-REJESTRACJA, przed pełnym przebiegiem.** Wyniku ani werdyktu jeszcze nie ma. Sekcje
-> „Wynik”, „Werdykt” i „Wniosek” dopisze orkiestrator po przebiegu `python -m symulacje.run_lv1`
-> (jak w KV1); progi poniżej są zapisane przed obejrzeniem wyniku i po nim się ich nie zmienia.
+> **STATUS: ZAKOŃCZONA — MIERZALNA przy p = 1 % i p = 5 % (reguła poprawiona), Caveats.** Przebieg
+> 2026-10-06, 32 min (16 procesów; czas z stderr, nie z `raw_output.txt`), z commitu `a067344` (kod = `f8a6a0f`).
+> Sekcje Wynik / Werdykt / Wniosek są na końcu pliku. Poniżej oryginalny wstęp pre-rejestracji (bez zmian):
+> progi poniżej były zapisane przed obejrzeniem wyniku i po nim się ich nie zmieniało.
 >
 > **Po przeglądzie (3 recenzentów, 2026-10-06) projekt i dwa progi zmieniono, przed pełnym
 > przebiegiem.** Wszystkie zmiany są w sekcji „Zmiany po przeglądzie, przed pełnym przebiegiem”.
@@ -476,6 +477,73 @@ Każda alternatywa to nowe pytanie z własnym licznikiem (PRD §11.4) i własną
    przy obu p), a pozostałe zmiany (równe ogony, flagi, warunki przeniesienia, STOP) zostają.
    **Rozstrzygnięte 2026-10-06 przez użytkownika: reguła poprawiona.** Werdykt według reguły pierwotnej
    jest drukowany jako opis („OPIS (nie werdykt): reguła PIERWOTNA”).
+
+## Wynik
+
+Źródło: `raw_output.txt`. Komórka główna ρ = 0,8, n = 1 600 dni, K = 20 monet, 5 000 paneli
+(SE odsetka ≤ 0,7 pp).
+
+| kryterium | p = 1 % | p = 5 % | wymaganie |
+|---|---|---|---|
+| K1 rozmiar testu zbiorczego (prognoza prawdziwa) | 3,9 % | 4,3 % | [2,5; 7,5] % |
+| K2 moc wobec σ zaniżonego o 30 % | 100 % | 100 % | ≥ 95 % |
+| K3 rozmiar „naiwnego” Kupca (20·n jak niezależne) | 25,8 % | 45,0 % | > 10 % |
+| ii-a moc wobec prognozy normalnej | 100 % | (opis) 41,2 % | ≥ 80 % (tylko 1 %) |
+| ii-b moc wobec prognozy stałej | 98,3 % | 99,4 % | ≥ 80 % |
+| iii MDE zaniżenia σ | 0,083 | 0,079 | ≤ 0,10 |
+| **wynik reguły (obowiązującej)** | **MIERZALNA** | **MIERZALNA** | |
+| opis: reguła pierwotna | MIERZALNA | NIEMIERZALNA | (x\* = 0,05; ii-a przy 5 %) |
+
+- **Przewidywania:** P1 (testy pojedynczej monety za słabe) sprawdziło się: Kupiec per moneta 44 % / 36 %
+  (normalna / stała), cc 36 % / 44 %, Z2 81 % / 27 %. P2 i P3 (MIERZALNA przy 5 % i 1 %) też się
+  sprawdziły. Nie były ślepe (zapisane po pilotażu).
+- **Najmniejszy zapas:** iii przy p = 1 %: MDE 0,083 przy progu 0,10 (zapas ok. 0,017); skrypt nie zgłosił
+  flagi „blisko progu” (2 SE) dla żadnego kryterium.
+- **Warunek przeniesienia na dane:** VR dziennej sumy trafień na prawdziwych danych ≤ 2,98 (p = 1 %)
+  i ≤ 6,29 (p = 5 %).
+- **Mapa (opis):** przy n = 600 dni reguła daje NIEMIERZALNA (ρ = 0,8, obie p; ρ = 0,5 przy 1 %); od
+  n = 1 000 wszędzie MIERZALNA. MDE testu zbiorczego przy ρ = 0,8: 0,122 / 0,094 / 0,083 / 0,077
+  (p = 1 %, n = 600 / 1 000 / 1 600 / 2 100).
+- **Opis, ważne dla następnej rundy:** realistyczne prognozy z ESTYMOWANĄ σ i poprawnym ogonem t5 mają za
+  dużo trafień (okno 60 dni: 1,38 % zamiast 1 %; EWMA 0,94: 1,28 %; przy 5 %: 5,89 % i 5,83 %);
+  prawdopodobna przyczyna: błąd estymacji σ pogrubia ogon (hipoteza, w tej rundzie niesprawdzana). Test zbiorczy odrzuca je w 78–98 % paneli. Jeśli tak jest też na prawdziwych
+  danych, odrzucenie prognozy nie znaczy „model bezużyteczny”, tylko „nie skalibrowany”.
+- **Opis:** test zbiorczy słabo widzi zaniżony ES przy dobrym VaR (es_za_niski: 26 % przy 1 %, 47 % przy
+  5 %); Z2 per moneta 17 % i 35 %.
+
+## Co na plus (+) / Co na minus (−)
+
+**(+)** Wszystkie trzy kontrole silnika przeszły: rozmiar 3,9 % i 4,3 %; zaniżenie σ o 30 % łapane w 100 %;
+naiwne traktowanie 20 monet jak niezależnych daje 26–45 % fałszywych alarmów, czyli R12 jest istotne
+i test zbiorczy je obsługuje. Przy ~1 600 dniach i 20 monetach wykrywamy zaniżenie zmienności o ok.
+8 % (p = 1 % i 5 %). Pojedyncza moneta wykrywa dopiero ok. 14–17 % przy p = 1 % i ok. 10–13 % przy p = 5 %. Przewidywania sprawdziły się.
+**(−)** (1) Reguła przy 5 % była poprawiona po pilotażu (decyzja użytkownika). Według reguły pierwotnej
+przy 5 % wyszłoby NIEMIERZALNA. (2) K1 dotyczy prognozy-wyroczni. Rozmiar przy modelu estymowanym jest
+nieznany, a prognozy realistyczne są odrzucane, więc przed rundą na danych potrzebna jest kontrola LV2.
+(3) Generator ma tylko gaussowską zależność między monetami (stałe ρ, bez wspólnych skoków), więc to
+raczej górne oszacowanie mocy. Warunek VR trzeba sprawdzić na danych. (4) Test B (grupowanie) ma okno
+10 dni dobrane na pilotażu tego generatora. (5) Zaniżony ES przy dobrym VaR jest słabo wykrywalny.
+
+## Werdykt
+
+**Caveats.** Według reguły z pre-rejestracji (poprawionej, decyzja użytkownika 2026-10-06) LV1 jest
+**MIERZALNA przy p = 1 % i p = 5 %**: przy ok. 1 600 dniach × 20 monetach test zbiorczy odróżnia dobrą
+prognozę ryzyka od zaniżonej o ok. 8 % zmienności. Warunki przed jakąkolwiek rundą VaR/ES na prawdziwych
+danych:
+1. **LV2:** rozmiar i moc przy prognozie ESTYMOWANEJ (okno/EWMA/GARCH dopasowany na danych). Pytanie
+   rundy na danych powinno być porównawcze albo dotyczyć kalibracji, bo w tym generatorze test odrzucał
+   nawet rozsądne modele estymowane (EWMA 78 %, okno 60 dni 93–98 %).
+2. Populacja ≥ 20 monet z ≥ 1 600 dniami OOS; monety z ok. 600 dniami osobno albo wcale.
+3. Sprawdzić VR na danych (≤ 2,98 / 6,29) bez patrzenia na wynik prognoz.
+4. Licznik „ryzyko 2021+”: 0 (bez zmian, dane syntetyczne).
+
+## Wniosek
+
+**Prostym językiem:** w sztucznym świecie podobnym do naszego (ok. 4–5 lat, 20 monet) prognozy ryzyka da się
+sprawdzić, ale tylko zbiorczo dla całego koszyka. Na prawdziwych danych zależy to od warunków z Werdyktu. Pojedyncza moneta to za mało. Wykryjemy, jeśli prognoza zaniża
+wahania o ok. 8 % lub więcej. Jest jedna niespodzianka: w symulacji nawet rozsądne, codziennie liczone prognozy
+(okno 60 dni, EWMA) test uznawał za źle skalibrowane, prawdopodobnie dlatego, że samo szacowanie zmienności pogrubia ogon. Następny
+krok (LV2) powie, jak uczciwie oceniać takie realistyczne prognozy, zanim dotkniemy prawdziwych danych.
 
 ## Użyte skille
 

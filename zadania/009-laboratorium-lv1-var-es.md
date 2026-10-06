@@ -2,7 +2,7 @@
 id: 009
 tytul: laboratorium LV1 — moc testów VaR/ES przy n ≈ 1 600 dni × 20 monet
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-06: „LV1: poprawiona, 011: a, E0: zamknij”"
 utworzono: 2026-10-05
@@ -50,3 +50,10 @@ Poprzednia wersja prawie nie odrzucała po stronie „za dużo trafień”, czyl
 Zmiany do (a) zrobiono PO pilotażu, który wskazuje, że przestawiają przewidywany wynik dla p = 5 %
 z NIEMIERZALNA na MIERZALNA — dlatego wybór jest Twój. Skrypt drukuje werdykt według obu reguł,
 więc jeden przebieg wystarczy przy każdym wyborze.
+
+**2026-10-06 — wynik:** pełny przebieg (reguła poprawiona, decyzja użytkownika): **MIERZALNA przy p = 1 % i 5 %,
+Caveats.** Rozmiar testu zbiorczego 3,9 / 4,3 %; MDE zaniżenia σ 0,083 / 0,079 (n = 1 600, ρ = 0,8). Pojedyncza
+moneta za słaba. Realistyczne prognozy z estymowaną σ test odrzucał w 78–98 % → przed rundą na danych kontrola
+**LV2**. Reguła pierwotna dałaby NIEMIERZALNA przy 5 % (opis). README: `runs/2026-10-05_lv1-moc-var-es/`.
+Liczby sprawdził niezależny weryfikator (1 poprawiona liczba, złagodzone sformułowania).
+

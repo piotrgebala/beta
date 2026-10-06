@@ -34,18 +34,17 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-06.
 - **007** — raport tygodniowy.
 - **008** — przyrząd VaR/ES; kontrola KV1 **ZALICZONA 19/19** (Caveats: duże n, ρ = 0).
 - **010** — rejestr cech + test przecieku (kontrola pozytywna łapie celowe przecieki).
-- **012** — automat: wszystkie 3 tryby uruchomione z sukcesem; **linię crona dodajesz Ty** (karta 012).
+- **012** — automat: wszystkie 3 tryby uruchomione z sukcesem; cron włączony 2026-10-06.
 - **014** — `dane/dni.py::dni_wazne`: parytet z Poprawką 1 F2-1 20/20, martwe dni zgodne z DQ1.
+- **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
 
 **Czekają na Twoją decyzję:** 009 (punkt 7 LV1), 011, 013 — niżej.
-
-**Nowe:** 015 — pobieranie Binance przyrostowe (miesięczny automat pobiera dziś całość, 32 min).
 
 ## Kolejka
 
 Po decyzji w 009: pełny przebieg LV1 (~30 min) → README z werdyktem. Dalej, zależnie od LV1 i 011:
 F2-1b (jeśli 011 = a) albo pre-rejestracja pierwszej rundy VaR/ES na danych (wymaga też kontroli
-rozmiaru przy ESTYMOWANYM modelu — „LV2”, opisane w README LV1). W tle: 015.
+rozmiaru przy ESTYMOWANYM modelu — „LV2”, opisane w README LV1).
 
 ## Decyzje czekające na Ciebie
 
@@ -53,9 +52,10 @@ rozmiaru przy ESTYMOWANYM modelu — „LV2”, opisane w README LV1). W tle: 01
 2. **009 / LV1 punkt 7** — reguła poprawiona (rekomendacja) czy pierwotna; szczegóły w karcie 009.
 3. **011** — F2-1b czy tylko ES/likwidacje. Rekomendacja: F2-1b.
 4. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
-5. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (834 testy zielone).
+5. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (851 testów zielonych).
 6. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
-7. **Cron** — wklejenie linii z `narzedzia/crontab.txt` (polecenie w karcie 012).
+7. **Skład top-20 po 2026-06** — lista monet bierze się z `alpha/.../universe_full`, który kończy się
+   w czerwcu 2026; nowe wejścia do top-20 nie są pobierane. Aktualizacja = Poprawka w alpha (karta 015).
 
 ## Backlog (bez kart)
 

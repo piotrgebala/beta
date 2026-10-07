@@ -43,8 +43,10 @@ README rundy z werdyktem, `raw_output.txt`, wiersz w `runs/INDEX.md`; niezależn
 ## Postęp (stan na 2026-10-07)
 
 **Zrobione:** kod i testy — commit `009204b` (`symulacje/garch_t.py`, `prognozy_lv2.py`, `porownanie_lv2.py`,
-`run_lv2.py`, `tests/test_lv2.py`); 1032 testy zielone, ruff i black czyste. **Nie zrobione:** pre-rejestracja,
-przegląd, przebieg rejestrowy (ziarno `20261016` w pełnej konfiguracji jeszcze nieużyte). Licznik „ryzyko 2021+” = 0.
+`run_lv2.py`, `tests/test_lv2.py`); pre-rejestracja — commit `73fff28`; przegląd przed przebiegiem (3 recenzentów,
+mutacje, architektura) — commit `24c8863` (131 funkcji / 241 przypadków w `tests/test_lv2.py`, 1115 w całym repo,
+ruff i black czyste). **Nie zrobione:** przebieg rejestrowy (ziarno `20261016` w pełnej konfiguracji jeszcze nieużyte),
+niezależne przeliczenie, werdykt. Licznik „ryzyko 2021+” = 0.
 
 **Ustalenia projektu (już w kodzie, przypięte testem `test_konfiguracja_progi_i_prognozy_zgodne_z_pre_rejestracja`;
 nie zmieniać bez wpisu w README):** 5 000 paneli, bootstrap 999, panel 2 100 dni (historia 400), komórki

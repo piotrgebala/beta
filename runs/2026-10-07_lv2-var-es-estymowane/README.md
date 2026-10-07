@@ -51,8 +51,9 @@ LV2b). Każdy z tych wyników jest uczciwym wynikiem rundy i zostanie opisany wp
 - **Pre-rejestracja zapisana w commicie `73fff28`** (2026-10-07 07:02:44 UTC: README oraz zmiany tylko w
   dokumentacji kodu `symulacje/garch_t.py` i `symulacje/run_lv2.py` i w ścieżkach karty 016; kod i testy
   rundy pochodzą z `009204b`, 2026-10-06 17:56:29 UTC). Hash `73fff28` wpisał commit `c9419a3` (07:02:57
-  UTC), bez zmian kodu ani progów. **Przebieg rejestrowy z commitu:** `HASH_PRZEBIEGU` (stan po przeglądzie
-  z kroku 2; hash wpisany osobnym commitem przed uruchomieniem; różnice względem `73fff28` wymienia sekcja
+  UTC), bez zmian kodu ani progów. **Przebieg rejestrowy z commitu:** `24c8863` (stan po przeglądzie
+  z kroku 2; hash wpisany osobnym commitem przed uruchomieniem, który zmienia tylko README, kartę i STATUS — kod i testy
+  są dokładnie z `24c8863`; różnice względem `73fff28` wymienia sekcja
   „Zmiany po przeglądzie, przed pełnym przebiegiem”).
 - Zadanie 016 (`zadania/016-laboratorium-lv2-var-es-estymowane.md`), kontynuacja LV1 (zadanie 009).
   Runda kalibracyjna, nie hipoteza rynkowa: **R1 — brak mechanizmu rynkowego** (nic nie przewidujemy,

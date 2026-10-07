@@ -43,8 +43,9 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 - **011** — F2-1b: MIERZALNA, **NIEPOZYTYWNY** (11/15 przy wymaganych 12); licznik „zmienność 2021+” = 1; HAR odłożony.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
 
-**W toku:** 016 — LV2 (testy VaR/ES dla prognoz estymowanych): kod i testy gotowe (`009204b`), czekają pre-rejestracja,
-przegląd i przebieg; plan w karcie. **Czeka na Ciebie:** 013.
+**W toku:** 016 — LV2 (testy VaR/ES dla prognoz estymowanych): kod i testy (`009204b`), pre-rejestracja (`73fff28`)
+i przegląd przed przebiegiem (`24c8863`) zrobione; zostają przebieg rejestrowy (ok. 30 min), niezależne przeliczenie
+i werdykt; plan w karcie. **Czeka na Ciebie:** 013.
 
 ## Kolejka
 

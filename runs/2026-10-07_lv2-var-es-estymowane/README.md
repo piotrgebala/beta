@@ -38,8 +38,10 @@ za słaby, by przy 1 600 dniach odróżnić EWMA od GARCH-t). Przewidywania W1�
 
 ## Metadane
 
-- **Pre-rejestracja zamrożona w commicie:** `HASH_PRE_REJESTRACJI` (README, kod i testy; pełny przebieg
-  idzie z tego stanu kodu; hash wpisany w następnym commicie, bez zmian kodu ani progów).
+- **Pre-rejestracja zapisana w commicie `73fff28`** (README; kod i testy z `009204b`). Hash wpisany w
+  następnym commicie, bez zmian kodu ani progów. **Przebieg rejestrowy z commitu:** `HASH_PRZEBIEGU`
+  (stan po przeglądzie z kroku 2; hash wpisany przed uruchomieniem; różnice względem `73fff28` wymienia
+  sekcja „Zmiany po przeglądzie, przed pełnym przebiegiem”).
 - Zadanie 016 (`zadania/016-laboratorium-lv2-var-es-estymowane.md`), kontynuacja LV1 (zadanie 009).
   Runda kalibracyjna, nie hipoteza rynkowa: **R1 — brak mechanizmu rynkowego** (nic nie przewidujemy,
   mierzymy własności przyrządu przy naszych n i dla prognoz estymowanych).

@@ -117,7 +117,7 @@ na konwencję startu GARCH oraz to, że wszystkie 8 przewidywań W1–W4 wyszło
 idealnie potwierdzający hipotezę zawsze wymaga ostrożności). Nie Revision: nie znaleziono błędu, a wszystkie
 niezależne przeliczenia się zgadzają. Siedem warunków jest w sekcji „Werdykt”.
 
-**7. Po Twojej stronie** (nic z tego nie jest zrobione bez Ciebie).
+**7. Po Twojej stronie** (stan z chwili werdyktu; rozstrzygnięcia z delegacji — aktualizacja pod listą).
 
 1. Czy otwierać pierwszą rundę VaR/ES na danych. Licznik „ryzyko 2021+” zostaje 0, aż ją otworzysz (0 → 1).
 2. Czy akceptujesz odczytanie Zakresu (b): 15 monet × 1 700 dni, bo reguła K w C2 nie ma flagi.
@@ -127,6 +127,15 @@ niezależne przeliczenia się zgadzają. Siedem warunków jest w sekcji „Werdy
 5. Czy zlecić LV2c (wyjaśnienie błędu standardowego testu DM, wrażliwość na konwencję startu GARCH, ewentualnie
    inna reguła dla pytania porównawczego) — nie jest potrzebne do pierwszej rundy bezwzględnej. Trop z ogonem EWMA
    (sekcja 4) to osobna karta opisowa, nie część LV2c.
+
+**Aktualizacja z 2026-10-07 (po werdykcie).** Na te pięć pytań odpowiedziałem sam, bo użytkownik napisał:
+„miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”. Zatem
+(1) pierwsza runda na danych: **tak, ale etapami** (karta 017: inwentarz i ρ_h bez oceny prognozy; karta 018: runda
+po zapisaniu pre-rejestracji; licznik 0 → 1 dopiero przy jej uruchomieniu); (2) odczytanie Zakresu (b): **przyjęte**;
+(3) próg K-a ≤ 10 %: **przyjęty** (przy p = 5 % nie rozstrzyga); (4) poziom: **jedyny, 5 %**; (5) LV2c: **niezlecone**
+(Backlog z wyzwalaczami). To są moje decyzje na delegację, nie Twoje; odczytanie Zakresu (b) zaproponowałem i
+zatwierdziłem ja sam, więc to słabsza kontrola niż Twoja. Każdą możesz zmienić; szczegóły i sposób cofnięcia:
+`STATUS.md`, „Decyzje podjęte przez Claude”.
 
 ## W skrócie — prostym językiem
 
@@ -1566,6 +1575,13 @@ decyzję, mają znacznik **[decyzja]**.
 
 Decyzje o otwarciu rundy na danych (licznik 0 → 1) i o zleceniu LV2c są w sekcji „Wynik w skrócie” (punkt 7) oraz
 w „Rekomendacji”.
+
+**Stan z 2026-10-07 (po delegacji).** Punkty **[decyzja]** 10, 12 i 13 rozstrzygnąłem sam na delegację użytkownika
+(„miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”):
+10 — przyjmuję odczytanie, że Zakres (b) jest otwarty tylko dla pytania K; 12 — próg K-a ≤ 10 % przyjmuję, a
+sprostowanie punktu 8 zostaje (przy p = 5 % próg nie rozstrzyga); 13 — poziom p = 5 % jako jedyny. Zlecenie LV2c i
+otwarcie rundy na danych: patrz uwaga pod punktem 7 w „Wyniku w skrócie” oraz `STATUS.md`. Treść punktów 10–19 i
+werdykt Caveats zostają bez zmian; decyzje pozostają otwarte na Twoją zmianę.
 
 ## Użyte skille
 

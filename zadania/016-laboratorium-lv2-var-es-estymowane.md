@@ -97,6 +97,10 @@ surowy wydruk: `raw_output.txt` w tym katalogu; wiersz w `runs/INDEX.md`. **Werd
   osobna symulacja 400 paneli (21 z 24 wierszy w granicach 2 SE). Poza zakresem: niezależna reimplementacja HAR i
   ogonów empirycznych.
 - **Licznik „ryzyko 2021+” = 0** (dane syntetyczne). LV2b nie było potrzebne (żadna reguła nie wyszła WSTRZYMANA).
-- **Czeka na Ciebie** (szczegóły: `STATUS.md`, „Decyzje czekające na Ciebie” pkt 4): otwarcie pierwszej rundy na
-  danych (0 → 1), odczytanie Zakresu (b), próg K-a ≤ 10 %, poziom p, ewentualne LV2c. Praca leży na gałęzi
-  `claude/fervent-fermi-vfctk6`; na `main` trafi nowym PR.
+- **Decyzje z tej rundy (2026-10-07):** użytkownik delegował je wykonawcy („sam sobie odpowiedz wedługo swojej najlepszej
+  wiedzy”), więc rozstrzygnął je Claude (`STATUS.md`, „Decyzje podjęte przez Claude”, pkt 1–5): pierwsza runda na danych
+  **tak**, ale etapami (karty 017 → 018, licznik 0 → 1 dopiero przy uruchomieniu 018 po zapisanej pre-rejestracji);
+  Zakres (b) przyjęty w odczytaniu K-only; próg K-a ≤ 10 % przyjęty (przy p = 5 % nie rozstrzyga); jedyny poziom p = 5 %;
+  LV2c niezlecone (Backlog z wyzwalaczami). Każdą możesz zmienić jednym zdaniem. Odczytanie Zakresu (b) zaproponował i
+  zatwierdził ten sam wykonawca, więc to słabsza kontrola niż Twoja. Praca leży na gałęzi `claude/fervent-fermi-vfctk6`;
+  na `main` trafia nowym PR (po Twojej stronie).

@@ -39,4 +39,5 @@ Testy (postać zamknięta = całka, martyngał, kierunki, zgodność stałych z 
 wobec 3–11 % odczytów ADR-09 (bramka 2 ✗) → reporter opisowy; rekomendacja D3-a. Raport na migawce
 dziennika z 2026-09-30 (6 dni): wszystkie E ≈ 1, brak dowodu w żadną stronę.
 
-Do decyzji użytkownika przed 2026-12-24: D3 (rekomendacja: (a) tylko reporter).
+D3 rozstrzygnięte 2026-10-07: **(a) tylko reporter**, przez Claude na delegację użytkownika („sam sobie odpowiedz wedługo
+swojej najlepszej wiedzy”; `STATUS.md`, pkt 6). Zmiana na (b) musi być zapisana przed 2026-12-24.

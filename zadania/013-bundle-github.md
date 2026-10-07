@@ -2,7 +2,7 @@
 id: 013
 tytul: bundle na GitHubie — 4 nowe repo (bundle, miara, kolektory, wykonanie)
 typ: konto
-status: czeka_na_decyzje
+status: odrzucone
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-05: „stwórz wszystkie repa na bundle oraz uzupełnij w nich README oraz CLAUDE.md”"
 utworzono: 2026-10-05
@@ -37,4 +37,17 @@ Claude Code blokuje to w trybie automatycznym).
 
 ## Wynik
 
-(dopisuje orkiestrator)
+**Odłożone, nie anulowane (2026-10-07, Claude na delegację użytkownika; STATUS.md, „Decyzje podjęte przez Claude”, pkt 7).**
+Status `odrzucone` znaczy tu „nie teraz”: prośba z 2026-10-05 zostaje w karcie w pierwotnym brzmieniu.
+
+Powody:
+
+- Praca badawcza leży w `beta`, a push (zasada 28) działa; cztery puste repo niczego nie odblokowują.
+- Migracja `miara` do osobnego pakietu jest po E2 (ADR `bundle/0001` pkt 3), a migracja `dane` → `kolektory` zależy od tej karty.
+- Założenie repo i kluczy wymaga Twojego konta GitHub; Claude kluczy nie tworzy ani nie zmienia adresów zdalnych.
+- Użytkownik zakwestionował potrzebę czterech repo („a po co Ci aż 4 nowe repa ?”), a pilnego powodu, by je teraz zakładać, nie ma.
+
+Ryzyko: szkielety `~/bundle`, `~/miara`, `~/kolektory`, `~/wykonanie` (po jednym commicie, bez prawdziwej pracy) mają
+jedną kopię, na serwerze. Utrata kosztuje odtworzenie szkieletów, nie badań.
+
+Wznowienie: zmień status na `nowe` i załóż cztery puste repo według `~/bundle/README.md`.

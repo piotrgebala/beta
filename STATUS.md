@@ -24,7 +24,7 @@
 
 ## Bieżące zadania
 
-Tablica: [`zadania/`](zadania/). Stan na 2026-10-06.
+Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
@@ -43,7 +43,8 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-06.
 - **011** — F2-1b: MIERZALNA, **NIEPOZYTYWNY** (11/15 przy wymaganych 12); licznik „zmienność 2021+” = 1; HAR odłożony.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
 
-**Nowe:** 016 — LV2 (testy VaR/ES dla prognoz estymowanych). **Czeka na Ciebie:** 013.
+**W toku:** 016 — LV2 (testy VaR/ES dla prognoz estymowanych): kod i testy gotowe (`009204b`), czekają pre-rejestracja,
+przegląd i przebieg; plan w karcie. **Czeka na Ciebie:** 013.
 
 ## Kolejka
 
@@ -54,9 +55,8 @@ bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 ## Decyzje czekające na Ciebie
 
 1. **D3** — rola F3 (rekomendacja: tylko reporter, D3-a); termin przed 2026-12-24.
-2. **PR #1** — scalenie gałęzi `claude/fervent-fermi-vfctk6` do `main` (851 testów zielonych).
-3. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
-4. **Skład top-20 po 2026-06** — lista monet bierze się z `alpha/.../universe_full`, który kończy się
+2. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
+3. **Skład top-20 po 2026-06** — lista monet bierze się z `alpha/.../universe_full`, który kończy się
    w czerwcu 2026; nowe wejścia do top-20 nie są pobierane. Aktualizacja = Poprawka w alpha (karta 015).
 
 ## Backlog (bez kart)

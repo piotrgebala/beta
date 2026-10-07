@@ -42,16 +42,19 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 - **009** — LV1: **MIERZALNA** przy p = 1 % i 5 % (Caveats; realistyczne prognozy odrzucane → LV2).
 - **011** — F2-1b: MIERZALNA, **NIEPOZYTYWNY** (11/15 przy wymaganych 12); licznik „zmienność 2021+” = 1; HAR odłożony.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
+- **016** — LV2: **MIERZALNA, ale tylko z pytaniem bezwzględnym** (Caveats). Dobry, lecz estymowany GARCH-t test
+  zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
+  porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
 
-**W toku:** 016 — LV2 (testy VaR/ES dla prognoz estymowanych): kod i testy (`009204b`), pre-rejestracja (`73fff28`)
-i przegląd przed przebiegiem (`24c8863`) zrobione; zostają przebieg rejestrowy (ok. 30 min), niezależne przeliczenie
-i werdykt; plan w karcie. **Czeka na Ciebie:** 013.
+**W toku:** nic. **Czeka na Ciebie:** 013 oraz decyzje z karty 016 (niżej).
 
 ## Kolejka
 
-**016 LV2** (pre-rejestracja → przebieg) → pierwsza runda VaR/ES na prawdziwych danych (licznik „ryzyko 2021+”,
-warunki z LV1: ≥ 20 monet × ≥ 1 600 dni, VR na danych, pytanie porównawcze/kalibracyjne). Tor likwidacji (F5)
-bez zmian. HAR odłożony po F2-1b (bez F2-1c).
+**Pierwsza runda VaR/ES na prawdziwych danych** (licznik „ryzyko 2021+” 0 → 1; po Twojej decyzji): tylko pytanie
+bezwzględne (reguła K z LV2), klasa `dopasuj_garch_t`, zakres 15 monet × 1 700 dni, jeden poziom p (rekomendacja 5 %);
+wcześniej karta opisowa na danych: ρ_h i warunki przeniesienia (bez drukowania odsetka trafień). Opcjonalnie LV2c
+(błąd standardowy testu DM, konwencja startu GARCH; osobno, jako karta opisowa, trop z ogonem EWMA). Tor likwidacji
+(F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 
 ## Decyzje czekające na Ciebie
 
@@ -59,6 +62,9 @@ bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 2. **013** — 4 puste repo na GitHubie + klucze (instrukcja w `~/bundle/README.md`).
 3. **Skład top-20 po 2026-06** — lista monet bierze się z `alpha/.../universe_full`, który kończy się
    w czerwcu 2026; nowe wejścia do top-20 nie są pobierane. Aktualizacja = Poprawka w alpha (karta 015).
+4. **016 LV2** — (a) czy otwierać pierwszą rundę VaR/ES na danych (licznik 0 → 1); (b) odczytanie Zakresu (b): 15 monet
+   × 1 700 dni (README rundy, „Decyzje wykonawcy — ciąg dalszy”, pkt 10); (c) czy próg K-a ≤ 10 % jest do przyjęcia
+   (pkt 12: przy 7,5 % wynik dla VaR 1 % to NIE); (d) poziom p (rekomendacja 5 %, pkt 13); (e) czy zlecić LV2c.
 
 ## Backlog (bez kart)
 

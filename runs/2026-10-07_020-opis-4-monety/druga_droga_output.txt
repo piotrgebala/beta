@@ -1,0 +1,7 @@
+panel: 2091 wierszy × 4 monet, 2021-01-02 … 2026-09-30
+dni oceny: 1691 (START = 400)
+GARCH: dopasowań 228, niezbieżnych 0, przy granicy 117, persystencja 0.9703, ν̂ 4.14
+VR = 2.264
+ρ̂ = 0.4213
+SE (druga implementacja, L = 20, B = 2000, ziarno 4242) = 0.0894
+ρ̂ + 2 SE = 0.6002

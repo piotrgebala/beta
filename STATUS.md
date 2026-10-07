@@ -48,6 +48,7 @@ GitHub i klucze), zostały po Twojej stronie.
 | 7 | 013: cztery repo na GitHubie (bundle, miara, kolektory, wykonanie) | **Odkładam** (status `odrzucone` = „nie teraz”, karta zostaje do wznowienia). | Praca leży w `beta`, push działa, a cztery puste repo niczego nie odblokowują; migracja `miara` jest po E2 (ADR `bundle/0001` pkt 3). Zakładanie wymaga Twojego konta i kluczy, których Claude nie tworzy. Ryzyko: szkielety bundla (po jednym commicie) mają jedną kopię, na serwerze. | Zmień status karty 013 na `nowe` i załóż puste repo wg `~/bundle/README.md`. |
 | 8 | Skład top-20 po 2026-06 | **Odkładam.** | Aktualizacja listy to Poprawka w alpha (R23, karta 015 w alpha). Pierwsza runda używa 15 monet z pełną historią od 2021, których zmiana składu nie dotyczy. | Wyzwalacz w Backlogu. |
 | 9 | Po wyniku 017: czy zlecić LV2c i co z 018 | **Zlecam LV2c jako kartę 019** (laboratorium z VR ≈ 8 i trwałością zmienności blisko granicy 0,9999; tylko p = 5 %, komórka C2, reguła K bez zmian); **018 → `czeka_na_decyzje`** (nie uruchamiam). Szerszego koszyka nie wybieram. Licznik „ryzyko 2021+” zostaje 0. | 017 pokazała na prawdziwych danych VR = 8,0 wobec 4,95 w laboratorium (ρ̂ 0,50, dolny koniec 0,36 > 0,282), 27 % dopasowań GARCH-t przy granicy persystencji (lab.: 2,2 %) i okno 2 091 z 2 100 wierszy. Wyzwalacz (i) z pkt. 5 zadziałał; LV2c to dane syntetyczne, bez licznika. Szerszy koszyk nie pomaga: ρ̂ jest własnością rynku, a młodsze monety nie mają 2 100 dni. | Karta 019 → `odrzucone`; wtedy 018 zostaje wstrzymana (albo `odrzucone`, jeśli nie chcesz rundy VaR/ES na danych). Wznowienie 018: warunki w karcie 018. |
+| 10 | Po wyniku 020: co z 019 przy K = 4 | **019 przeliczona na K = 4 z celem VR = 2,26 (ρ̂ 0,42) i drugim scenariuszem LV2 (ρ = 0,8, bez wspólnego szoku, VR ≈ 1,85).** Moc reguły K przy K = 4 nie jest dziedziczona z LV2. 018 zostaje wstrzymana. Licznik „ryzyko 2021+” zostaje 0. | 020: ρ̂ = 0,42, SE 0,09, przedział 0,24–0,60 obejmuje laboratorium (0,282); reguły z pre-rejestracji 020 dają dokładnie ten krok. Cztery monety niosą dziennie ok. 1,8 niezależnej monety, więc moc trzeba zmierzyć, a nie zakładać. Dane syntetyczne, bez licznika. | Karta 019 → `odrzucone`; 018 zostaje wstrzymana (albo `odrzucone`, jeśli nie chcesz rundy VaR/ES na danych). |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -59,15 +60,15 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 
 **Nowe — do wykonania (`nowe`):**
 
-- **019** — LV2c: laboratorium z zależnością trafień (VR ≈ 8) i trwałością zmienności blisko granicy, jak na
-  prawdziwych danych; pytanie: czy reguła K (rozmiar ≤ 10 %, moc ≥ 80 %) zostaje mierzalna. Dane syntetyczne, bez
-  licznika. Najpierw pre-rejestracja w gicie. Zlecona pkt. 9 wyżej.
+- **019** — LV2c dla K = 4: laboratorium z zależnością trafień jak na prawdziwych danych czwórki (cel VR = 2,26 z 020; drugi scenariusz: LV2 bez wspólnego szoku, VR ≈ 1,85) i trwałością zmienności blisko granicy (ok. 50 % dopasowań); pytanie: czy reguła K (rozmiar ≤ 10 %, moc ≥ 80 %) zostaje mierzalna. Dane syntetyczne, bez
+  licznika. Najpierw pre-rejestracja w gicie. Zlecona pkt. 9 i 10 wyżej.
 
 **Czekają na decyzję (`czeka_na_decyzje`):**
 
-- **018** — pierwsza runda VaR/ES na danych: pytanie bezwzględne, `dopasuj_garch_t`, p = 5 %, 15 × 1 700 dni.
-  **Wstrzymana** po wyniku 017 (zależność ponad laboratorium, okno 2 091 < 2 100). Wznowienie: LV2c (019) mierzalne
-  przy VR ≈ 8 + dane za październik 2026 + powtórka 017 na końcowym oknie + własna pre-rejestracja (licznik 0 → 1).
+- **018** — pierwsza runda VaR/ES na danych: pytanie bezwzględne, `dopasuj_garch_t`, p = 5 %, od 2026-10-07 **4 monety** (BTC, ETH, SOL, BNB) × ok. 1 690 dni
+  zamiast 15 × 1 700. **Wstrzymana** po wyniku 017 (zależność ponad laboratorium, okno 2 091 < 2 100). Wznowienie:
+  LV2c dla K = 4 (019) mierzalne przy VR ≈ 2,26 (020) + dane za październik 2026 + powtórka 020 na końcowym oknie +
+  własna pre-rejestracja (licznik 0 → 1).
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
@@ -89,6 +90,10 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
   (ρ̂ 0,50; dolny koniec 0,36 > 0,282), bramka zależności NIE PRZECHODZI (ostrożna: nie przechodzi też w laboratorium),
   okno C2 NIE DOMYKA SIĘ (2 091 z 2 100 wierszy), 27 % dopasowań GARCH-t przy granicy persystencji (lab.: 2,2 %).
   Licznik „ryzyko 2021+” = 0. Konsekwencja: 018 wstrzymana, zlecona 019.
+- **020** — opis zależności trafień dla BTC, ETH, SOL, BNB (karta opisowa, Caveats): VR = 2,26, ρ̂ = 0,42 (SE 0,09, przedział
+  0,24–0,60), nie do odróżnienia od laboratorium (0,282) ani od 15 monet (0,50); ok. 1,8 niezależnej monety dziennie;
+  117 z 228 dopasowań przy granicy (te same co w 017); kontrole R8 ✓, druga droga ✓. Licznik „ryzyko 2021+” = 0.
+  Konsekwencja: 019 na K = 4 z celem VR = 2,26, 018 wstrzymana.
 - **016** — LV2: **MIERZALNA, ale tylko z pytaniem bezwzględnym** (Caveats). Dobry, lecz estymowany GARCH-t test
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
@@ -99,11 +104,11 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 
 ## Kolejka
 
-0. **020** (opis zależności trafień dla 4 monet: BTC, ETH, SOL, BNB; decyzja użytkownika 2026-10-07).
-1. **019** (LV2c: pre-rejestracja w gicie → kalibracja generatora na ziarnach pilotażowych → przebieg rejestrowy). Po zmianie koszyka 019 jest przeliczana na K = 4.
-   Dalej, dopiero po jej wyniku i po danych za październik 2026 (spodziewane ok. 2026-11-01): powtórka 017 na
+0. ~~**020**~~ — zrobiona 2026-10-07 (`do_przegladu`).
+1. **019** (LV2c dla K = 4: pre-rejestracja w gicie → kalibracja generatora na ziarnach pilotażowych → przebieg rejestrowy; cel VR = 2,26 i scenariusz LV2).
+   Dalej, dopiero po jej wyniku i po danych za październik 2026 (spodziewane ok. 2026-11-01): powtórka 020 na
    końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja przed uruchomieniem). Jeśli
-   LV2c wyjdzie NIEMIERZALNA przy VR ≈ 8, wracam do Ciebie z opcjami (inna reguła K′, szerszy koszyk albo zamknięcie
+   019 wyjdzie NIEMIERZALNA przy K = 4, wracam do Ciebie z opcjami (inna reguła K′, szerszy koszyk albo zamknięcie
    rundy VaR/ES na danych).
 2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 3. E3: reporter sekwencyjny gotowy przed 2026-12-24 (D3-a).
@@ -113,8 +118,8 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 Z zasady po Twojej stronie (nie mogę ich podjąć za Ciebie):
 
 1. **Scalenie do `main`** — praca leży na gałęzi `claude/fervent-fermi-vfctk6`; na `main` trafia nowym PR.
-2. **Odbiór kart `do_przegladu`** (001–012, 014–017) — przegląd i przeniesienie na `zrobione`.
-3. **Zmiana któregokolwiek z dziewięciu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 9: zlecenie LV2c).
+2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 020) — przegląd i przeniesienie na `zrobione`.
+3. **Zmiana któregokolwiek z dziesięciu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 9: zlecenie LV2c).
 4. **Konto GitHub i klucze** — tylko jeśli wznowisz 013.
 
 Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i niczego nie ruszałem.

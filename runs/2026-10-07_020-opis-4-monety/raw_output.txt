@@ -1,0 +1,24 @@
+Inwentarz świec 1d (dane do 2026-09-30 włącznie, R16: od 2021-01-01)
+moneta     | świec | pierwsza   | ostatnia   | zwroty | braki w kalendarzu
+BTCUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+ETHUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+SOLUSDT    |  2094 | 2021-01-01 | 2026-09-30 |   2091 | 2022-02-26, 2022-02-27, 2022-02-28, 2022-04-01, 2022-04-02
+BNBUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+
+Daty wycięte z panelu wspólnego przez dziurę u którejś monety (7): 2022-02-26, 2022-02-27, 2022-02-28, 2022-03-01, 2022-04-01, 2022-04-02, 2022-04-03
+Panel wspólny: 2091 wierszy, 2021-01-02 … 2026-09-30, monet: 4
+
+Pomiar zależności dziennej liczby przekroczeń VaR 5 % (GARCH-t, refit co 30 dni, K = 4)
+  dni oceny: 1691
+  dopasowań GARCH: 228, niezbieżnych: 0, przy granicy: 117, średnia persystencja α+β 0.9703, średnie ν̂ 4.14
+  VR = Var(S_t) / (K p (1 − p)) = 2.264
+  ρ̂ = (VR − 1) / (K − 1) = 0.4213
+  SE (bootstrap blokowy, L = 20, B = 2000, ziarno 20261007) = 0.0911
+  wrażliwość SE (opis): L = 10: 0.0931, L = 40: 0.0909
+  ρ̂ ± 2 SE = [0.2391; 0.6035]
+  VR odpowiadające ρ̂ ± 2 SE = [1.717; 2.811]
+Spójność z 017: dopasowań 228 (oczekiwane 228), przy granicy 117 (oczekiwane 117) → ZGODNA
+
+Kontrole R8 (40 paneli syntetycznych po 4 monet, ta sama funkcja pomiarowa)
+  dodatnia (ρ = 0.8, oczekiwane ≈ 0.282): średnia ρ̂ 0.2859, sd panelu 0.0588, kryterium |średnia − 0.282| ≤ 0.03 → ZALICZONA
+  ujemna (ρ = 0, oczekiwane ≈ 0): średnia ρ̂ 0.0101, sd panelu 0.0209, kryterium |średnia| ≤ 0.02 → ZALICZONA

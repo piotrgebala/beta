@@ -2,7 +2,7 @@
 id: 020
 tytul: opis zależności trafień VaR 5 % dla koszyka BTC, ETH, SOL, BNB (karta opisowa, jak 017)
 typ: badawcze
-status: nowe
+status: do_przegladu
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-07: „rób tylko prognozy na eth btc sol, bnb” (STATUS.md, Decyzje użytkownika); karta jest moim wykonaniem tej decyzji"
 utworzono: 2026-10-07
@@ -42,4 +42,17 @@ ocenia, nie liczy odsetka trafień i nie podbija licznika „ryzyko 2021+” (zo
 
 ## Wynik
 
-(dopisuje orkiestrator)
+Zrobione 2026-10-07. Runda: `runs/2026-10-07_020-opis-4-monety/README.md` (pre-rejestracja `afe6791`, kod `35eb867`, poprawki testów (`c61555b`)
+i reguły STOP po niezależnym przeglądzie w osobnym commicie przed wynikiem; werdykt **Caveats**; licznik „ryzyko 2021+” zostaje 0 —
+karta opisowa).
+
+- **Zależność trafień dla BTC, ETH, SOL, BNB:** VR = 2,264, ρ̂ = 0,4213, SE = 0,0911 (bootstrap blokowy, L = 20; L = 10 / 40: 0,0931 /
+  0,0909), ρ̂ ± 2 SE = [0,239; 0,604] (VR [1,72; 2,81]). Przedział obejmuje wartość laboratorium (0,282) i wynik 15 monet (0,500),
+  więc dla czwórki nie umiemy powiedzieć, czy zależność jest większa niż w laboratorium.
+- **Ile niezależnych monet dziennie** (wzór przybliżony K / VR): 4 / 2,26 = ok. 1,8; dla 15 monet z 017: ok. 1,9. Moc testu dla K = 4
+  jest niezmierzona (to zadanie 019).
+- **Spójność z 017: ZGODNA** (228 dopasowań, 117 przy granicy = 51 %); kontrole R8 dla K = 4 zaliczone (średnie ρ̂ 0,286 / 0,010).
+- Druga droga (własny panel, zamrożone moduły LV2, inne ziarno) odtwarza VR i ρ̂ co do cyfry, SE 0,0894; nie weryfikuje estymatora
+  `dopasuj_garch_t`.
+- **Konsekwencja:** 019 jest przeliczana na K = 4 z celem VR = 2,26 i drugim scenariuszem LV2 (bez wspólnego szoku); 018 dalej
+  wstrzymana.

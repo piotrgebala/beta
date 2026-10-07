@@ -9,9 +9,9 @@ rekurencja wariancji idzie przez `scipy.signal.lfilter` i cała próbka dopasowa
 wywołaniu (kilka ms). Poprawność sprawdza niezależnie pakiet `arch` (`tests/test_lv2.py`).
 Dopasowanie liczymy na zmiennych bez skali (r² / backcast), więc wynik nie zależy od jednostek zwrotu.
 
-Walk-forward (`prognozy_garch_t`): refit co `krok` dni na ROSNĄCYM oknie r_0 … r_{b−1} (b = początek
-bloku), prognoza σ²_t dla t w bloku z filtra przepuszczonego przez całą historię r_0 … r_{t−1} z
-parametrami tego bloku — w prognozie nie ma ani jednego zwrotu z dnia ≥ t.
+Walk-forward (`prognozy_lv2.zbuduj_zrodla`): refit co `krok` dni na ROSNĄCYM oknie r_0 … r_{b−1}
+(b = początek bloku), prognoza σ²_t dla t w bloku z filtra przepuszczonego przez całą historię
+r_0 … r_{t−1} z parametrami tego bloku — w prognozie nie ma ani jednego zwrotu z dnia ≥ t.
 """
 
 from __future__ import annotations

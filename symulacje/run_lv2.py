@@ -1,8 +1,8 @@
 """
 LV2 — laboratorium VaR/ES dla prognoz ESTYMOWANYCH (okno, EWMA, GARCH-t, HAR). Zadanie 016.
-Pre-rejestracja: `runs/2026-10-06_lv2-var-es-estymowane/README.md`. Neutralny reporter (R14).
+Pre-rejestracja: `runs/2026-10-07_lv2-var-es-estymowane/README.md`. Neutralny reporter (R14).
 
-    python -m symulacje.run_lv2 --workers 16 > runs/2026-10-06_lv2-var-es-estymowane/raw_output.txt
+    python -m symulacje.run_lv2 --workers 16 > runs/2026-10-07_lv2-var-es-estymowane/raw_output.txt
     python -m symulacje.run_lv2 --smoke      # małe panele: TYLKO sprawdzenie, że kod działa
 
 Pytania: (K) czy zbiorczy test wsteczny LV1 uczciwie ocenia prognozę ESTYMOWANĄ i poprawnie określoną

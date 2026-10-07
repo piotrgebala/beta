@@ -21,7 +21,7 @@ z estymowaną σ (okno 60 dni, EWMA 0,94) przy poprawnym ogonie t5 miały za du�
 
 ## Zakres
 
-- Pre-rejestracja w `runs/RRRR-MM-DD_lv2-var-es-estymowane/` przed przebiegiem; ten sam generator i test
+- Pre-rejestracja w `runs/2026-10-07_lv2-var-es-estymowane/` przed przebiegiem; ten sam generator i test
   zbiorczy co LV1 (`symulacje/moc_var_es.py`), komórka n = 1 600 (i 1 700 z F2-1b), ρ = 0,8.
 - Prognozy estymowane: okno 60, EWMA 0,94, GARCH(1,1)-t dopasowany walk-forward (rozgrzewka, refit co 30 dni),
   HAR jako opis; ogon: t5 stały i kwantyl empiryczny standaryzowanych reszt.
@@ -58,13 +58,13 @@ progu 10 %, blisko); P raczej NIE (MDE ≈ 0,13–0,14 przy progu 0,10; moc pary
 
 **Do zrobienia (po kolei; commit i push po każdym kroku):**
 
-1. Pre-rejestracja `runs/2026-10-06_lv2-var-es-estymowane/README.md` (format jak LV1): zdanie o wnioskach skumulowanych
+1. Pre-rejestracja `runs/2026-10-07_lv2-var-es-estymowane/README.md` (format jak LV1): zdanie o wnioskach skumulowanych
    (LV1: realistyczne prognozy odrzucane w 78–98 % paneli; F2-1b: NIEPOZYTYWNY 11/15 → STOP → ryzyko ogona), R1, rachunek
    mierzalności (R3), projekt, kryteria K1/K2/K-a/K-b i K4/K5/K6a/K6b/P-a/P-b/K7a–d, reguła rundy i STOP, przewidywania
    W1–W4, ograniczenia, liczniki. Commit, potem hash wpisany do README.
 2. Przegląd przed przebiegiem: 3 niezależnych recenzentów + mutacje na kopii poza repo + `arxitect:architecture-review`;
    zmiany opisać w „Zmiany po przeglądzie, przed pełnym przebiegiem”.
-3. Przebieg: `python -m symulacje.run_lv2 --workers 16 > runs/2026-10-06_lv2-var-es-estymowane/raw_output.txt`
+3. Przebieg: `python -m symulacje.run_lv2 --workers 16 > runs/2026-10-07_lv2-var-es-estymowane/raw_output.txt`
    (ok. 30 min; bez innych równoległych przebiegów; czas idzie na stderr).
 4. Niezależne przeliczenie ≥ 1 kluczowej liczby inną drogą (np. GARCH przez pakiet `arch`, osobna implementacja DM).
 5. README: Wynik, Co na plus / na minus, Werdykt (Ready/Caveats/Revision, podpisuje Claude), Wniosek, Rekomendacja,

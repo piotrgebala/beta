@@ -22,6 +22,15 @@
   swojej najlepszej wiedzy”. To nie jest Twoja decyzja w żadnej z poniższych spraw, tylko zgoda, żebym je
   rozstrzygnął sam. Co rozstrzygnąłem — w następnej sekcji.
 
+- **2026-10-07** — **Koszyk: „rób tylko prognozy na eth btc sol, bnb”.** Zinterpretowałem jako: prognozy
+  zmienności i ryzyka (VaR/ES), jedyne prognozy w programie, i tylko dla BTC, ETH, SOL, BNB (4 monety zamiast 15).
+  To Twoja decyzja i wyprzedza pkt 2 i 9 poniżej oraz „15 monet” w kartach 017–019. Dane są (od 2021-01-01 do
+  2026-09-30: BTC, ETH, BNB 2 099 wierszy, SOL 2 094), ale liczby z LV1/LV2 dotyczą 20 i 15 monet. Dla K = 4 moc
+  testu zbiorczego jest niezmierzona (LV1: pojedyncza moneta wykrywa zaniżenie σ tylko w 10–17 % przypadków), więc
+  przed jakąkolwiek rundą na danych potrzebny jest rachunek mierzalności K = 4 (R3). Kierunek ceny nie wchodzi w
+  grę (alpha zamknęła go dowodem braku); gdyby chodziło o niego, napisz. Plan: karta 020 (opis 4 monet), potem 019
+  przeliczona na K = 4, potem 018.
+
 ## Decyzje podjęte przez Claude na delegację (2026-10-07)
 
 Każdą z nich możesz zmienić jednym zdaniem. Przy każdej: powód i jak ją cofnąć. Nie podjąłem żadnej decyzji
@@ -90,7 +99,8 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 
 ## Kolejka
 
-1. **019** (LV2c: pre-rejestracja w gicie → kalibracja generatora na ziarnach pilotażowych → przebieg rejestrowy).
+0. **020** (opis zależności trafień dla 4 monet: BTC, ETH, SOL, BNB; decyzja użytkownika 2026-10-07).
+1. **019** (LV2c: pre-rejestracja w gicie → kalibracja generatora na ziarnach pilotażowych → przebieg rejestrowy). Po zmianie koszyka 019 jest przeliczana na K = 4.
    Dalej, dopiero po jej wyniku i po danych za październik 2026 (spodziewane ok. 2026-11-01): powtórka 017 na
    końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja przed uruchomieniem). Jeśli
    LV2c wyjdzie NIEMIERZALNA przy VR ≈ 8, wracam do Ciebie z opcjami (inna reguła K′, szerszy koszyk albo zamknięcie

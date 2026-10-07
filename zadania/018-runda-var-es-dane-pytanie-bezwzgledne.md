@@ -12,6 +12,13 @@ budzet: "Opus, 1–2 sesje"
 
 # 018 — pierwsza runda VaR/ES na danych
 
+## Zmiana zakresu (decyzja użytkownika, 2026-10-07)
+
+Koszyk to **4 monety: BTC, ETH, SOL, BNB** (zamiast 15). Wszystko poniżej, co mówi o „15 monetach”, „C2” i oknie
+2 100 wierszy, jest do przeliczenia na K = 4 w nowej pre-rejestracji. Liczby z LV2 (K-a, K-b) i z 017 (VR 8,0, ρ̂ 0,50)
+dotyczą 15 monet i nie przenoszą się automatycznie: ρ̂ = (VR − 1)/(K − 1), a moc testu zbiorczego przy K = 4 nie
+była mierzona. Cel kalibracji VR dla K = 4 da karta 020.
+
 ## Po co
 
 Pytanie, na które LV2 pozwoliła odpowiedzieć: **czy prognoza VaR 5 % z modelu GARCH(1,1)-t, dopasowywanego

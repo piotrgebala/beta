@@ -6,14 +6,20 @@ R8, determinizm względem liczby procesów, okablowanie reguł i zamrożenie kon
 
 from __future__ import annotations
 
+import inspect
 import math
+import os
+import sys
 import warnings
 
 import numpy as np
+import pandas as pd
 import pytest
+import scipy
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from scipy.integrate import quad
+from scipy.special import expit
 from scipy.stats import t as student_t
 
 import symulacje.garch_t as gt
@@ -23,6 +29,7 @@ import symulacje.prognozy_lv2 as pz
 import symulacje.run_lv2 as lv2
 from miara.dm import newey_west_lag
 from miara.var_es import var_es_t
+from modele.zmiennosc import prognoza_har
 from symulacje.garch_panel import generuj_panel
 
 P = 0.05
@@ -477,6 +484,44 @@ def test_zaburzenie_dnia_t_nie_zmienia_prognoz_na_dni_do_t_wlacznie(panel_mikro,
         assert not np.allclose(zr1.ogon[klucz][0][blok_2], zr2.ogon[klucz][0][blok_2]), klucz
 
 
+@pytest.mark.parametrize("t0", [400, 429, 430, 431, 489, 490, N_MIKRO - 1])
+def test_zwroty_od_dnia_t0_nie_zmieniaja_zadnej_z_19_prognoz_na_dni_do_t0_wlacznie(
+    panel_mikro, zrodla_mikro, t0
+):
+    """Od t0 zwroty ×3 i RV ×9: (q, ES) każdej prognozy na obu poziomach bez różnicy co do bitu
+    dla dni ≤ t0; granice bloków (429/430, 489/490) i ostatni dzień panelu włączone."""
+    zab = _przytnij(panel_mikro)
+    zab["r"].iloc[t0:, :] *= 3.0
+    zab["rv"].iloc[t0:, :] *= 9.0
+    zr2 = pz.zbuduj_zrodla(zab, start=START_MIKRO)
+    ile = t0 - START_MIKRO + 1
+    for nazwa in pz.PROGNOZY:
+        for p in pz.POZIOMY:
+            for stary, nowy in zip(pz.prognoza(zrodla_mikro, nazwa, p), pz.prognoza(zr2, nazwa, p)):
+                np.testing.assert_array_equal(stary[:ile], nowy[:ile], err_msg=f"{nazwa} p={p}")
+
+
+@pytest.mark.parametrize("t0", [400, 429, 430, 445, 489])
+def test_zmiana_zwrotu_dnia_t0_rusza_prognozy_estymowane_dopiero_od_dnia_t0_plus_1(
+    panel_mikro, zrodla_mikro, t0
+):
+    """Test czułości: zmiana jednego dnia ma zmienić σ̂ następnego dnia we wszystkich monetach,
+    każdej prognozy estymowanej, i nie ruszyć wyroczni ani zaniżeń (nie zależą od zwrotów)."""
+    zab = _przytnij(panel_mikro)
+    zab["r"].iloc[t0, :] = zab["r"].iloc[t0, :] * 3.0 + 0.01
+    zab["rv"].iloc[t0, :] *= 9.0
+    zr2 = pz.zbuduj_zrodla(zab, start=START_MIKRO)
+    w = t0 - START_MIKRO
+    for nazwa, (zrodlo, _, _) in pz.PROGNOZY.items():
+        q1, _ = pz.prognoza(zrodla_mikro, nazwa, 0.01)
+        q2, _ = pz.prognoza(zr2, nazwa, 0.01)
+        np.testing.assert_array_equal(q1[: w + 1], q2[: w + 1], err_msg=nazwa)
+        if zrodlo == "wyr":
+            np.testing.assert_array_equal(q1, q2, err_msg=nazwa)
+        else:
+            assert (q1[w + 1] != q2[w + 1]).all(), nazwa
+
+
 def test_podpanel_pierwszych_monet_to_to_samo_co_panel_z_tych_monet(panel_mikro, zrodla_mikro):
     """Monety są dla prognoz wymienne i niezależne: `pierwsze(k)` = zbudowanie źródeł na k monetach."""
     zr_k = zrodla_mikro.pierwsze(2)
@@ -497,6 +542,16 @@ def test_zbuduj_zrodla_odrzuca_zly_start(panel_mikro):
         pz.zbuduj_zrodla(panel_mikro, start=100)
     with pytest.raises(ValueError, match="start"):
         pz.zbuduj_zrodla(panel_mikro, start=N_MIKRO)
+
+
+def test_zbuduj_zrodla_odrzuca_start_przed_pierwsza_prognoza_har(panel_mikro):
+    """Pierwsza określona prognoza HAR jest na dniu 395: wcześniejszy start dałby NaN w `har_t5`."""
+    pierwsza = int(np.argmax(np.isfinite(pz.prognoza_har(panel_mikro["rv"].iloc[:, 0]).to_numpy())))
+    assert pierwsza == 395
+    with pytest.raises(ValueError, match="HAR"):
+        pz.zbuduj_zrodla(panel_mikro, start=pierwsza - 1)
+    with pytest.raises(ValueError, match="HAR"):
+        pz.zbuduj_zrodla(panel_mikro, start=120)
 
 
 # --- silnik LV2: tabela porównań, statystyki komórki ----------------------------------------------------
@@ -645,8 +700,9 @@ def test_mikro_ksztalty_i_puste_miejsca_tylko_tam_gdzie_brak_prognozy(mikro):
 def test_mikro_diagnostyka_garch_liczy_dopasowania_wszystkich_blokow_i_monet(mikro):
     bloki = math.ceil((MIKRO["n_dni"] - MIKRO["start"]) / pz.KROK)
     d = mikro["diag"]
-    assert (d[:, 0] == bloki * MIKRO["k_panel"]).all() and (d[:, 1] <= d[:, 0]).all()
-    assert (d[:, 2] <= d[:, 0]).all() and (d[:, 3] > 0.5).all() and (d[:, 4] > 2.0).all()
+    dop, nz, br, pers, nu = (d[:, lv2.DIAG.index(k)] for k in lv2.DIAG)
+    assert (dop == bloki * MIKRO["k_panel"]).all() and (nz <= dop).all()
+    assert (br <= dop).all() and (pers > 0.5).all() and (nu > 2.0).all()
 
 
 def test_mikro_komorka_podpanelowa_to_pierwsze_monety_i_dni_tego_samego_panelu(mikro):
@@ -913,10 +969,14 @@ def _wyn_do_przewidywan(b=100, o60=75, ew=80, regret=(0.30, 0.20, 0.10)):
     return wyn
 
 
-def _oceny(pa_ok=False, pb_ok=False, pb_wartosc=0.35):
-    ocena = {
-        "P": {"kryteria": [{"ok": pa_ok, "wartosc": 0.14}, {"ok": pb_ok, "wartosc": pb_wartosc}]}
-    }
+def _oceny(pa_ok=False, pb_ok=False, pb_wartosc=0.35, odwrotna_kolejnosc=False):
+    kryteria = [
+        {"kod": "P-a", "ok": pa_ok, "wartosc": 0.14},
+        {"kod": "P-b", "ok": pb_ok, "wartosc": pb_wartosc},
+    ]
+    if odwrotna_kolejnosc:
+        kryteria.reverse()
+    ocena = {"P": {"kryteria": kryteria}}
     return {p: ocena for p in lv2.POZIOMY}
 
 
@@ -960,6 +1020,23 @@ def test_przewidywania_w3_i_w4_sa_trafione_tylko_gdy_kryteria_p_sa_niespelnione(
     przew = _przew(_wyn_do_przewidywan(), _oceny(pa_ok=True, pb_ok=True))
     assert not przew[("W3", 0.05)]["ok"] and not przew[("W4", 0.05)]["ok"]
     assert przew[("W1", 0.05)]["ok"] and przew[("W2", 0.05)]["ok"]
+
+
+@pytest.mark.parametrize("odwrotna", [False, True])
+def test_przewidywania_w3_i_w4_czytaja_kryteria_po_kodzie_a_nie_po_pozycji(odwrotna):
+    """Kolejność kryteriów na liście nie może zmienić tego, które przewidywanie czyta które kryterium."""
+    przew = _przew(
+        _wyn_do_przewidywan(), _oceny(pa_ok=True, pb_ok=False, odwrotna_kolejnosc=odwrotna)
+    )
+    assert (
+        przew[("W3", 0.01)]["ok"] is False
+    )  # P-a spełnione, więc przewidywanie „P-a nie” chybione
+    assert przew[("W4", 0.01)]["ok"] is True  # P-b niespełnione, więc trafione
+    assert przew[("W4", 0.01)]["wartosc"] == 0.35  # wartość pochodzi z P-b, nie z P-a (0,14)
+    przew = _przew(
+        _wyn_do_przewidywan(), _oceny(pa_ok=False, pb_ok=True, odwrotna_kolejnosc=odwrotna)
+    )
+    assert przew[("W3", 0.05)]["ok"] is True and przew[("W4", 0.05)]["ok"] is False
 
 
 # --- okablowanie reguł K i P: MIERZALNE / NIEMIERZALNE / WSTRZYMANE -------------------------------
@@ -1109,6 +1186,17 @@ def test_ocen_p_dobre_wejscie_daje_tak_a_k6_bramkuje_po_jednym_wniosku():
         "K6a": "TAK",
         "K6b": "NIE",
     }
+    assert {k["kod"]: k["dotyczy"] for k in o["kontrole"]} == {
+        "K4": ("P-a", "P-b"),
+        "K5": ("P-a", "P-b"),
+        "K6a": ("P-b",),
+        "K6b": ("P-b",),
+        "K7a": ("P-b",),
+        "K7b": ("P-b",),
+        "K7c": ("P-b",),
+        "K7d": ("P-b",),
+    }
+    assert all(k["dotyczy"] is None for k in lv2.ocen_k(_lk())["kontrole"])
     assert all(_ok(o).values())
 
 
@@ -1158,6 +1246,115 @@ def test_k6_za_zachowawczy_podwaza_tylko_wniosek_nie_a_tak_zostaje_wazne():
     assert _ok(dobre)["K6a"] and not _ok(dobre)["K6b"]
     assert dobre["werdykt"] == "TAK"  # zachowawczy test zaniża moc, więc wykryta moc jest pewna
     assert lv2.ocen_p(_lp(k6=k6, pb=(0.35, 0.01)))["werdykt"] == "WSTRZYMANE"
+
+
+KRZYWA_ZLA = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50]  # P-a niespełnione: MDE poza siatką
+
+
+@pytest.mark.parametrize(
+    "zmiana, bez_zlej_krzywej",
+    [
+        ({"k7": _k7(nu=(6.51, 0.02))}, "WSTRZYMANE"),
+        ({"k7": _k7(pers=(0.949, 0.001))}, "WSTRZYMANE"),
+        ({"k7": _k7(nie_zbiezne=(0.0201, 0.001))}, "WSTRZYMANE"),
+        ({"k7": _k7(brzeg=(0.0501, 0.003))}, "WSTRZYMANE"),
+        ({"k6": _k6(p1=(0.08, 0.004))}, "WSTRZYMANE"),
+        ({"k6": _k6(p4=(0.02, 0.004))}, "TAK"),  # K6b bramkuje tylko wniosek NIE
+        ({"k6": _k6(p1=(0.08, 0.004), p4=(0.02, 0.004))}, "WSTRZYMANE"),
+    ],
+)
+def test_niespelnione_p_a_daje_nie_mimo_zawodzacej_kontroli_estymatora_lub_hac(
+    zmiana, bez_zlej_krzywej
+):
+    """P-a (test DM na wyroczni) nie zależy od GARCH-t ani od HAC na parach realistycznych."""
+    o = lv2.ocen_p(_lp(krzywa=KRZYWA_ZLA, **zmiana))
+    assert not _ok(o)["P-a"] and o["werdykt"] == "NIE"
+    assert lv2.ocen_p(_lp(**zmiana))["werdykt"] == bez_zlej_krzywej
+
+
+@pytest.mark.parametrize(
+    "zmiana",
+    [
+        {"k4": {**{n: (0.05, 0.004) for n in NAZWY_K4}, NAZWY_K4[0]: (0.0249, 0.004)}},
+        {"k5": (0.9499, 0.01)},
+    ],
+)
+def test_zawodzace_k4_lub_k5_wstrzymuje_takze_nie_z_p_a(zmiana):
+    assert lv2.ocen_p(_lp(krzywa=KRZYWA_ZLA, **zmiana))["werdykt"] == "WSTRZYMANE"
+
+
+def test_nie_z_p_b_wymaga_kontroli_estymatora_i_k6b_a_nie_k6a():
+    zle_pb = {"pb": (0.35, 0.01)}
+    assert lv2.ocen_p(_lp(**zle_pb))["werdykt"] == "NIE"
+    assert lv2.ocen_p(_lp(**zle_pb, k7=_k7(nu=(6.51, 0.02))))["werdykt"] == "WSTRZYMANE"
+    assert lv2.ocen_p(_lp(**zle_pb, k6=_k6(p4=(0.02, 0.004))))["werdykt"] == "WSTRZYMANE"
+    assert lv2.ocen_p(_lp(**zle_pb, k6=_k6(p1=(0.08, 0.004))))["werdykt"] == "NIE"
+    # P-a też niespełnione: wystarcza wiarygodne P-a, więc zawodzące K6b/K7 nie wstrzymują
+    dwa_braki = {**zle_pb, "krzywa": KRZYWA_ZLA}
+    assert lv2.ocen_p(_lp(**dwa_braki, k6=_k6(p4=(0.02, 0.004))))["werdykt"] == "NIE"
+    assert lv2.ocen_p(_lp(**dwa_braki, k5=(0.9, 0.01)))["werdykt"] == "WSTRZYMANE"
+
+
+def _werdykt_dawny(kontrole, kryteria):
+    """Reguła sprzed przeglądu (bez `dotyczy`): to samo dla kontroli bez `dotyczy`, czyli dla reguły K."""
+
+    def spelnione(*bramki):
+        return all(k["ok"] for k in kontrole if k["bramka"] in bramki)
+
+    if not spelnione("obie"):
+        return "WSTRZYMANE"
+    wniosek = "TAK" if all(k["ok"] for k in kryteria) else "NIE"
+    return wniosek if spelnione(wniosek) else "WSTRZYMANE"
+
+
+def _w(kod, ok, bramka="obie", dotyczy=None):
+    return lv2._wiersz(kod, "G", "opis", 0.0, "wym", ok, bramka=bramka, dotyczy=dotyczy)
+
+
+@settings(max_examples=300, deadline=None)
+@given(
+    kontrole=st.lists(
+        st.tuples(st.booleans(), st.sampled_from(["obie", "TAK", "NIE"])), min_size=0, max_size=6
+    ),
+    kryteria=st.lists(st.booleans(), min_size=1, max_size=3),
+)
+def test_werdykt_bez_dotyczy_to_regula_sprzed_przegladu(kontrole, kryteria):
+    k = [_w(f"K{i}", ok, b) for i, (ok, b) in enumerate(kontrole)]
+    c = [_w(f"C{i}", ok) for i, ok in enumerate(kryteria)]
+    assert lv2._werdykt(k, c) == _werdykt_dawny(k, c)
+
+
+@settings(max_examples=300, deadline=None)
+@given(
+    kontrole=st.lists(
+        st.tuples(
+            st.booleans(),
+            st.sampled_from(["obie", "TAK", "NIE"]),
+            st.sampled_from([None, ("C0",), ("C1",), ("C0", "C1")]),
+        ),
+        min_size=0,
+        max_size=6,
+    ),
+    kryteria=st.tuples(st.booleans(), st.booleans()),
+)
+def test_werdykt_z_dotyczy_wlasnosci(kontrole, kryteria):
+    k = [_w(f"K{i}", ok, b, d) for i, (ok, b, d) in enumerate(kontrole)]
+    c = [_w(f"C{i}", ok) for i, ok in enumerate(kryteria)]
+    w = lv2._werdykt(k, c)
+    assert w in ("TAK", "NIE", "WSTRZYMANE")
+    if w == "TAK":
+        assert all(kryteria) and all(x["ok"] for x in k if x["bramka"] != "NIE")
+    if w == "NIE":
+        assert not all(kryteria)
+    if all(kryteria) and all(x["ok"] for x in k if x["bramka"] != "NIE"):
+        assert w == "TAK"
+    # naprawa kontroli nie zamienia rozstrzygnięcia w WSTRZYMANE
+    naprawione = [{**x, "ok": True} for x in k]
+    if w != "WSTRZYMANE":
+        assert lv2._werdykt(naprawione, c) == w
+    # kryterium niespełnione + wszystkie kontrole w porządku = NIE
+    if not all(kryteria):
+        assert lv2._werdykt(naprawione, c) == "NIE"
 
 
 def test_k6_czyta_skrajne_pary_i_pomija_brak_porownania():
@@ -1260,6 +1457,7 @@ def test_wydruk_oceny_opisuje_bramke_kontroli_k6(capsys):
     assert "K6a" in out and "K6b" in out and "bramkuje tylko wniosek TAK" in out
     assert "bramkuje tylko wniosek NIE" in out and "WYNIK reguły: MIERZALNE" in out
     assert out.count("bramkuje tylko wniosek") == 2  # K4, K5, K7a–d dotyczą obu wniosków
+    assert out.count("[dotyczy: P-a, P-b]") == 2 and out.count("[dotyczy: P-b]") == 6
 
 
 # --- determinizm względem liczby procesów i wydruk ------------------------------------------------
@@ -1287,6 +1485,40 @@ def test_wynik_nie_zalezy_od_liczby_procesow_a_panele_sa_rozne():
     assert not np.array_equal(inne["abs"], w1["abs"], equal_nan=True)
 
 
+def _panele_rejestrowe():
+    return np.random.SeedSequence(lv2.SEED).spawn(lv2.KONFIG["panele"])
+
+
+def test_potomne_to_te_same_ziarna_co_spawn_ale_bez_zmiany_stanu():
+    for i in (0, 1, 4999):
+        stare = _panele_rejestrowe()[i].spawn(2)
+        ss = _panele_rejestrowe()[i]
+        nowe = lv2._potomne(ss, 2)
+        assert ss.n_children_spawned == 0
+        for a, b in zip(stare, nowe):
+            assert a.spawn_key == b.spawn_key
+            np.testing.assert_array_equal(a.generate_state(4), b.generate_state(4))
+        assert [x.spawn_key for x in lv2._potomne(ss, 2)] == [x.spawn_key for x in nowe]
+
+
+def test_ziarna_generatora_wybranych_paneli_rejestrowych_sa_przypiete():
+    """Wartości policzone `SeedSequence(SEED).spawn(5000)[i].spawn(2)[0]` przed zmianą `_potomne`."""
+    paneli = _panele_rejestrowe()
+    assert [lv2._ziarno_int(lv2._potomne(paneli[i], 2)[0]) for i in (0, 1, 4999)] == [
+        8581670518509412265,
+        502486054208167762,
+        8124181800485222282,
+    ]
+
+
+def test_przetworz_panel_ponownie_na_tym_samym_ss_daje_ten_sam_wynik():
+    ss = np.random.SeedSequence(lv2.SEED).spawn(KONFIG_MALY["panele"])[0]
+    pierwszy = lv2.przetworz_panel((ss, KONFIG_MALY))
+    drugi = lv2.przetworz_panel((ss, KONFIG_MALY))
+    for a, b in zip(pierwszy, drugi):
+        np.testing.assert_array_equal(a, b)  # także identyczne NaN
+
+
 def test_smoke_stdout_identyczny_dla_roznych_procesow(capsys):
     lv2.main(["--smoke", "--workers", "2"])
     a = capsys.readouterr()
@@ -1302,6 +1534,8 @@ def test_smoke_stdout_identyczny_dla_roznych_procesow(capsys):
         "DIAGNOSTYKA ESTYMATORA GARCH-t (K7)",
         "OPIS (K6)",
         "bramkuje tylko wniosek TAK",
+        "WARUNEK ZAKRESU (b)",
+        "[dotyczy: P-b]",
     ):
         assert fraza in a.out, fraza
     assert "PILOTAŻ: powyższe wyniki reguł nie są werdyktem." in a.out
@@ -1416,3 +1650,667 @@ def test_domyslne_wywolanie_to_przebieg_rejestrowy_bez_znacznika_pilotazu(
     assert wywolania == [(lv2.KONFIG, 7, lv2.SEED)]
     assert "PILOTAŻ" not in out and "5000 paneli, bootstrap po dniach 999" in out
     assert f"ziarno {lv2.SEED}." in out and "REGUŁA PIERWSZEJ RUNDY" in out
+
+
+# =====================================================================================================
+# Testy dopisane po przeglądzie przed pełnym przebiegiem (README rundy, „Zmiany po przeglądzie”):
+# luki wykryte testami mutacyjnymi (216 mutantów kodu LV2 na kopii poza repo) i uwagi recenzentów
+# architektury i kodu. W docstringach: [Xnn] = identyfikator mutanta, którego dany test zabija.
+# =====================================================================================================
+
+
+# --- 0. bezpiecznik: żaden test nie może zacząć przebiegu większego niż pilotaż --------------------------
+
+
+@pytest.fixture(autouse=True)
+def _bezpiecznik_rozmiaru_przebiegu(monkeypatch):
+    """[W14] Mutant „--smoke nie zmienia konfiguracji” kazał testowi smoke liczyć 5000 paneli (wisi
+    godzinami, zamiast się wywrócić). Strażnik przerywa każde `uruchom` na konfiguracji > 100 paneli.
+    """
+    prawdziwa = lv2.uruchom
+
+    def straznik(konfig, workers, ziarno=lv2.SEED):
+        assert (
+            konfig["panele"] <= 100
+        ), f"test próbuje uruchomić {konfig['panele']} paneli — to nie jest pilotaż"
+        return prawdziwa(konfig, workers, ziarno)
+
+    monkeypatch.setattr(lv2, "uruchom", straznik)
+
+
+def test_smoke_uzywa_konfiguracji_smoke_a_nie_rejestrowej(monkeypatch, capsys, mikro):
+    """[W14] `--smoke` ma przekazać do `uruchom` KONFIG_SMOKE (a nie KONFIG) i oznaczyć pilotaż."""
+    konfigi = []
+
+    def atrapa(konfig, workers, ziarno=lv2.SEED):
+        konfigi.append(konfig)
+        return mikro
+
+    monkeypatch.setattr(lv2, "uruchom", atrapa)
+    lv2.main(["--smoke", "--workers", "1"])
+    assert konfigi == [lv2.KONFIG_SMOKE] and konfigi[0] != lv2.KONFIG
+    assert "PILOTAŻ — NIE JEST PRZEBIEGIEM REJESTROWYM" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "argv, panele, ziarno, fraza",
+    [
+        (["--ziarno", "5"], lv2.KONFIG["panele"], 5, "ziarno 5."),
+        (["--panele", "7"], 7, lv2.SEED, "7 paneli, bootstrap"),
+    ],
+)
+def test_pilotaz_jest_oznaczony_gdy_zmieniono_samo_ziarno_albo_sama_liczbe_paneli(
+    monkeypatch, capsys, mikro, argv, panele, ziarno, fraza
+):
+    """[W12, W13] Każda z dwóch zmian osobno (bez --smoke) daje znacznik pilotażu i trafia do `uruchom`."""
+    wywolania = []
+
+    def atrapa(konfig, workers, ziarno=lv2.SEED):
+        wywolania.append((konfig["panele"], ziarno))
+        return mikro
+
+    monkeypatch.setattr(lv2, "uruchom", atrapa)
+    lv2.main(argv + ["--workers", "2"])
+    out = capsys.readouterr().out
+    assert wywolania == [(panele, ziarno)]
+    assert "PILOTAŻ — NIE JEST PRZEBIEGIEM REJESTROWYM" in out and fraza in out
+    assert "PILOTAŻ: powyższe wyniki reguł nie są werdyktem." in out
+
+
+# --- 1. ziarna ----------------------------------------------------------------------------------------
+
+
+def test_panel_i_dostaje_dziecko_i_z_spawn_glownego_ziarna():
+    """[D03] Ziarna paneli to `SeedSequence(ziarno).spawn(panele)` (a nie np. `SeedSequence(ziarno + i)`)."""
+    ziarno = 77
+    wyn = lv2.uruchom(KONFIG_MALY, 2, ziarno=ziarno)
+    dzieci = np.random.SeedSequence(ziarno).spawn(KONFIG_MALY["panele"])
+    for i, ss in enumerate(dzieci):
+        abs_i, dm_i, diag_i = lv2.przetworz_panel((ss, KONFIG_MALY))
+        np.testing.assert_array_equal(wyn["abs"][i], abs_i)
+        np.testing.assert_array_equal(wyn["dm"][i], dm_i)
+        np.testing.assert_array_equal(wyn["diag"][i], diag_i)
+
+
+# --- 2. Newey–West: opóźnienie dla n komórek rejestrowych (1600, 1700) -------------------------------
+
+
+def _ar1(n: int, phi: float, seed: int) -> np.ndarray:
+    rng = np.random.default_rng(seed)
+    e = rng.standard_normal(n) * 0.01
+    d = np.empty(n)
+    d[0] = e[0]
+    for t in range(1, n):
+        d[t] = phi * d[t - 1] + e[t]
+    return d + 0.0004
+
+
+def _se_nw(d: np.ndarray, lag: int) -> float:
+    n = len(d)
+    dc = d - d.mean()
+    gam = [float(np.dot(dc[k:], dc[: n - k])) / n for k in range(lag + 1)]
+    s = gam[0] + 2.0 * sum((1.0 - k / (lag + 1.0)) * gam[k] for k in range(1, lag + 1))
+    return math.sqrt(s / n)
+
+
+@pytest.mark.parametrize("n, lag", [(600, 5), (1600, 7), (1700, 7)])
+def test_dm_wektor_uzywa_opoznienia_nw_z_pre_rejestracji_takze_dla_n_komorek_rejestrowych(n, lag):
+    """[M15] Dotychczasowy test sprawdzał tylko n = 600 (opóźnienie 5); rejestrowe komórki mają n = 1600
+    i 1700 (opóźnienie 7). Błąd NW z opóźnieniem 5 jest tu o ok. 8 % za mały."""
+    d = _ar1(n, 0.6, seed=n)
+    assert math.floor(4.0 * (n / 100.0) ** (2.0 / 9.0)) == lag
+    t, se = _dm_reczny(d)
+    w = pl.dm_wektor(d)
+    assert w["se"] == pytest.approx(se, rel=1e-10) and w["t"] == pytest.approx(t, rel=1e-10)
+    assert w["se"] == pytest.approx(_se_nw(d, lag), rel=1e-10)
+    if lag == 7:
+        assert abs(_se_nw(d, 5) / w["se"] - 1.0) > 0.03  # test odróżnia lag 7 od lag 5
+
+
+# --- 3. statystyki komórki: składniki testu zbiorczego na poziomie α/3, zbiorczy na α ------------------
+
+
+@pytest.mark.parametrize(
+    "p_a, p_b, p_c, t_a, oczekiwane",  # oczekiwane: (zb_a, zb_b, zb_c, zb_bonf, zb_a_prawa)
+    [
+        (0.03, 0.5, 0.5, 1.0, (0, 0, 0, 0, 0)),  # między α/3 a α: składnik NIE odrzuca
+        (0.5, 0.04, 0.5, 1.0, (0, 0, 0, 0, 0)),
+        (0.5, 0.5, 0.045, 1.0, (0, 0, 0, 0, 0)),
+        (0.01, 0.5, 0.5, 1.0, (1, 0, 0, 1, 1)),
+        (0.01, 0.5, 0.5, -1.0, (1, 0, 0, 1, 0)),  # za mało trafień: A odrzuca, ale nie „prawa”
+        (0.5, 0.01, 0.5, 1.0, (0, 1, 0, 1, 0)),
+        (0.5, 0.5, 0.01, 1.0, (0, 0, 1, 1, 0)),
+        (lv2.ALFA / 3, 0.5, 0.5, 1.0, (0, 0, 0, 0, 0)),  # dokładnie α/3: ostra nierówność
+        (float(np.nextafter(lv2.ALFA / 3, 0.0)), 0.5, 0.5, 1.0, (1, 0, 0, 1, 1)),
+    ],
+)
+def test_skladniki_i_zbiorczy_odrzucaja_dopiero_ponizej_alfa_przez_3(
+    monkeypatch, p_a, p_b, p_c, t_a, oczekiwane
+):
+    """[M24, M25] Dotychczasowy test porównywał flagi z `prog = ALFA / 3` liczonym przez ten sam kod,
+    a na danych losowych p-wartości nigdy nie lądują między α/3 a α (ani 2α/3). Tu p-wartości są zadane.
+    """
+    r, q, es = _dane_t5(3, 100, 4, 0.05)
+    zadane = {"p_a": p_a, "p_b": p_b, "p_c": p_c, "t_a": t_a}
+    monkeypatch.setattr(lv2, "testy_zbiorcze", lambda *a, **k: zadane)
+    w = lv2.statystyki_komorki(r, q, es, 0.05, None)
+    flagi = tuple(w[lv2.IDX[n]] for n in ("zb_a", "zb_b", "zb_c", "zb_bonf", "zb_a_prawa"))
+    assert flagi == tuple(float(x) for x in oczekiwane)
+
+
+# --- 4. progi domknięte DOKŁADNIE na granicy: K5, K6a, K6b, P-b; _blisko ostro < 2 SE -----------------
+
+_LO, _HI = lv2.ROZMIAR
+
+
+@pytest.mark.parametrize(
+    "kod, zmiana, ok",
+    [
+        ("K5", {"k5": (lv2.MOC_KONTROLA, 0.0)}, True),
+        ("K5", {"k5": (float(np.nextafter(lv2.MOC_KONTROLA, 0.0)), 0.0)}, False),
+        ("K6a", {"k6": _k6(p2=(_HI, 0.004))}, True),
+        ("K6a", {"k6": _k6(p2=(float(np.nextafter(_HI, 1.0)), 0.004))}, False),
+        ("K6b", {"k6": _k6(p2=(_LO, 0.004))}, True),
+        ("K6b", {"k6": _k6(p2=(float(np.nextafter(_LO, 0.0)), 0.004))}, False),
+        ("P-b", {"pb": (lv2.MOC_MIN, 0.01)}, True),
+        ("P-b", {"pb": (float(np.nextafter(lv2.MOC_MIN, 0.0)), 0.01)}, False),
+    ],
+)
+def test_ocen_p_progi_k5_k6a_k6b_i_pb_sa_domkniete_dokladnie_na_granicy(kod, zmiana, ok):
+    """[T14, T15, T16, T18] Dotychczasowe testy wchodziły tylko 0,0001 od progu — mutanty `>=` → `>`
+    (K5, K6b, P-b) i `<=` → `<` (K6a) przechodziły. Tu: dokładnie próg (ma przejść) i o 1 ulp obok.
+    """
+    assert _ok(lv2.ocen_p(_lp(**zmiana)))[kod] is ok
+
+
+def test_blisko_to_scisle_mniej_niz_2_se_od_progu():
+    """[B01] 0,5 − 0,25 = 0,25 = 2 · 0,125 — wszystko liczby dwójkowe, więc równość jest dokładna."""
+    assert not lv2._blisko(0.5, 0.125, 0.25)
+    assert lv2._blisko(0.5, float(np.nextafter(0.125, 1.0)), 0.25)
+    assert not lv2._blisko(0.5, float(np.nextafter(0.125, 0.0)), 0.25)
+
+
+# --- 5. prognozy: strażnik startu, odtworzenie od zera, brak wglądu w przyszłość na granicach bloków --
+
+
+def test_zbuduj_zrodla_strazniki_startu_sa_ostre_na_obu_granicach(panel_mikro):
+    """[S21] start < ROZGRZEWKA_RESZT + 2 · KROK = 120 (dopasowanie GARCH ma mieć ≥ 100 obserwacji)
+    i start ≥ n to „poza zakresem”; start 120 przechodzi pierwszy strażnik i zatrzymuje go dopiero
+    strażnik HAR (pierwsza prognoza HAR dopiero od dnia 395); start = n − 1 działa (blok jednodniowy).
+    """
+    najmniejszy = pz.ROZGRZEWKA_RESZT + 2 * pz.KROK
+    assert najmniejszy == 120
+    krotki = _przytnij(panel_mikro, n=160)
+    with pytest.raises(ValueError, match="poza zakresem"):
+        pz.zbuduj_zrodla(krotki, start=najmniejszy - 1)
+    with pytest.raises(ValueError, match="HAR"):
+        pz.zbuduj_zrodla(krotki, start=najmniejszy)
+    with pytest.raises(ValueError, match="poza zakresem"):
+        pz.zbuduj_zrodla(panel_mikro, start=N_MIKRO)
+    zr = pz.zbuduj_zrodla(panel_mikro, start=N_MIKRO - 1)
+    assert zr.r.shape == (1, K_MIKRO) and zr.diag["dopasowania"] == K_MIKRO
+
+
+def test_zrodla_zgodne_z_odtworzeniem_od_zera_z_definicji_dnia_t_i_bloku(monkeypatch, panel_mikro):
+    """[S03, S04, S05, S06, S09–S15, S16, S17, S19, S24, S25, S27] Każde źródło σ i każdy ogon liczone
+    od nowa z definicji (pętle, bez pandas/lfilter), a okno dopasowania GARCH, flagi i średnie
+    diagnostyki odczytane z podsłuchanych wywołań `dopasuj_garch_t`. Łapie przesunięcia o dzień
+    (stare dane / zajrzenie w przyszłość) na granicach bloków, których nie widzi test zaburzenia.
+    Panel ucięty do 505 dni: ostatni blok ma 15 dni (jak ostatni blok panelu rejestrowego: 20 dni).
+    """
+    panel_mikro = _przytnij(panel_mikro, n=505)
+    prawdziwa = pz.dopasuj_garch_t
+    fity = []
+
+    def podsluch(r, start=None):
+        f = prawdziwa(r, start=start)
+        i = len(fity)  # znane flagi: nie_zbiezne = 4 z 12, brzeg = 3 z 12
+        f = f._replace(zbiezny=(i % 3 != 0), brzeg=(i % 4 == 1))
+        fity.append((np.array(r, copy=True), f))
+        return f
+
+    monkeypatch.setattr(pz, "dopasuj_garch_t", podsluch)
+    zr = pz.zbuduj_zrodla(panel_mikro, start=START_MIKRO)
+    r, rv = panel_mikro["r"].to_numpy(), panel_mikro["rv"].to_numpy()
+    n, k = r.shape
+    b0, krok, rozgrz = START_MIKRO, pz.KROK, pz.ROZGRZEWKA_RESZT
+    bloki = list(range(b0, n, krok))
+    assert len(fity) == len(bloki) * k == 12
+
+    # σ okna 60 dni i EWMA 0,94 dla każdego dnia t: tylko dni < t
+    okno = np.full((n, k), np.nan)
+    for t in range(60, n):
+        okno[t] = np.sqrt((r[t - 60 : t] ** 2).mean(axis=0))
+    ewma, v = np.full((n, k), np.nan), (r[:30] ** 2).mean(axis=0)
+    ewma[30] = np.sqrt(v)
+    for t in range(31, n):
+        v = 0.94 * v + 0.06 * r[t - 1] ** 2
+        ewma[t] = np.sqrt(v)
+    np.testing.assert_allclose(zr.sigma["okno60"], okno[b0:], rtol=1e-10)
+    np.testing.assert_allclose(zr.sigma["ewma94"], ewma[b0:], rtol=1e-10)
+
+    # HAR: prognoza dnia t z harmonogramem od dnia 395 (min_trening = 365), bez przesunięć
+    har = np.column_stack(
+        [prognoza_har(pd.Series(rv[:, j]), min_trening=365, co_ile=30).to_numpy() for j in range(k)]
+    )
+    assert np.isfinite(har[b0:]).all()
+    np.testing.assert_array_equal(zr.sigma["har"], np.sqrt(har[b0:]))
+
+    for ib, b in enumerate(bloki):
+        e = min(b + krok, n)
+        wiersze = slice(b - b0, e - b0)
+        zg = np.empty((b - rozgrz, k))
+        for j, (r_fit, f) in enumerate(fity[ib * k : (ib + 1) * k]):
+            np.testing.assert_array_equal(r_fit, r[:b, j])  # dopasowanie na dniach 0 … b − 1
+            s2 = np.empty(e)
+            s2[0] = f.backcast
+            for u in range(e - 1):  # σ²_{u+1} = ω + α r²_u + β σ²_u: dzień u+1 widzi dni ≤ u
+                s2[u + 1] = f.omega + f.alpha * r[u, j] ** 2 + f.beta * s2[u]
+            np.testing.assert_allclose(zr.sigma["garch"][wiersze, j] ** 2, s2[b:e], rtol=1e-9)
+            zg[:, j] = r[rozgrz:b, j] / np.sqrt(s2[rozgrz:b])
+        reszty = {
+            "okno60": r[rozgrz:b] / okno[rozgrz:b],
+            "ewma94": r[rozgrz:b] / ewma[rozgrz:b],
+            "garch": zg,
+        }
+        for p in pz.POZIOMY:
+            for src, z in reszty.items():
+                qk, esk, qz, esz = pz.ogon_empiryczny(z, p)
+                oczekiwane = {
+                    "ec": (np.tile(qk, (e - b, 1)), np.tile(esk, (e - b, 1))),
+                    "ep": (np.full((e - b, k), qz), np.full((e - b, k), esz)),
+                }
+                for ogon, (q_ref, es_ref) in oczekiwane.items():
+                    q, es = zr.ogon[(src, ogon, p)]
+                    np.testing.assert_allclose(
+                        q[wiersze], q_ref, rtol=1e-8, err_msg=f"{src} {ogon}"
+                    )
+                    np.testing.assert_allclose(
+                        es[wiersze], es_ref, rtol=1e-8, err_msg=f"{src} {ogon}"
+                    )
+            qn, en = zip(*(var_es_t(1.0, p, f.nu) for _, f in fity[ib * k : (ib + 1) * k]))
+            q, es = zr.ogon[("garch", "tnu", p)]
+            np.testing.assert_allclose(q[wiersze], np.tile(np.array(qn, float), (e - b, 1)))
+            np.testing.assert_allclose(es[wiersze], np.tile(np.array(en, float), (e - b, 1)))
+
+    flagi = [f for _, f in fity]
+    d = zr.diag
+    assert d["dopasowania"] == 12 and d["nie_zbiezne"] == 4 and d["brzeg"] == 3
+    assert d["persystencja"] == pytest.approx(np.mean([f.alpha + f.beta for f in flagi]), rel=1e-12)
+    assert d["nu"] == pytest.approx(np.mean([f.nu for f in flagi]), rel=1e-12)
+
+
+@pytest.mark.parametrize("i_gw", [30, 60])
+def test_zaburzenie_pierwszego_dnia_bloku_nie_zmienia_prognoz_tego_ani_poprzednich_blokow(
+    panel_mikro, zrodla_mikro, i_gw
+):
+    """[S05, S09, S10, S11] Zwrot z dnia b (początek bloku) nie może wejść do parametrów GARCH bloku,
+    ani do ogonów bloku, ani do σ̂ dnia b. Istniejący test zaburza tylko dzień w środku bloku (45).
+    """
+    zab = _przytnij(panel_mikro)
+    zab["r"].iloc[START_MIKRO + i_gw, :] = -0.5
+    zab["rv"].iloc[START_MIKRO + i_gw, :] *= 16.0
+    zr1, zr2 = zrodla_mikro, pz.zbuduj_zrodla(zab, start=START_MIKRO)
+    for z in ("okno60", "ewma94", "garch", "har"):
+        np.testing.assert_array_equal(zr1.sigma[z][: i_gw + 1], zr2.sigma[z][: i_gw + 1], err_msg=z)
+        assert not np.allclose(zr1.sigma[z][i_gw + 1 :], zr2.sigma[z][i_gw + 1 :]), z
+    do_konca_bloku = slice(0, i_gw + pz.KROK)  # bloki 1 … (blok zaczynający się w dniu i_gw)
+    nastepny = slice(
+        i_gw + pz.KROK, i_gw + 2 * pz.KROK
+    )  # pierwszy blok, który widzi zaburzony dzień
+    for klucz in zr1.ogon:
+        for i in (0, 1):
+            np.testing.assert_array_equal(
+                zr1.ogon[klucz][i][do_konca_bloku],
+                zr2.ogon[klucz][i][do_konca_bloku],
+                err_msg=str(klucz),
+            )
+    # nie wszystkie kwantyle empiryczne ruszą się od jednego dnia, ale każde źródło musi je odczuć
+    for src in ("okno60", "ewma94", "garch"):
+        zmienione = [
+            not np.allclose(zr1.ogon[k][i][nastepny], zr2.ogon[k][i][nastepny])
+            for k in zr1.ogon
+            if k[0] == src
+            for i in (0, 1)
+        ]
+        assert any(zmienione), src
+
+
+# --- 6. wydruk raportu: okablowanie kolumn i reguł ----------------------------------------------------
+
+
+def test_wiersz_abs_wypisuje_kazda_kolumne_z_wlasciwego_pola():
+    """[W02, W03] Kolumny: hit, U | A, B, C | zbiorczy ± SE | A>0, VR — każda z własnego pola STAT."""
+    wyn = _pusty_wyn(4)
+    zadane = (
+        ("hit", 0.0123), ("u_sr", 1.234), ("zb_a", 0.25), ("zb_b", 0.5), ("zb_c", 0.75),
+        ("zb_bonf", 1.0), ("zb_a_prawa", 0.1), ("vr", 3.21),
+    )  # fmt: skip
+    for stat, v in zadane:
+        _wpisz_abs(wyn, 0, 1, "okno60_t5", stat, v)
+    tokeny = lv2._wiersz_abs(wyn, 0, 1, "okno60_t5").split()
+    assert tokeny == [
+        "okno60_t5", "1.23", "1.234", "|", "25.0", "50.0", "75.0", "|", "100.0", "±", "0.00", "|",
+        "10.0", "3.21",
+    ]  # fmt: skip
+
+
+def test_wiersz_dm_wypisuje_odsetki_obu_stron_oraz_se_i_t_we_wlasciwych_kolumnach():
+    """[W04, W05] B>A% (t > 1,96) przed A>B% (t < −1,96); potem d̄, SD(d̄) | se, t."""
+    kod = "wyr_fz0_okno60_t5"
+    j = lv2.POR_IDX[kod]
+    t, sr, se = [3.0, 3.0, -3.0, 0.5], [0.010, 0.020, 0.030, 0.040], [0.004, 0.005, 0.006, 0.007]
+    wyn = _pusty_wyn(4)
+    wyn["dm"][:, 0, 0, j, :] = np.column_stack([t, sr, se])
+    oczekiwane = [
+        kod, "50.0", "25.0", "|", f"{np.mean(sr):+9.5f}".strip(), f"{np.std(sr, ddof=1):8.5f}".strip(),
+        "|", f"{np.mean(se):8.5f}".strip(), f"{np.mean(t):+6.2f}".strip(),
+    ]  # fmt: skip
+    assert lv2._wiersz_dm(wyn, 0, 0, lv2.POROWNANIA[j]).split() == oczekiwane
+
+
+def test_wydruk_k6_czyta_odsetki_po_wysrodkowaniu_a_nie_zwykle_dwustronne(capsys):
+    """[W06] t = 5 w każdym panelu, ale jednakowe d̄ → po wyśrodkowaniu 0 % (zwykły |t| > 1,96 dałby 100 %)."""
+    wyn = _pusty_wyn(4)
+    for x, y in lv2.PARY_REALNE:
+        for s in lv2.STRATY:
+            wyn["dm"][:, 0, 0, lv2.POR_IDX[f"real_{s}_{x}__{y}"], :] = [5.0, 0.01, 0.002]
+    lv2._wypisz_k6(wyn, {"komorki": ((5, 250), (3, 200))})
+    out = capsys.readouterr().out
+    assert "  okno60_t5 → ewma94_t5: fz0   0.0, pinb   0.0" in out
+    assert "100.0" not in out
+
+
+def test_wydruk_diagnostyki_pokazuje_osobno_brak_zbieznosci_i_brzeg(capsys):
+    """[W07] Wiersz „bez zbieżności” ma pochodzić z kolumny nie_zbiezne, a „przy granicy” z kolumny brzeg."""
+    wyn = _pusty_wyn(4)
+    wyn["diag"][:] = [12.0, 1.0, 3.0, 0.97, 5.0]
+    lv2._wypisz_diag(wyn)
+    out = capsys.readouterr().out
+    assert "dopasowań na panel: 12" in out
+    assert "bez zbieżności 8.33 %" in out and "przy granicy zakresu 25.00 %" in out
+
+
+def test_wydruk_przewidywan_pisze_tak_dla_trafionych_i_nie_dla_nietrafionych(capsys):
+    """[W08] Przy P-a spełnionym nietrafione jest tylko W3 (oba poziomy); reszta trafiona."""
+    lv2._wypisz_przewidywania(_wyn_do_przewidywan(), _oceny(pa_ok=True))
+    linie = [l for l in capsys.readouterr().out.splitlines() if l.startswith("  W")]
+    trafione = {(l.split()[0], l.split()[3]): l.rstrip().endswith(": TAK") for l in linie}
+    assert len(trafione) == 8
+    assert trafione == {
+        (kod, p): kod != "W3" for kod in ("W1", "W2", "W3", "W4") for p in ("1%:", "5%:")
+    }
+
+
+@pytest.mark.parametrize(
+    "werdykt_k, werdykt_p, runda",
+    [
+        ("TAK", "NIE", "MIERZALNA — dozwolone pytania: K bezwzględne"),
+        ("NIE", "TAK", "MIERZALNA — dozwolone pytania: P porównawcze"),
+        ("WSTRZYMANE", "NIE", "WSTRZYMANA"),
+    ],
+)
+def test_wydruk_kryteriow_liczy_kazda_regule_dla_wlasnej_komorki_i_poziomu_a_wnioski_ida_do_reguly_rundy(
+    monkeypatch, capsys, werdykt_k, werdykt_p, runda
+):
+    """[W09, W10, W11] Atrapy `liczby_*` i `ocen_*` zapisują, z jaką komórką i poziomem je wywołano;
+    `oceny` (do przewidywań) mają pochodzić z komórki głównej; werdykt K i werdykt P trafiają do
+    `regula_rundy` we właściwej kolejności (K = TAK ⇒ pytanie K, P = TAK ⇒ pytanie P); C2 ma etykietę
+    „warunek Zakresu (b)”, a nie „reguła pierwszej rundy”."""
+    wywolania = []
+
+    def liczby(nazwa):
+        def f(wyn, ic, ip):
+            wywolania.append((nazwa, ic, ip))
+            return (nazwa, ic, ip)
+
+        return f
+
+    def ocena(werdykt):
+        return lambda wejscie: {
+            "kontrole": [],
+            "kryteria": [],
+            "werdykt": werdykt,
+            "wejscie": wejscie,
+        }
+
+    monkeypatch.setattr(lv2, "liczby_k", liczby("k"))
+    monkeypatch.setattr(lv2, "liczby_p", liczby("p"))
+    monkeypatch.setattr(lv2, "ocen_k", ocena(werdykt_k))
+    monkeypatch.setattr(lv2, "ocen_p", ocena(werdykt_p))
+    oceny = lv2._wypisz_kryteria(_pusty_wyn(4), {"komorki": ((5, 250), (3, 200))})
+    out = capsys.readouterr().out
+    assert wywolania == [
+        (regula, ic, ip) for ic in (0, 1) for ip in (0, 1) for regula in ("k", "p")
+    ]
+    assert "WARUNEK ZAKRESU (b), nie werdykt rundy" in out
+    for ip, p in enumerate(lv2.POZIOMY):
+        assert oceny[p]["K"]["wejscie"] == ("k", 0, ip) and oceny[p]["P"]["wejscie"] == ("p", 0, ip)
+        assert f"  REGUŁA PIERWSZEJ RUNDY VaR/ES NA DANYCH, p = {p:.0%}: {runda}\n" in out
+        assert (
+            f"  REGUŁA RUNDY W C2 (warunek Zakresu (b), nie werdykt rundy), p = {p:.0%}: {runda}\n"
+        ) in out
+
+
+# --- 7. estymator GARCH-t: granice zakresu, flagi, skala, strażnik długości ---------------------------
+
+
+def _seria_igarch(seed: int, n: int = 2000) -> np.ndarray:
+    rng = np.random.default_rng(seed)
+    eps = rng.standard_t(5.0, n) * math.sqrt(3.0 / 5.0)
+    r, s2 = np.empty(n), 1e-4
+    for t in range(n):
+        r[t] = math.sqrt(s2) * eps[t]
+        s2 = 1e-8 + 0.1 * r[t] ** 2 + 0.9 * s2
+    return r
+
+
+def test_estymator_granice_zakresu_sa_takie_jak_w_zapisie():
+    """[E02, E03, E06] Dopuszczalny zakres: α + β ≤ 0,9999 · expit(9,2), ν ∈ [2,5; 100]."""
+    assert (gt.P_MAX, gt.NU_MIN, gt.NU_MAX) == (0.9999, 2.5, 100.0)
+    assert gt._GRANICE[:3] == ((-20.0, 3.0), (-6.0, 9.2), (-8.0, 8.0))
+    assert gt._GRANICE[3] == pytest.approx((math.log(0.5), math.log(98.0)), rel=1e-15)
+
+
+def test_estymator_na_danych_skrajnych_zatrzymuje_sie_na_granicy_i_zglasza_brzeg():
+    """[E02, E03, E06, E27] ν̂ → ∞ (zwroty normalne) kończy na 100; ogony t_2,2 na 2,5; IGARCH na
+    α̂ + β̂ = P_MAX · expit(9,2). Wszędzie flaga `brzeg`, a dopasowanie jest zbieżne."""
+    f = gt.dopasuj_garch_t(np.random.default_rng(2).standard_normal(1500) * 0.01)
+    assert f.nu == pytest.approx(100.0, rel=1e-6) and f.brzeg and f.zbiezny
+    f = gt.dopasuj_garch_t(np.random.default_rng(3).standard_t(2.2, 1500) * 0.01)
+    assert f.nu == pytest.approx(2.5, rel=1e-6) and f.brzeg and f.zbiezny
+    f = gt.dopasuj_garch_t(_seria_igarch(1))
+    assert f.alpha + f.beta == pytest.approx(0.9999 * expit(9.2), rel=1e-6)
+    assert f.brzeg and f.zbiezny
+
+
+def test_estymator_na_zwyklych_danych_nie_zglasza_brzegu_a_zbieznosc_zalezy_od_optymalizatora(
+    monkeypatch,
+):
+    """[E26] `zbiezny` ma odzwierciedlać `success` optymalizatora (wymuszone `success = False`)."""
+    x = _seria_garch(n=1500, seed=5)
+    f = gt.dopasuj_garch_t(x)
+    assert f.zbiezny and not f.brzeg
+    prawdziwe = gt._jedno
+
+    def nieudane(theta0, x2):
+        w = prawdziwe(theta0, x2)
+        w.success = False
+        return w
+
+    monkeypatch.setattr(gt, "_jedno", nieudane)
+    assert gt.dopasuj_garch_t(x).zbiezny is False
+    assert gt.dopasuj_garch_t(x, start=f).zbiezny is False
+
+
+def test_przy_granicy_zapala_sie_w_odleglosci_ponizej_1e_3_od_obu_stron_kazdego_parametru():
+    """[E11, E12, E13] Próg 1e-3 (nie 1e-1, nie 1e-9) i obie granice (dolna i górna)."""
+    srodek = np.array([(lo + hi) / 2 for lo, hi in gt._GRANICE])
+    assert not gt._przy_granicy(srodek)
+    for i, (lo, hi) in enumerate(gt._GRANICE):
+        for granica, kierunek in ((lo, 1.0), (hi, -1.0)):
+            blisko, daleko = srodek.copy(), srodek.copy()
+            blisko[i], daleko[i] = granica + kierunek * 5e-4, granica + kierunek * 2e-3
+            assert gt._przy_granicy(blisko) and not gt._przy_granicy(daleko), (i, granica)
+
+
+def test_backcast_to_srednia_kwadratow_a_nie_wariancja_gdy_srednia_zwrotu_niezerowa():
+    """[E19] Model ma średnią 0, więc σ²_0 = mean(r²) (nie var(r)); tu mean(r²) jest 5× większa od var(r)."""
+    x = 0.01 * np.random.default_rng(1).standard_normal(300) + 0.02
+    f = gt.dopasuj_garch_t(x)
+    assert f.backcast == pytest.approx(np.mean(x * x), rel=1e-12)
+    assert np.mean(x * x) > 4 * np.var(x)
+
+
+def test_dopasowanie_wymaga_co_najmniej_100_obserwacji():
+    """[E20] 100 obserwacji wystarcza, 99 nie."""
+    r = np.random.default_rng(0).standard_normal(100) * 0.01
+    assert isinstance(gt.dopasuj_garch_t(r), gt.DopasowanieGarchT)
+    with pytest.raises(ValueError, match="100"):
+        gt.dopasuj_garch_t(r[:99])
+
+
+def test_punkty_startowe_optymalizatora_zimne_sa_trzy_stale_a_cieply_to_poprzednie_dopasowanie(
+    monkeypatch,
+):
+    """[E07, E08, E09, E10] Test KONTRAKTOWY (podsłuchuje `_jedno`): bez ciepłego startu — trzy zimne
+    punkty (α, β, ν) z zapisu; z ciepłym — pierwszy punkt to poprzednie parametry (ω przeskalowane
+    przez backcast). Mutanty E07–E10 nie zmieniają wyniku (inny punkt startu, to samo optimum)."""
+    x = _seria_garch(n=400, seed=7)
+    prawdziwa = gt._jedno
+    starty = []
+
+    def podsluch(theta0, x2):
+        starty.append(np.array(theta0))
+        return prawdziwa(theta0, x2)
+
+    monkeypatch.setattr(gt, "_jedno", podsluch)
+    f0 = gt.dopasuj_garch_t(x)
+    zimne = [
+        gt._theta(1.0 - al - be, al, be, nu)
+        for al, be, nu in ((0.05, 0.90, 8.0), (0.10, 0.85, 5.0), (0.15, 0.75, 4.0))
+    ]
+    np.testing.assert_allclose(np.array(starty), np.array(zimne))
+    starty.clear()
+    gt.dopasuj_garch_t(x, start=f0)
+    cieply = gt._theta(f0.omega / f0.backcast, f0.alpha, f0.beta, f0.nu)
+    assert len(starty) == 1
+    np.testing.assert_allclose(starty[0], cieply)
+
+
+# --- 8. kontrakty zależności i okablowanie przebiegu: kolejność kolumn, domyślne wartości cudzych funkcji,
+#        wersje środowiska, zapis surowych tablic, jeden wątek BLAS ----------------------------------------
+
+
+def test_kolejnosc_kolumn_stat_i_diag_jest_przypieta_bo_odczyty_diag_sa_pozycyjne():
+    """`liczby_k7` i `_wypisz_diag` biorą kolumny DIAG po numerach (0 … 4); przestawienie kolejności
+    zamieniłoby po cichu ν̂ z persystencją, a wynik rundy nie miałby błędu, tylko złe liczby."""
+    assert lv2.STAT == (
+        "hit",
+        "u_sr",
+        "zb_a",
+        "zb_b",
+        "zb_c",
+        "zb_bonf",
+        "zb_a_prawa",
+        "vr",
+        "niezdef",
+    )
+    assert lv2.DIAG == ("dopasowania", "nie_zbiezne", "brzeg", "persystencja", "nu")
+    diag = np.array([[10.0, 2.0, 1.0, 0.97, 4.5], [10.0, 0.0, 3.0, 0.99, 5.5]])
+    k7 = lv2.liczby_k7({"diag": diag})
+    assert k7["nu"][0] == pytest.approx(5.0) and k7["pers"][0] == pytest.approx(0.98)
+    assert k7["nie_zbiezne"][0] == pytest.approx(0.1) and k7["brzeg"][0] == pytest.approx(0.2)
+
+
+def test_wartosci_domyslne_cudzych_funkcji_uzywane_przez_lv2_sa_przypiete():
+    """LV2 woła `generuj_panel` tylko z `nu` i `rho`, a `prognoza_har` bez harmonogramu refitów, więc
+    wynik zarejestrowanego przebiegu zależy od ich domyślnych wartości. Zmiana takiej wartości w innym
+    module po cichu zmieniłaby wynik (i zakres pre-rejestracji): wtedy podaj ją jawnie w LV2."""
+    g = inspect.signature(generuj_panel).parameters
+    assert {k: g[k].default for k in ("daily_vol", "garch", "m_intraday", "burn", "start")} == {
+        "daily_vol": 0.04,
+        "garch": (0.08, 0.9),
+        "m_intraday": 288,
+        "burn": 500,
+        "start": "2021-01-01",
+    }
+    h = inspect.signature(prognoza_har).parameters
+    assert (h["min_trening"].default, h["co_ile"].default) == (365, 30)
+    assert (lv2.NU, pz.NU, lv2.RHO, lv2.SEED) == (5.0, 5.0, 0.8, 20_261_016)
+
+
+def test_wiersz_odrzuca_nieznana_bramke_a_trzy_znane_przechodza():
+    """Literówka w `bramka` („tak”) nie może zrobić z kontroli kontroli, której żaden wniosek nie
+    uwzględnia."""
+    assert lv2.BRAMKI == ("obie", "TAK", "NIE")
+    with pytest.raises(ValueError, match="bramka"):
+        lv2._wiersz("K9", "g", "opis", 0.1, "≤ 0,1", True, bramka="tak")
+    for b in lv2.BRAMKI:
+        assert lv2._wiersz("K9", "g", "opis", 0.1, "≤ 0,1", True, bramka=b)["bramka"] == b
+
+
+def _wywolaj_main_z_atrapa(monkeypatch, wynik, argv):
+    monkeypatch.setattr(lv2, "uruchom", lambda konfig, workers, ziarno=lv2.SEED: wynik)
+    lv2.main(argv)
+
+
+def test_wydruk_podaje_wersje_srodowiska_bez_zmiennych_miedzy_przebiegami(
+    monkeypatch, capsys, mikro
+):
+    """Linia „Wersje: …” trafia do raw_output.txt, więc ma być deterministyczna (bez czasu i ścieżek)."""
+    _wywolaj_main_z_atrapa(monkeypatch, mikro, ["--smoke", "--workers", "1"])
+    linie = [w for w in capsys.readouterr().out.splitlines() if w.startswith("Wersje:")]
+    oczekiwana = (
+        f"Wersje: python {sys.version.split()[0]}, numpy {np.__version__}, "
+        f"scipy {scipy.__version__}, pandas {pd.__version__}."
+    )
+    assert linie == [oczekiwana]
+
+
+def test_zapisz_tworzy_katalog_i_plik_npz_z_tymi_samymi_tablicami_co_wynik(
+    monkeypatch, capsys, tmp_path, mikro
+):
+    plik = tmp_path / "nowy_katalog" / "wyniki.npz"
+    _wywolaj_main_z_atrapa(monkeypatch, mikro, ["--smoke", "--workers", "1", "--zapisz", str(plik)])
+    capsys.readouterr()
+    with np.load(plik) as z:
+        assert set(z.files) == {"abs", "dm", "diag"}
+        for klucz in z.files:
+            np.testing.assert_array_equal(z[klucz], mikro[klucz])  # także identyczne NaN
+
+
+def test_zapisz_zapisuje_zaraz_po_przebiegu_wiec_awaria_raportu_nie_gubi_wynikow(
+    monkeypatch, tmp_path, mikro
+):
+    """Pełny przebieg trwa ok. 30 minut; jeśli wydruk padnie, surowe tablice mają już być na dysku."""
+    plik = tmp_path / "wyniki.npz"
+
+    def pada(wyn):
+        raise RuntimeError("awaria wydruku")
+
+    monkeypatch.setattr(lv2, "_wypisz_diag", pada)
+    with pytest.raises(RuntimeError, match="awaria wydruku"):
+        _wywolaj_main_z_atrapa(
+            monkeypatch, mikro, ["--smoke", "--workers", "1", "--zapisz", str(plik)]
+        )
+    with np.load(plik) as z:
+        np.testing.assert_array_equal(z["abs"], mikro["abs"])
+
+
+def test_bez_zapisz_nie_powstaje_zaden_plik(monkeypatch, capsys, tmp_path, mikro):
+    monkeypatch.chdir(tmp_path)
+    _wywolaj_main_z_atrapa(monkeypatch, mikro, ["--smoke", "--workers", "1"])
+    capsys.readouterr()
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_uruchom_wymusza_jeden_watek_blas_nawet_gdy_srodowisko_ustawia_wiecej(monkeypatch):
+    """Przypisanie (nie `setdefault`): wynik i czas przebiegu nie mogą zależeć od zmiennych środowiska
+    użytkownika."""
+    zmienne = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")
+    for z in zmienne:
+        monkeypatch.setenv(z, "8")
+    jeden = {**KONFIG_MALY, "panele": 1}
+    lv2.uruchom(jeden, 1)
+    assert [os.environ[z] for z in zmienne] == ["1", "1", "1"]

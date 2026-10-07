@@ -111,6 +111,8 @@ def zbuduj_zrodla(panel: dict, start: int = START, krok: int = KROK) -> Zrodla:
         [prognoza_har(pd.Series(panel["rv"].to_numpy()[:, j])).to_numpy() for j in range(k)]
     )
     sigma["har"] = np.sqrt(har[start:])
+    if not np.isfinite(sigma["har"]).all():
+        raise ValueError("start za wczesny: prognoza HAR nieokreślona na początku okresu oceny")
     bloki = list(range(start, n, krok))
     dlugosci = np.array([min(b + krok, n) - b for b in bloki])
     tail = {

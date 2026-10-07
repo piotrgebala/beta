@@ -1,10 +1,14 @@
 # LV2 — laboratorium VaR/ES dla prognoz ESTYMOWANYCH: czy test zbiorczy i test porównawczy nadają się na pierwszą rundę na danych (2026-10-07)
 
-> **STATUS: PRE-REJESTRACJA — przebieg rejestrowy jeszcze nie wykonany.** Zapisana 2026-10-07 przed
-> pełnym przebiegiem (ziarno `20261016`, 5 000 paneli). Progi i reguły poniżej nie zmieniają się po
-> obejrzeniu wyniku. Ewentualne zmiany po przeglądzie (krok 2 planu z karty 016) trafią do sekcji
-> „Zmiany po przeglądzie, przed pełnym przebiegiem” razem z uzasadnieniem. Sekcje Wynik / Co na plus i
-> na minus / Werdykt / Wniosek zostaną dopisane po przebiegu.
+> **STATUS: PRE-REJESTRACJA PO PRZEGLĄDZIE — przebieg rejestrowy jeszcze nie wykonany.** Pierwotnie
+> zapisana 2026-10-07 o 07:02 UTC (commit `73fff28`), poprawiona po przeglądzie (3 recenzentów, mutacje,
+> przegląd architektury) i przed pełnym przebiegiem (ziarno `20261016`, 5 000 paneli); hash tej wersji
+> wpisany w „Metadane”. Progi liczbowe, prognozy, generator, komórki, liczba paneli i ziarno **nie
+> zmieniły się**. Zmieniła się jedna reguła (reguła P: które kontrole bramkują które kryteria — zmiana po
+> fakcie, która może tylko zamienić WSTRZYMANE na NIE) i doszły reguły operacyjne (flaga „blisko progu”,
+> ziarno LV2b, warunki przeniesienia, nazwa komórki C2); wszystko jest w sekcji „Zmiany po przeglądzie,
+> przed pełnym przebiegiem”. Sekcje Wynik / Co na plus i na minus / Werdykt / Wniosek zostaną dopisane po
+> przebiegu.
 
 ## W skrócie — prostym językiem
 
@@ -36,34 +40,51 @@ inne ziarno). Wygląda na to, że **K da TAK** (z małym zapasem przy 1 %), a **
 za słaby, by przy 1 600 dniach odróżnić EWMA od GARCH-t). Przewidywania W1–W4 zapisano po tym pilotażu, więc
 **nie są ślepe**. Dokładna oś czasu — w sekcji „Co sprawdzono PRZED zapisem kryteriów”.
 
+Po zapisie recenzenci uruchomili dwa małe pilotaże (100 i 60 paneli, inne ziarna, poza rejestrem). Razem z
+pilotażem 480 (640 paneli) K-a przy 1 % wyszło **8,9 ± 1,1 %** wobec progu 10 %, czyli zapas jest mały i
+niepewny. Dlatego wynik rejestrowy może być też inny, niż tu oczekujemy: K może dać NIE (wtedy przy 1 % runda
+NIEMIERZALNA), a kontrola laboratorium może zawieść przypadkiem (wtedy WSTRZYMANE i najwyżej jedna runda
+LV2b). Każdy z tych wyników jest uczciwym wynikiem rundy i zostanie opisany wprost.
+
 ## Metadane
 
-- **Pre-rejestracja zapisana w commicie `73fff28`** (README; kod i testy z `009204b`). Hash wpisany w
-  następnym commicie, bez zmian kodu ani progów. **Przebieg rejestrowy z commitu:** `HASH_PRZEBIEGU`
-  (stan po przeglądzie z kroku 2; hash wpisany przed uruchomieniem; różnice względem `73fff28` wymienia
-  sekcja „Zmiany po przeglądzie, przed pełnym przebiegiem”).
+- **Pre-rejestracja zapisana w commicie `73fff28`** (2026-10-07 07:02:44 UTC: README oraz zmiany tylko w
+  dokumentacji kodu `symulacje/garch_t.py` i `symulacje/run_lv2.py` i w ścieżkach karty 016; kod i testy
+  rundy pochodzą z `009204b`, 2026-10-06 17:56:29 UTC). Hash `73fff28` wpisał commit `c9419a3` (07:02:57
+  UTC), bez zmian kodu ani progów. **Przebieg rejestrowy z commitu:** `HASH_PRZEBIEGU` (stan po przeglądzie
+  z kroku 2; hash wpisany osobnym commitem przed uruchomieniem; różnice względem `73fff28` wymienia sekcja
+  „Zmiany po przeglądzie, przed pełnym przebiegiem”).
 - Zadanie 016 (`zadania/016-laboratorium-lv2-var-es-estymowane.md`), kontynuacja LV1 (zadanie 009).
   Runda kalibracyjna, nie hipoteza rynkowa: **R1 — brak mechanizmu rynkowego** (nic nie przewidujemy,
   mierzymy własności przyrządu przy naszych n i dla prognoz estymowanych).
-- Kod (commit `009204b`): `symulacje/run_lv2.py` (przebieg, reguły K i P, wydruk), `symulacje/prognozy_lv2.py`
+- Kod (commit `009204b`, poprawiony po przeglądzie): `symulacje/run_lv2.py` (przebieg, reguły K i P, wydruk), `symulacje/prognozy_lv2.py`
   (19 prognoz estymowanych na jednym panelu), `symulacje/garch_t.py` (własny estymator GARCH(1,1)-t
   metodą największej wiarygodności, sprawdzony niezależnie pakietem `arch` 8.0.0), `symulacje/porownanie_lv2.py`
   (strata FZ0, strata kwantylowa, wzory zamknięte na oczekiwane straty, test DM), testy `tests/test_lv2.py`
-  (88 testów, 159 przypadków). **Nie zmieniane:** zamrożony `miara/var_es.py` (po KV1), `miara/dm.py`
+  (131 testów, 241 przypadków; w `009204b` było 88 i 159). **Nie zmieniane:** zamrożony `miara/var_es.py` (po KV1), `miara/dm.py`
   (HAC), `symulacje/moc_var_es.py` (test zbiorczy LV1: A lub B lub C, Bonferroni, bootstrap-t po dniach),
   `symulacje/garch_panel.py` (generator).
-- Komenda: `python -m symulacje.run_lv2 --workers 16 > runs/2026-10-07_lv2-var-es-estymowane/raw_output.txt`.
+- Komenda: `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m symulacje.run_lv2 --workers 16
+  --zapisz data/lv2_wyniki_paneli.npz > runs/2026-10-07_lv2-var-es-estymowane/raw_output.txt`. `--zapisz`
+  zapisuje surowe wyniki wszystkich paneli (plik `.npz` w `data/`, poza gitem) zaraz po przebiegu, przed
+  wydrukiem raportu, żeby awaria raportu nie kosztowała 30 minut liczenia; kod sam wymusza jeden wątek
+  BLAS (zmienne w komendzie są dla porządku).
   `--smoke` sprawdza tylko, że kod działa (4 panele po 700 dni, 8 monet); `--panele` i `--ziarno` dają
   pilotaż z nagłówkiem „PILOTAŻ — NIE JEST PRZEBIEGIEM REJESTROWYM”. Na stdout idą tylko liczby
-  odtwarzalne; czas i postęp idą na stderr.
+  odtwarzalne (oraz wersje pakietów z linii „Wersje: …”); czas i postęp idą na stderr.
 - Dane: WYŁĄCZNIE syntetyczne (`symulacje.garch_panel.generuj_panel`: GARCH(1,1) α 0,08, β 0,90, szok
   dzienny t z ν = 5, zmienność bezwarunkowa 4 %/dzień, czynnik rynkowy ρ = 0,8). Nie czytamy `data/`;
   R16 (dane od 2021) nie dotyczy.
 - Determinizm (R19): ziarno główne `20261016`; `SeedSequence.spawn` na panel, a w panelu osobno generator
-  i bootstrap; kolejność wyników zachowuje `imap`, więc wynik **nie zależy od liczby procesów**
-  (pilnują tego testy). Ziarna pilotaży przed zapisem kryteriów były INNE (777 dla pilotaży 16 i 480
-  paneli, 810000 dla pilotażu 64 paneli, własne ziarna dla pilotaży estymatora). Ziarno rejestrowe
-  użyto dotąd tylko w teście działania `--smoke` (4 panele); **w pełnej konfiguracji nikt go nie uruchomił**.
+  i bootstrap (po przeglądzie ziarna dzieci panelu liczy funkcja `_potomne`, która **nie zmienia stanu**
+  `SeedSequence`: te same ziarna co `spawn` na świeżym obiekcie, przypięte w teście dla paneli 0, 1 i 4 999);
+  kolejność wyników zachowuje `imap`, więc wynik **nie zależy od liczby procesów** (pilnują tego testy);
+  kod sam ustawia jeden wątek BLAS. Ziarna pilotaży przed zapisem kryteriów były INNE (777 dla pilotaży 16
+  i 480 paneli, 810000 dla pilotażu 64 paneli, własne ziarna dla pilotaży estymatora), pilotaże recenzentów
+  po zapisie też (4711 i 424242). Ziarno rejestrowe użyto dotąd w teście działania `--smoke` (4 panele),
+  w mikro-teście niezależności od liczby procesów (3 panele po 520 dni, 3 monety) i w teście przypięcia
+  ziaren; **pełnej konfiguracji (5 000 paneli × 2 100 dni) nikt z tym ziarnem nie doprowadził do końca ani
+  nie widział jej wyniku** (patrz incydent W14 w „Zmiany po przeglądzie”).
 - Czas: pilotaż 480 paneli = 174 s na 16 procesach, czyli ok. 5,8 s na panel na rdzeń; 5 000 paneli ≈
   **30 min** na 16 procesach (zakres 20–60 min). Uruchamiać bez innych równoległych przebiegów.
 
@@ -107,17 +128,21 @@ pierwsze 1 600 dni oceny, C2 = pierwsze 15 monet i pierwsze 1 700 dni oceny; ka�
 | generator | GARCH(1,1) α 0,08 β 0,90, t5, zmienność 4 %, czynnik rynkowy ρ = 0,8 (korelacja zwrotów ok. 0,62), K = 20 monet; bez zależności ogonowej i bez wspólnej zmienności |
 | panel | 2 100 dni, generowany RAZ na panel; okres oceny 1 700 dni po 400 dniach historii |
 | komórka główna **C1** | K = 20 monet, n = 1 600 dni oceny (jak w LV1); **tylko ona wchodzi do reguł i werdyktu** |
-| komórka opisowa **C2** | K = 15 monet, n = 1 700 dni oceny (populacja F2-1b); drukowana jako OPIS tej samej reguły |
+| komórka **C2** (warunek Zakresu (b)) | K = 15 monet, n = 1 700 dni oceny (populacja F2-1b); ta sama reguła drukowana w C2 jest **warunkiem Zakresu (b)** pierwszej rundy na danych, nie werdyktem rundy; w K6 pięć par realistycznych (bez `ewma94_t5 → ewma94_ep`: C2 nie ma ogonów `ep`), K7 liczone z 20 monet |
 | poziomy | p ∈ {1 %, 5 %}, każdy osobno |
 | panele | **5 000** (jedna wspólna seria paneli dla wszystkich prognoz, strat i komórek) |
 | bootstrap testu zbiorczego | 999 replikacji po dniach (wspólne indeksy dla wszystkich prognoz i p w danym panelu i n) |
-| test porównawczy | DM na dziennych średnich po monetach różnicy strat, wariancja HAC Newey–West (`miara.dm`, opóźnienie 7 przy n ≥ 1 600); bez poprawki Harveya–Leyborne'a–Newbolda |
+| test porównawczy | DM na dziennych średnich po monetach różnicy strat, wariancja HAC Newey–West (`miara.dm`, opóźnienie 7 dla n od 1 241 do 2 262 dni, czyli dla 1 600 i 1 700); bez poprawki Harveya–Leyborne'a–Newbolda |
 | precyzja | SE odsetka ≤ **0,71 pp** (0,57 pp przy mocy 80 %, 0,31 pp przy 5 %) |
 | okres treningu GARCH | rosnące okno od dnia 0 do początku bloku b ≥ 400; refit co 30 dni (57 bloków × 20 monet = 1 140 dopasowań na panel) |
 
 **Dlaczego 5 000 paneli.** SE odsetka odrzuceń ma być wyraźnie mniejszy niż pasmo rozmiaru (±2,5 pp wokół
-5 % to ok. 8 SE, bo SE rozmiaru wynosi 0,31 pp) i niż odstępy między progami a oczekiwanymi wartościami
-(pilotaż: K-a 7,9 % przy progu 10 %, czyli ok. 5,5 SE przy 5 000 paneli; 1,7 SE samego pilotażu). Panele
+5 % to ok. 8 SE, bo SE rozmiaru wynosi 0,31 pp) i niż odstępy między progami a oczekiwanymi wartościami.
+Przy K-a prawdziwy rozmiar nie jest znany: pilotaż 480 paneli dał 7,9 ± 1,2 % przy progu 10 %, a trzy
+pilotaże razem (480 + 100 + 60 = 640 paneli, inne ziarna) 57/640 = 8,9 ± 1,1 %. SE ok. 0,4 pp przebiegu
+rejestrowego opisuje tylko jego własną precyzję i **nie usuwa niepewności co do prawdziwego rozmiaru**: przy
+niepewności 8,9 ± 1,1 % szansa, że wynik rejestrowy wyjdzie ≤ 10 %, to ok. 80–83 %, a nie pewność
+(wcześniejsze sformułowanie „zapas ok. 5,5 SE” było przesadą). Panele
 komórek C1 i C2 są zależne (ten sam panel), więc porównania między komórkami są opisowe.
 
 ### Rachunek mierzalności (R3)
@@ -126,17 +151,25 @@ Laboratorium jest mierzalne, jeśli (1) jego rozdzielczość jest dużo mniejsza
 (2) każde kryterium może zawieść (inaczej reguła nic nie rozstrzyga).
 
 1. **Rozdzielczość.** SE ≤ 0,71 pp przy 5 000 panelach. Pasma kontroli rozmiaru (K1, K4, K6) mają ±2,5 pp
-   wokół 5 % (8 SE); próg mocy 95 % (K2, K5) leży daleko od wyników pilotażu (100 %); K-a: zapas 2,1 pp
-   (pilotaż) = 5,5 SE rejestrowego przebiegu; K-b: moc 99,4–99,6 % wobec progu 80 %. Rozdzielczość
-   bootstrapu: B = 999 daje p-wartości na siatce 1/1 000, a próg α/3 = 1,67 % to ok. 17 przekroczeń (test
-   `test_rozdzielczosc_bootstrapu_pozwala_testom_a_i_b_odrzucac_na_poziomie_alfa_przez_3`).
+   wokół 5 % (8 SE); próg mocy 95 % (K2, K5) leży daleko od wyników pilotażu (100 %); K-a: zapas ok. 1–2 pp
+   (pilotaż 480: 7,9 %; trzy pilotaże razem 8,9 ± 1,1 %) wobec SE przebiegu rejestrowego ok. 0,4 pp — zapas
+   jest realny, ale prawdziwy rozmiar jest niepewny (patrz „Dlaczego 5 000 paneli”); K-b: moc 99,4–99,6 %
+   wobec progu 80 % (**K-b to w praktyce druga kontrola pozytywna, a nie kryterium, które realnie
+   rozstrzyga; rozstrzyga K-a**). Rozdzielczość bootstrapu: B = 999 daje p-wartości na siatce 1/1 000, a próg
+   α/3 = 1,67 % oznacza, że składnik jednostronny odrzuca przy co najwyżej 15 z 999 replikacji po dużej
+   stronie (dwustronny: przy co najwyżej 7 po mniejszej stronie), więc test zbiorczy ma poziom nominalny co
+   najwyżej 4,8 %, nie 5 % (testy
+   `test_rozdzielczosc_bootstrapu_pozwala_testom_a_i_b_odrzucac_na_poziomie_alfa_przez_3` oraz
+   `test_skladniki_i_zbiorczy_odrzucaja_dopiero_ponizej_alfa_przez_3`).
 2. **Obalalność (kryteria mogą zawieść).** Gdyby K-a stosować do prognozy `ewma94_t5` (σ z EWMA, ogon t5),
    zawiodłoby ono z dużym zapasem: 77–86 % odrzuceń w pilotażach wobec progu 10 %. Gdyby K-b dotyczyło σ
    zaniżonego tylko o 5 %, zawiodłoby też (pilotaż 480: moc testu zbiorczego wobec wyroczni × 0,95 to
    47 % / 53 %, wobec progu 80 %). P-a i P-b w pilotażu **nie** są spełnione (patrz niżej): reguła P
    potrafi więc dać NIE, a reguła K w pilotażu daje TAK. Żadna reguła nie jest trywialnie spełniona;
    P-a i P-b nie są też niemożliwe z konstrukcji (moc DM rośnie z n i ze zbliżaniem się prognoz do
-   wyroczni), tylko przy n = 1 600 pilotaż pokazuje 35 % / 76 % mocy pary głównej.
+   wyroczni), tylko przy n = 1 600 pilotaż 480 pokazuje 35 % / 76 % mocy pary głównej (pilotaże
+   recenzentów: 37–47 % przy 1 % i 78–84 % przy 5 %). Reguła K może też dać NIE: w pilotażach recenzentów
+   K-a przy 1 % wyszło 12,0 % i 11,7 % (powyżej progu 10 %), w pilotażu 480 7,9 %.
 3. **Koszt:** ok. 30 min na 16 procesach.
 
 Werdykt rachunku: **przebieg może wystartować** — rozdzielczość jest dużo mniejsza niż marginesy
@@ -165,7 +198,18 @@ Reszty standaryzowane do ogonów empirycznych: dla okna i EWMA z ich własnych �
 z filtra przepuszczonego z parametrami bloku b przez dni < b („reszty w próbie”: parametry widziały te
 same dni, ale filtr nie widzi dni ≥ b). Bez żadnego zwrotu z dnia ≥ t w prognozie dnia t:
 `test_prognozy_nie_zalezą_od_przyszlosci_obciecie_panelu` oraz
-`test_zaburzenie_dnia_t_nie_zmienia_prognoz_na_dni_do_t_wlacznie`.
+`test_zaburzenie_dnia_t_nie_zmienia_prognoz_na_dni_do_t_wlacznie`. Po przeglądzie testy poszerzono (pierwotnie
+zaburzały tylko dzień w środku bloku):
+`test_zwroty_od_dnia_t0_nie_zmieniaja_zadnej_z_19_prognoz_na_dni_do_t0_wlacznie` (t0 ∈ {400, 429, 430, 431,
+489, 490, ostatni dzień} na mikro-panelu; wszystkie 19 prognoz i oba poziomy bez różnicy co do bitu dla dni ≤ t0),
+`test_zmiana_zwrotu_dnia_t0_rusza_prognozy_estymowane_dopiero_od_dnia_t0_plus_1` (test czułości: zmiana
+jednego dnia rusza σ̂ dnia następnego, we wszystkich monetach każdej prognozy estymowanej),
+`test_zaburzenie_pierwszego_dnia_bloku_nie_zmienia_prognoz_tego_ani_poprzednich_blokow` (dzień początku bloku nie
+wchodzi do parametrów GARCH ani do ogonów tego bloku) i
+`test_zrodla_zgodne_z_odtworzeniem_od_zera_z_definicji_dnia_t_i_bloku` (każde σ̂ i każdy ogon przeliczone od nowa
+z definicji, pętlami). Niezależnie recenzent kodu sprawdził panel o pełnej długości (2 100 dni, 5 monet):
+zaburzenie zwrotów od dnia t0 ∈ {399, 400, 429, 430, 431, 1000, 2079, 2080} nie zmieniło ani jednego bitu
+w 76 tablicach prognoz (19 prognoz × 2 poziomy p × kwantyl i ES) dla dni ≤ t0.
 
 ### Test zbiorczy (bez zmian względem LV1)
 
@@ -201,7 +245,11 @@ dwustronny z równymi ogonami), C: ogon (średnia d_t, jednostronny). Zbiorczy =
   HAC. Pary realistyczne to `okno60_t5 → ewma94_t5`, `ewma94_t5 → garch_tnu`, `okno60_t5 → garch_tnu`,
   `garch_tnu → garch_t5`, `ewma94_t5 → har_t5`, `ewma94_t5 → ewma94_ep`. Pod H0 „prawdziwa średnia
   różnica = jej średnia po panelach” odsetek |t_c| > 1,96 powinien wynosić ok. 5 %, jeśli błąd HAC jest
-  wiarygodny. To kontrola błędu standardowego (opóźnienia HAC), nie rozmiar absolutny.
+  wiarygodny. To kontrola błędu standardowego (opóźnienia HAC), nie rozmiar absolutny. W C2 jest pięć par (bez
+  `ewma94_t5 → ewma94_ep`). Pilotaż 480 dał największy odsetek 7,3 % / 9,0 %, pilotaże recenzentów do
+  12 %; prawdopodobna przyczyna to efekt estymacji (West 1996: różnica strat z estymowanych parametrów ma
+  inną wariancję niż daje wzór HAC) — to **hipoteza, nie ustalenie**, a dłuższe opóźnienie HAC by jej nie
+  naprawiło.
 
 ### Kryteria
 
@@ -223,15 +271,19 @@ Kody są w kodzie (`ocen_k`, `ocen_p`) i w wydruku.
 
 **Reguła P — pytanie porównawcze (DM na stracie FZ0).**
 
-| kod | rola | co | wymaganie | bramkuje |
-|---|---|---|---|---|
-| **K4** | kontrola negatywna (R8) | rozmiar DM (dwustronny) na 4 parach dokładnie zerowych {FZ0, PINB} × {c_A 0,9; 0,8}; liczy się NAJGORSZA z czterech | odsetek odrzuceń ∈ [2,5 %; 7,5 %] | każdy wniosek |
-| **K5** | kontrola pozytywna (R8) | moc DM-FZ0 (jednostronnie t > 1,96): `zan30` wobec `wyr_t5` | ≥ 95 % | każdy wniosek |
-| **K6a** | kontrola HAC | rozmiar DM-FZ0 po wyśrodkowaniu na parach realistycznych: NAJWIĘKSZY z sześciu | ≤ 7,5 % | **tylko wniosek TAK** |
-| **K6b** | kontrola HAC | jw.: NAJMNIEJSZY z sześciu | ≥ 2,5 % | **tylko wniosek NIE** |
-| **K7a–d** | kontrola estymatora | jak w regule K | jak wyżej | każdy wniosek |
-| **P-a** | kryterium (mierzalność) | MDE zaniżenia σ testu DM-FZ0 wobec wyroczni (moc 80 %, siatka x ∈ {0; 0,05; 0,10; 0,15; 0,20; 0,30}) | MDE ≤ **0,10** (realizacja: moc po wygładzeniu maksimum narastającym przy x = 0,10 ≥ 80 %) | — |
-| **P-b** | kryterium (mierzalność) | moc DM-FZ0 (t > 1,96, B lepsza) pary głównej `ewma94_t5 → garch_tnu` | ≥ **80 %** | — |
+| kod | rola | co | wymaganie | bramkuje wniosek | dotyczy kryteriów |
+|---|---|---|---|---|---|
+| **K4** | kontrola negatywna (R8) | rozmiar DM (dwustronny) na 4 parach dokładnie zerowych {FZ0, PINB} × {c_A 0,9; 0,8}; liczy się NAJGORSZA z czterech | odsetek odrzuceń ∈ [2,5 %; 7,5 %] | każdy wniosek | P-a, P-b |
+| **K5** | kontrola pozytywna (R8) | moc DM-FZ0 (jednostronnie t > 1,96): `zan30` wobec `wyr_t5` | ≥ 95 % | każdy wniosek | P-a, P-b |
+| **K6a** | kontrola HAC | rozmiar DM-FZ0 po wyśrodkowaniu na parach realistycznych: NAJWIĘKSZY z sześciu (w C2 z pięciu) | ≤ 7,5 % | **tylko wniosek TAK** | P-b |
+| **K6b** | kontrola HAC | jw.: NAJMNIEJSZY z sześciu (w C2 z pięciu) | ≥ 2,5 % | **tylko wniosek NIE** | P-b |
+| **K7a–d** | kontrola estymatora | jak w regule K | jak wyżej | każdy wniosek | P-b |
+| **P-a** | kryterium (mierzalność) | MDE zaniżenia σ testu DM-FZ0 wobec wyroczni (moc 80 %, siatka x ∈ {0; 0,05; 0,10; 0,15; 0,20; 0,30}) | MDE ≤ **0,10** (realizacja: moc po wygładzeniu maksimum narastającym przy x = 0,10 ≥ 80 %) | — | — |
+| **P-b** | kryterium (mierzalność) | moc DM-FZ0 (t > 1,96, B lepsza) pary głównej `ewma94_t5 → garch_tnu` | ≥ **80 %** | — | — |
+
+Kolumna „dotyczy kryteriów” mówi, przy którym niespełnionym kryterium reguły P dana kontrola musi przejść,
+żeby wniosek NIE był wiarygodny (zmiana po przeglądzie, patrz niżej); w regule K każda kontrola dotyczy
+obu kryteriów, a przy wniosku TAK (wszystkie kryteria spełnione) liczą się wszystkie kontrole „TAK”/„każdy”.
 
 **Uzasadnienia progów.**
 
@@ -261,21 +313,38 @@ Kody są w kodzie (`ocen_k`, `ocen_p`) i w wydruku.
   wniosek TAK → K6a bramkuje TAK. Test **zbyt zachowawczy** może tylko zaniżać moc, więc wniosek TAK pozostaje
   ważny, a podważa tylko wniosek NIE → K6b bramkuje NIE. Progi 2,5 % i 7,5 % bez zmian względem wersji
   pierwotnej (jedna kontrola dwustronna dla obu wniosków); zmiana zrobiona po pilotażu (patrz niżej).
+- **Dlaczego K6 i K7 dotyczą tylko wniosku P-b (zmiana po przeglądzie, po fakcie).** P-a pyta o moc DM
+  wobec wyroczni, a K6 (błąd HAC na parach realistycznych) i K7 (estymator GARCH) tej mocy nie dotyczą:
+  wyrocznia nie jest estymowana, a pary realistyczne w ogóle w P-a nie występują. W wersji z `73fff28`
+  zawiedzione K6a, K6b albo K7 wstrzymywało więc także wniosek „P-a niespełnione”, choć nic o nim nie mówi.
+  Recenzent statystyczny pokazał to na własnym pilotażu przy p = 5 % (P-a: MDE 0,127, czyli niespełnione;
+  K6b 2,0 % < 2,5 %; stara reguła dawała WSTRZYMANE zamiast NIE). Teraz każda kontrola ma jawną listę
+  kryteriów (`dotyczy`): K4 i K5 — P-a i P-b; K6a, K6b i K7a–d — tylko P-b. **Skutek: nowa reguła zmienia
+  wyłącznie wyniki WSTRZYMANE na NIE; nie tworzy TAK, nie odbiera NIE i nie zmienia reguły K** (własność
+  sprawdza `test_werdykt_z_dotyczy_wlasnosci`; stara reguła jako szczególny przypadek bez `dotyczy`:
+  `test_werdykt_bez_dotyczy_to_regula_sprzed_przegladu`). To zmiana po obejrzeniu pilotaży, więc **nie jest
+  ślepa**; uzasadnienie jest logiczne, progi liczbowe bez zmian.
 
 ### Reguła decyzji (R4 / reguła STOP)
 
 Dla każdego p osobno, na komórce głównej C1. Wynik każdej z dwóch reguł (K, P) to jedno z trzech:
 
-- **WSTRZYMANE** ⇔ zawodzi którakolwiek kontrola „każdy wniosek” **tej reguły** (K: K1, K2, K7a–d;
-  P: K4, K5, K7a–d), **albo** zawodzi kontrola bramkująca wyciągnięty wniosek (tylko reguła P: K6a przy
-  wniosku TAK, K6b przy wniosku NIE). Błąd laboratorium, nie wniosek o danych.
-- **TAK** (pytanie mierzalne) ⇔ wszystkie kontrole bramkujące przeszły ORAZ wszystkie kryteria
-  (K: K-a i K-b; P: P-a i P-b) są spełnione.
-- **NIE** (pytanie niemierzalne) ⇔ kontrole bramkujące przeszły, a co najmniej jedno kryterium nie.
+- **TAK** (pytanie mierzalne) ⇔ wszystkie kryteria reguły są spełnione (K: K-a i K-b; P: P-a i P-b) ORAZ
+  przeszły wszystkie kontrole o bramce „każdy wniosek” albo „tylko TAK” (K: K1, K2, K7a–d; P: K4, K5, K6a,
+  K7a–d; K6b w TAK nie uczestniczy).
+- **NIE** (pytanie niemierzalne) ⇔ dla co najmniej jednego niespełnionego kryterium przeszły wszystkie
+  kontrole o bramce „każdy wniosek” albo „tylko NIE”, które to kryterium dotyczą (K: K1, K2, K7a–d; P przy
+  niespełnionym P-a: K4 i K5; P przy niespełnionym P-b: K4, K5, K6b, K7a–d).
+- **WSTRZYMANE** ⇔ każdy inny przypadek: zawiodła kontrola, od której zależy wyciągany wniosek. To błąd
+  laboratorium, nie wniosek o danych.
+
+Zmiana względem `73fff28`: wniosek NIE z P-a nie czeka już na K6b i K7a–d (nie dotyczą mocy wobec wyroczni).
+Reguła zmienia więc wyłącznie wyniki WSTRZYMANE na NIE; TAK i reguła K są bez zmian (patrz „Zmiany po
+przeglądzie”).
 
 W wydruku wynik reguły K lub P nazywa się **MIERZALNE** (= TAK), **NIEMIERZALNE** (= NIE) albo
 **WSTRZYMANE**; wynik rundy to **MIERZALNA / NIEMIERZALNA / WSTRZYMANA**. Każdą regułę i regułę rundy
-wydruk podaje osobno dla C1 (kryteria) i C2 (opis).
+wydruk podaje osobno dla C1 (werdykt rundy) i C2 (warunek Zakresu (b), nie werdykt rundy).
 
 **Reguła rundy** (`regula_rundy`): runda pierwszej analizy VaR/ES na danych przy poziomie p jest
 
@@ -286,25 +355,39 @@ wydruk podaje osobno dla C1 (kryteria) i C2 (opis).
 **WSTRZYMANA ⇒ STOP:** najpierw diagnoza, potem **najwyżej jedna** runda LV2b. W LV2b wolno zmienić
 wyłącznie to, co diagnoza wskaże jako błąd laboratorium (np. opóźnienie HAC w DM, ustawienia estymatora);
 NIE wolno zmieniać progów, prognoz, generatora, komórek ani liczby paneli. Druga WSTRZYMANA to
-NIEMIERZALNA(p) i karta decyzji do użytkownika.
+NIEMIERZALNA(p) i karta decyzji do użytkownika. LV2b używa **nowego ziarna `20261017`** (ziarno rejestrowe + 1):
+poprawka nie może być dopasowana do już obejrzanych paneli. LV2b dotyczy tylko poziomów p, które były
+WSTRZYMANE; wynik poziomu, który nie był WSTRZYMANY, przechodzi bez zmian i nie jest liczony ponownie. Reguły
+są oceniane dla każdego p osobno, więc runda może być MIERZALNA przy p = 5 % i NIEMIERZALNA albo WSTRZYMANA
+przy p = 1 %. (Ziarno LV2b to decyzja wykonawcy, odmienna od propozycji recenzenta „to samo ziarno”; do
+przeglądu użytkownika.)
 
 **MIERZALNA(p) ⇒ pierwsza runda VaR/ES na danych może wejść do pre-rejestracji** (osobna karta, licznik
 „ryzyko 2021+”, PRD §11.4), ale tylko przy warunkach przeniesienia zapisanych TERAZ:
 
 1. **Zakres.** (a) ≥ 20 monet, każda z ≥ 1 600 dniami OOS po ≥ 400 dniach historii (komórka C1), **albo**
    (b) populacja 15 monet × ≥ 1 700 dni OOS (komórka C2, jak F2-1b), ale tylko jeśli ta sama reguła
-   (to samo pytanie, to samo p) daje TAK także w C2 — C2 jest drukowana jako OPIS tej decyzji, nie jest
-   kryterium werdyktu rundy. Przy mniejszym n lub K potrzebna jest nowa pre-rejestracja laboratorium.
-2. **Zależność.** Współczynnik VR dziennej sumy trafień (VR = Var(S_t)/(K p (1 − p))) zmierzony na
-   prawdziwych danych dla prognozy `garch_tnu`-podobnej (osobna karta, licznik opisowy) nie przekracza
-   VR komórki C1 z tego przebiegu dla `garch_tnu` (wydruk podaje go przy każdym p; pilotaż: ok. 3,2 przy 1 %
-   i 6,4 przy 5 %). Inaczej trzeba policzyć nową komórkę z silniejszą zależnością.
+   (to samo pytanie, to samo p) daje TAK także w C2 **i wynik C2 nie ma flagi „w granicach 2 SE od progu”**
+   — C2 jest warunkiem Zakresu (b), nie kryterium werdyktu rundy. **Dziś osiągalna jest tylko wersja (b)**
+   (wg F2-1b pełną historię ma 15 monet); wersja (a) wymaga rozszerzenia koszyka. Przy mniejszym n lub K
+   potrzebna jest nowa pre-rejestracja laboratorium. Komórka i lista monet rundy na danych (K, n, kolejność
+   monet) muszą być zapisane z góry i być dokładnie komórką laboratorium.
+2. **Zależność.** Współczynnik VR dziennej sumy trafień (VR = Var(S_t)/(K p (1 − p))) rośnie z liczbą monet
+   K, więc porównujemy **ρ_h = (VR − 1)/(K − 1)** (średnia korelacja trafień dwóch monet w tym samym dniu;
+   pilotaż: ρ_h ≈ 0,116 przy 1 % i ≈ 0,284 przy 5 %, w C1 i C2 prawie tak samo). ρ_h zmierzone na
+   prawdziwych danych dla prognozy `garch_tnu`-podobnej (osobna karta, licznik opisowy; skrypt, który nie
+   drukuje odsetka trafień) musi spełniać **ρ̂ + 2 SE ≤ ρ_h z laboratorium** (VR dla `garch_tnu` wydruk
+   podaje przy każdym p, a ρ_h wylicza się z niego). Inaczej trzeba policzyć nową komórkę z silniejszą
+   zależnością.
 3. **Klasa prognozy.** Wniosek K dotyczy klasy „GARCH(1,1)-t dopasowany walk-forward (refit co 30 dni, rosnące
    okno ≥ 400 dni), ogon t_ν̂”. Okno 60 dni i EWMA mają W1 (odrzucane w ≥ 70 % paneli): test bezwzględny jest dla
    nich z założenia nieinformatywny i wolno je oceniać wyłącznie testem porównawczym (jeśli P = TAK) albo
-   opisowo. Prognozę i ogon zapisuje pre-rejestracja rundy na danych.
+   opisowo. Prognozę i ogon zapisuje pre-rejestracja rundy na danych; ma ona użyć dokładnie
+   `symulacje.garch_t.dopasuj_garch_t`, zerowej średniej zwrotu i refitów co 30 dni od początku okresu oceny.
 4. **Pytanie.** Wolno zadać wyłącznie pytania z wynikiem TAK; odrzucenie prognozy testem bezwzględnym
    znaczy „nie skalibrowana”, nie „bezużyteczna” (LV1).
+5. **Dwa poziomy.** Runda na danych, która pyta o oba p (1 % i 5 %), zadaje dwa testy: albo wskazuje jedno p
+   z góry, albo stosuje korektę (α/2). Zapisze to pre-rejestracja rundy na danych.
 
 **NIEMIERZALNA(p)** ⇒ **żadna runda VaR/ES na prawdziwych danych przy tym poziomie nie startuje** (R3).
 Alternatywy — niżej.
@@ -312,7 +395,12 @@ Alternatywy — niżej.
 Skrypt jest neutralnym reporterem (R14): drukuje liczby, kryteria i wynik reguł; werdykt (Ready / Caveats
 / Revision) podpisuje Claude po przebiegu. Wydruk oznacza „[w granicach 2 SE od progu]” każde kryterium lub
 kontrolę, której wartość leży bliżej progu niż 2 SE (przy takich werdykt jest wrażliwy na losowość), oraz
-przy kontrolach K6a/K6b „[bramkuje tylko wniosek …]”.
+przy kontrolach „[bramkuje tylko wniosek …]” i „[dotyczy: …]” (które kryteria wniosek NIE bramkuje).
+
+**Reguła flagi (dopisana po przeglądzie, przed przebiegiem).** Wynik mechaniczny reguł obowiązuje i flaga go
+nie zmienia. Ale werdykt rundy (Ready / Caveats / Revision) jest przy wyniku z flagą co najwyżej Caveats;
+nie wolno dosypywać paneli, zmieniać ziarna ani powtarzać przebiegu „bo blisko progu”; a TAK z flagą w C2 nie
+otwiera Zakresu (b).
 
 ### Przewidywania (zapisane PO obejrzeniu pilotażu, więc nie ślepe; falsyfikowalne)
 
@@ -327,11 +415,16 @@ Sprawdzane w kodzie (`przewidywania`) dla komórki głównej, osobno dla p = 1 %
 
 **Oczekiwanie łączne (nie ślepe):** K = TAK (K-a przy 1 % blisko progu: 7,9 ± 1,2 % w pilotażu), P = NIE,
 a więc runda MIERZALNA wyłącznie przez pytanie bezwzględne K. W razie niespełnienia któregoś z W1–W4 albo
-takiego łącznego wyniku opisujemy to wprost.
+takiego łącznego wyniku opisujemy to wprost. Po przeglądzie (pilotaże recenzentów, razem 640 paneli):
+K-a przy 1 % ma zbiorczo 8,9 ± 1,1 %, więc **K = NIE (a przy 1 % runda NIEMIERZALNA) jest realnym wynikiem**;
+kontrola, która zawiedzie przypadkiem (np. K1 8,0 % w pilotażu recenzenta), daje WSTRZYMANE; P-b przy 5 %
+ma zbiorczo 77,3 ± 1,7 %, więc szansa, że W4 zostanie obalone (moc ≥ 80 %), to ok. 6–7 %; P-a jest
+niespełnione z dużym zapasem (moc przy x = 0,10 ok. 50–59 % wobec 80 %), więc przy przechodzących K4 i K5
+P = NIE. Przewidywania W3 i W4 program odczytuje po kodzie kryterium, nie po jego pozycji w liście.
 
 ### Co NIE jest kryterium (opis)
 
-Wynik komórki C2; wszystkie prognozy poza `wyr_t5`, `zan30`, `garch_tnu`, `garch_tnu_zan10` w regule K i
+Wynik komórki C2 (jest warunkiem Zakresu (b), nie kryterium werdyktu rundy); wszystkie prognozy poza `wyr_t5`, `zan30`, `garch_tnu`, `garch_tnu_zan10` w regule K i
 poza `wyr_t5`/`zan…` i parą główną w regule P; składniki A, B, C testu zbiorczego; test A po stronie „za
 dużo trafień”; VR; strata PINB poza K4; ogony empiryczne (`ep`, `ec`), `garch_t5`, `har_t5`, `okno60_t5`,
 `ewma94_t5` (z wyjątkiem pary głównej); „koszt estymacji” (średnia różnica straty prognozy estymowanej
@@ -344,18 +437,29 @@ rozmiar.
 Oś czasu (UTC, 2026-10-06; ustalona z zapisów sesji) i co z niej wynika dla ślepoty projektu:
 
 **1. Estymator GARCH-t (17:07–17:09).** Własny estymator (`symulacje/garch_t.py`) porównano z pakietem `arch`
-8.0.0 przy tym samym backcaście (test `test_dopasowanie_zgodne_z_pakietem_arch_przy_tym_samym_backcast`),
+8.0.0 przy tej samej wartości backcastu (test `test_dopasowanie_zgodne_z_pakietem_arch_przy_tym_samym_backcast`;
+konwencja startu filtra różni się: `arch` przyjmuje σ²₀ = ω + (α + β)·backcast, nasz estymator σ²₀ = backcast;
+różnica logarytmu wiarygodności ≤ 0,04 na 10 seriach, α i β w granicach 3·10⁻⁴, ν w granicach 0,1),
 sprawdzono odtwarzanie parametrów generatora na długich seriach, zgodność ciepłego i zimnego startu oraz
 niezależność od jednostek zwrotu. Pilotaże estymatora na pojedynczych seriach miały własne ziarna.
+
+**1a. Pilotaż samej wyroczni dla testu DM (17:09:59, skrypt poza repo, ziarna 900000 + numer powtórzenia).**
+300 paneli po 20 monet × 1 700 dni; tylko pary „dokładnie zerowe” (c_A 0,9 i 0,8) i moc wobec wyroczni na
+siatce x = 0,05–0,20, straty FZ0 i PINB, oba p. Pokazał, jak szybko rośnie moc DM; nie zawierał prognoz
+estymowanych. Wynik był widziany przed zapisem kryteriów P.
 
 **2. Pilotaż 64 paneli (17:11:45, skrypt poza repo, ziarno bazowe 810000; to NIE jest wynik rundy).** Odsetek
 odrzuceń testu zbiorczego, p = 1 % / 5 %: `garch_tnu` 6,2 % / 4,7 %; `okno60_t5` 100 % / 93,8 %;
 `ewma94_t5` 85,9 % / 79,7 %. Test DM-FZ0 pary `ewma94_t5 → garch_tnu`, odsetek t > 1,96 (B lepsza): 37,5 % /
 68,8 %. **Progi K-a (≤ 10 %) i zakresy K7 zapisano w kodzie PO tym pilotażu (17:22:07)** — nie są ślepe.
-SE pilotażu 64 paneli jest duży (ok. 3 pp przy 6 %).
+SE pilotażu 64 paneli jest duży (ok. 3 pp przy 6 %). Pilotaż objął n = 1 700 dni oceny, 14 prognoz i 16 par DM, a
+parę główną P-b i pary K6 wybrano **po** jego obejrzeniu. Wagą straty PINB była wtedy σ̂ prognozy A; po
+pilotażu zmieniono ją na wspólną EWMA 0,94 znaną w t − 1 (17:20:54–17:21:00; waga musi być wspólna dla
+obu prognoz pary, żeby strata pozostała prawidłowa; zmiana była zrobiona po obejrzeniu wyniku).
 
 **3. Test działania i pilotaże 16 i 480 paneli (17:28–17:35, ziarno 777).** `--smoke` (17:28:36) sprawdził,
-że kod działa. Pilotaż 480 paneli (17:29:08–17:32:03; 174 s na 16 procesach) pokazał: (komórka C1, p = 1 % /
+że kod działa. Pilotaż 16 paneli (17:28:49–17:29:02) to pierwsze 16 paneli tego samego ziarna; jego wynik też
+był widziany. Pilotaż 480 paneli (17:29:08–17:32:03; 174 s na 16 procesach) pokazał: (komórka C1, p = 1 % /
 p = 5 %; **to NIE jest wynik rundy**)
 
 | wielkość | p = 1 % | p = 5 % | wymaganie |
@@ -398,25 +502,130 @@ oba wyniki, czyli nie są trywialne (R3).
 - **Test przypięcia konfiguracji** (`test_konfiguracja_progi_i_prognozy_zgodne_z_pre_rejestracja`) zapisuje
   progi, ziarno, komórki i listę prognoz z tej pre-rejestracji; zmiana któregokolwiek w kodzie wymaga zmiany
   w README (oraz w teście).
+- **Zmiana tylko w dokumentacji** `symulacje/porownanie_lv2.py` (17:48:49): docstring, bez zmiany kodu.
 
 **5. Kod testów i commit.** Testy jednostkowe powstały równolegle z kodem (17:33–17:55); commit kodu
-`009204b` (17:56:28). Testy pokrywają m.in.: wzory strat na liczbach ręcznych, wartości oczekiwane
+`009204b` (17:56:29). Testy pokrywają m.in.: wzory strat na liczbach ręcznych, wartości oczekiwane
 (porównanie z całkowaniem), pary zerowe, DM na wzorze ręcznym i znak, estymator GARCH względem `arch`, brak
 zaglądania w przyszłość (zaburzenie dnia t nie zmienia prognoz do t włącznie), podpanel = te same monety
 i dni, okablowanie reguł (każdy próg domknięty na granicy, bramki K6, tabela prawdy reguły rundy),
 determinizm niezależny od liczby procesów, przypięcie konfiguracji, znacznik pilotażu. Mikro kontrole R8
 na małych panelach: wyrocznia ma poprawny rozmiar, `zan30` jest wykrywane, pary zerowe nie odrzucają zbyt
-często. Mutacje na kopii poza repozytorium — w kroku przeglądu.
+często. Mutacje na kopii poza repozytorium zrobiono po zapisie (sekcja „Zmiany po przeglądzie”).
 
 **6. Czego nie sprawdzano.** Pełnego przebiegu rejestrowego (5 000 paneli, ziarno 20261016) nie
-uruchamiano. Nie czytano żadnych prawdziwych danych. K-a na rozdzielczości rejestrowej (SE ok. 0,4 pp)
+uruchamiano (poza jednym incydentem po zapisie, opisanym w „Zmiany po przeglądzie”: przerwany test
+mutacyjny z konfiguracją rejestrową, którego wyniku nikt nie widział). Nie czytano żadnych prawdziwych danych. K-a na rozdzielczości rejestrowej (SE ok. 0,4 pp)
 nie jest znane — pilotaż ma SE 1,2 pp. Nie badano zachowania estymatora przy zmianach reżimu, wspólnej
 zmienności ani zależności ogonowej (generator ich nie ma).
 
 ### Zmiany po przeglądzie, przed pełnym przebiegiem
 
-(do wypełnienia w kroku 2 planu: 3 niezależnych recenzentów, mutacje na kopii poza repo,
-`arxitect:architecture-review`; pusta, dopóki przegląd się nie odbył)
+Zapisane po commicie `73fff28` i **przed** przebiegiem rejestrowym. Przegląd zrobiły **modele** (agenty
+Claude), nie ludzie: inna „głowa” niż autor, ale możliwe wspólne ślepe plamy; dlatego po przebiegu dojdzie
+jeszcze przeliczenie jednej kluczowej liczby drugą, niezależną drogą (krok 4 planu). Recenzenci dostali
+pre-rejestrację i kod, nie moją analizę.
+
+**Kto i co sprawdzał.**
+
+- *Recenzent statystyczny:* progi, wzory strat i mnożniki par zerowych, reguły, tabelę prawdy reguły rundy i
+  liczby pilotażu 480 (przeliczone od nowa); własny pilotaż 100 paneli (ziarno 4711, poza rejestrem).
+- *Recenzent kodu:* przeciek z przyszłości (zero różnic co do bitu w 76 tablicach przy ośmiu punktach t0 na panelu
+  o pełnej długości 2 100 dni, 5 monet), niezależne przeliczenie jednego panelu (kwantyle i ES do 7·10⁻¹⁶; trafienia, U i VR co do
+  bitu; statystyka DM identyczna: 2,569250), determinizm (1 i 3 procesy, liczba wątków BLAS), estymator względem
+  `arch` na 10 seriach, ciepły i zimny start (różnica NLL ≤ 5·10⁻¹²); własny pilotaż 60 paneli (ziarno 424242).
+- *Recenzent mutacyjny:* zepsuł kod na kopii poza repozytorium na wiele sposobów (mutacje), żeby sprawdzić, czy
+  testy to zauważą.
+- *`arxitect:architecture-review`:* projekt obiektowy APPROVED, architektura APPROVED, interfejsy
+  CHANGES_REQUESTED (0 ustaleń blokujących).
+
+**Ustalenia i co z nimi zrobiono.**
+
+| # | ustalenie | kto | działanie |
+|---|---|---|---|
+| 1 | **BLOKUJĄCE:** K6 i K7 bramkowały wniosek NIE z P-a, choć nic o nim nie mówią | statystyczny | `dotyczy` w regule P (zmiana reguły, po fakcie; patrz „Uzasadnienia progów”) |
+| 2 | brak reguły na wynik „blisko progu” | statystyczny | reguła flagi (w „Reguła decyzji”) |
+| 3 | C2 nazwana „opisem”, a jest jedynym osiągalnym Zakresem | statystyczny | C2 = warunek Zakresu (b) (README i wydruk) |
+| 4 | warunki przeniesienia nieprecyzyjne (VR zależy od K; dwa p = dwa testy) | statystyczny | warunki 1–5 |
+| 5 | luki w osi czasu | statystyczny, kod | sekcja „Co sprawdzono PRZED zapisem kryteriów” uzupełniona |
+| 6 | K6a ≈ 9–12 % na parach realistycznych (hipoteza: efekt estymacji) | statystyczny | opisane, progi bez zmian; propozycję ograniczenia K6a/K6b do pary głównej **odrzucono** (opcja diagnozy w LV2b) |
+| 7 | brak reguły ziarna dla LV2b | statystyczny | ziarno `20261017` (recenzent proponował to samo ziarno) |
+| 8 | drobiazgi: opóźnienie NW 7 tylko do n = 2 262; „17 przekroczeń”; „z sześciu”; flaga P-a z surowej mocy; K-b w praktyce kontrola pozytywna; godzina commitu | statystyczny | poprawione w README i w kodzie (flaga P-a z mocy po wygładzeniu) |
+| 9 | `przetworz_panel` zmieniał stan wspólnego `SeedSequence` | kod | `_potomne` (to samo, co `spawn`, bez zmiany stanu), test przypięcia ziaren |
+| 10 | test przecieku zaburzał tylko środek bloku | kod | testy poszerzone (patrz „Prognozy”) |
+| 11 | zbyt luźny strażnik `start` | kod | strażnik: prognoza HAR musi być określona od początku okresu oceny |
+| 12 | błędny opis U w wydruku | kod | poprawiony |
+| 13 | błędne zdania README o backcaście i o ziarnach | kod | poprawione |
+| 14 | 53 luki w testach (mutanty, których nikt nie zauważył) | mutacyjny | 23 nowe funkcje testowe (42 przypadki) |
+| 15 | okablowanie reguły rundy (W3/W4 po kodzie), kolejność kolumn STAT/DIAG, domyślne wartości cudzych funkcji, nieznana `bramka`, wersje środowiska, `--zapisz` | architektura | kod i testy |
+
+**Co się zmieniło w regułach (po fakcie).** Tylko jedno: `dotyczy` w regule P (ustalenie 1). **Nie zmieniły się**:
+progi liczbowe, prognozy, generator, komórki, liczba paneli, ziarno rejestrowe, reguła K, reguła rundy. Nowa
+reguła P zamienia wyłącznie WSTRZYMANE na NIE (własność sprawdzona w teście). Doszły reguły operacyjne:
+flaga „blisko progu”, ziarno LV2b, warunki przeniesienia 1–5, nazwa C2.
+
+**Czego nie przyjęto.** (a) Ograniczenia K6a/K6b do pary głównej `ewma94_t5 → garch_tnu`: uczyniłoby K6a mniej
+surowym po obejrzeniu pilotaży (zostaje jako opcja diagnozy w LV2b). (b) „To samo ziarno w LV2b”: wybrano nowe,
+żeby poprawka nie była dopasowana do obejrzanych paneli. (c) Asercji NaN w `przetworz_panel`: zamiast tego
+mikro-test i sprawdzenie NaN na zapisanych wynikach po przebiegu.
+
+**Pilotaże recenzentów (poza rejestrem, inne ziarna, bez wpływu na jakikolwiek licznik).** Recenzent
+statystyczny: 100 paneli, ziarno 4711; recenzent kodu: 60 paneli, ziarno 424242. Ziarno rejestrowe nie było
+użyte. Komórka C1, p = 1 %:
+
+| wielkość | pilotaż 480 | recenzent statystyczny (100) | recenzent kodu (60) |
+|---|---|---|---|
+| K1 rozmiar na wyroczni | 3,1 % | 8,0 % (powyżej 7,5 %) | 3,3 % |
+| K-a rozmiar `garch_tnu` | 7,9 ± 1,2 % | 12,0 % | 11,7 ± 4,2 % |
+| K-b moc | 99,4 % | 100 % | 100 % |
+| P-a MDE | 0,140 | 0,141 | 0,134 |
+| P-b moc | 35,2 % | 47,0 % | 36,7 % |
+| wynik reguł K / P / rundy | TAK / NIE / MIERZALNA | WSTRZYMANE / WSTRZYMANE / WSTRZYMANA | NIE / WSTRZYMANE / WSTRZYMANA |
+
+Wyniki reguł w tabeli pochodzą z kodu z `73fff28` (przed zmianą `dotyczy`); przy p = 1 % nowa reguła P dałaby
+to samo, bo w obu pilotażach zawiodła K4 (8,0 % i 1,7 %). Przy p = 5 % K wyszło MIERZALNE w obu pilotażach recenzentów (K-a 7,0 % i 5,0 %); P-a MDE 0,127 i 0,130, P-b
+84,0 % i 78,3 %. Trzy pilotaże razem (640 paneli): K-a przy 1 % **57/640 = 8,9 ± 1,1 %**; P-b przy 5 % **77,3 ± 1,7 %**.
+Małe pilotaże mają duże SE (3–4 pp), więc pojedyncze porażki kontroli (K1 8,0 %; K4 1,7 %; K6b 0,0 %) to w
+dużej mierze szum, ale pokazują, że w przebiegu rejestrowym kontrola może zawieść przypadkiem.
+
+**Incydent W14 (błąd recenzenta mutacyjnego, ujawniony).** Jedna z mutacji sprawiła, że test działania
+(`--smoke`) zaczął liczyć pełną konfigurację rejestrową (5 000 paneli, ziarno rejestrowe) na kopii poza
+repozytorium, aż do przerwania po 420 s. Wynik nie został zapisany ani nigdy zobaczony; oryginalny kod nie
+został ruszony. Od tego czasu test-strażnik (autouse) powoduje błąd w `uruchom` przy więcej niż 100 panelach
+(mutacja W14 jest zabijana w 14 s). Jest to jedyny przypadek uruchomienia konfiguracji rejestrowej przed
+przebiegiem rejestrowym i **żaden jej wynik nie został obejrzany**.
+
+**Mutacje (kopia poza repozytorium).** Pierwsza seria: 216 mutantów względem testów z `73fff28`; 159 zabitych,
+57 przeżyło (4 równoważne, czyli bez zmiany zachowania, i 53 prawdziwe luki w testach). Recenzent zaproponował
+23 funkcje testowe (42 przypadki), które zabiły 53 z nich; wszystkie dodano. Ostatnia seria, na końcowym
+kodzie: **249 mutantów; 243 zabite asercją, 2 zabite błędem (C16, D10), 4 przeżyły i są równoważne** (M01 i M06:
+strata równa 0 przy r = v w obu zapisach; S08: dłuższy filtr dodaje tylko σ² dla dnia, którego nikt nie
+czyta; D06: uporządkowane `imap` nie zależy od `chunksize`). Mutacje sprawdzają, czy testy zauważą zepsuty kod;
+nie sprawdzają, czy wniosek statystyczny jest dobry.
+
+**Stan testów po przeglądzie.** `tests/test_lv2.py`: 131 funkcji testowych, 241 przypadków (w
+`009204b`: 88 i 159); cały zestaw repo: 1115 zebranych przypadków, z tego 1 pominięty (brak
+`shellcheck` w środowisku), reszta zielona; ruff i black czyste. Uczciwie: w drugim pełnym
+przebiegu jeden test czasowy spoza LV2 (`tests/test_automat.py`, sygnał zabijający krok automatu) przekroczył
+limit 30 s pod obciążeniem maszyny; w izolacji jest zielony (3 z 3 przebiegów), a pierwszy pełny przebieg był
+w całości zielony.
+
+**Poprawki samego README** (stwierdzone przez recenzentów): godzina commitu kodu 17:56:29 (nie 17:56:28); „ok. 17
+przekroczeń” → co najwyżej 15 (jednostronny) i 7 (dwustronny, po mniejszej stronie) z 999, poziom ≤ 4,8 %; „zapas 5,5 SE”
+usunięty; zdanie o ziarnie rejestrowym (użyte też w mikro-teście i teście przypięcia ziaren); „z sześciu” (w C2 z
+pięciu); opóźnienie NW 7 tylko dla n od 1 241 do 2 262; zdanie o backcaście (ta sama wartość liczbowa, inna
+konwencja startu filtra); „kod i testy z `009204b`” (commit `73fff28` zmienił też dokumentację dwóch plików
+kodu i ścieżki w karcie); luki w osi czasu; liczby testów.
+
+**Odroczone drobiazgi (po przebiegu, bez wpływu na wynik):** zdublowane `POZIOMY` i `NU`; martwa stała `N_DNI`;
+kolejność argumentów `fz0` i `straty_dzienne`; `Zrodla.pierwsze(k)` dla k większego niż liczba monet; definicja
+trafienia w `fz0` (`r <= v`) kontra `r < q` w teście zbiorczym (różnią się tylko przy równości); podział
+`run_lv2.py` (dziś ok. 990 linii).
+
+**Czego przegląd nie pokrył.** Niezależnej reimplementacji testu zbiorczego i estymatora GARCH przez recenzenta
+statystycznego; symulacji potwierdzającej efekt estymacji w DM (hipoteza z K6a); niezależnego przeliczenia C2,
+testu B i HAR przez recenzenta kodu; warstwy wydruku i reguł w pełni (część zamknięta nowymi testami). Dlatego
+po przebiegu: (i) przeliczenie niezależną drogą (krok 4), (ii) sprawdzenie NaN w C1 na zapisanych wynikach paneli.
 
 ### Co zrobić, gdy wynik jest NIEMIERZALNA albo WSTRZYMANA (alternatywy, nie ruchy tej rundy)
 
@@ -447,8 +656,12 @@ Każda alternatywa to nowe pytanie z własnym licznikiem (PRD §11.4) i własną
   poprawka HLN jest pomijalna, ale to założenie, nie pomiar.
 - **Reszty „w próbie” dla ogonów empirycznych GARCH** i ok. 16 trafień na monetę w ogonie 1 % → ogony
   empiryczne są szumne; to opis, nie kryterium.
-- **Pilotaż nie był ślepy** (K-a, K7, K6, P-a i W1–W4 ustalono po jego obejrzeniu).
-- **C2 (15 monet) to opis.** W pilotażu K-a w C2 przy p = 1 % wyniosło 9,4 %, bliżej progu niż w C1. Jeśli
+- **Pilotaż nie był ślepy** (K-a, K7, K6, P-a i W1–W4 ustalono po jego obejrzeniu). Zmiana reguły P po przeglądzie
+  (`dotyczy`) też jest po fakcie. Przegląd zrobiły modele, nie ludzie.
+- **Efekt estymacji w DM (hipoteza).** K6a ≈ 9–12 % na parach realistycznych sugeruje, że błąd HAC jest za
+  mały przy prognozach z estymowanymi parametrami (West 1996); nie zbadano tego symulacją. Dla wniosku NIE
+  z reguły P to nie ma znaczenia (liberalny test tylko zawyża moc), dla TAK — bramkuje K6a.
+- **C2 (15 monet) to warunek Zakresu (b), nie werdykt rundy.** W pilotażu K-a w C2 przy p = 1 % wyniosło 9,4 %, bliżej progu niż w C1. Jeśli
   w przebiegu rejestrowym C2 nie da TAK, populacja 15 monet (F2-1b) nie spełnia warunku „Zakres (b)”; wtedy
   pierwsza runda na danych wymaga ≥ 20 monet (np. top-50 z danymi od 2021).
 - Panel ma 2 100 dni, a refit idzie od 400 dni; krótsza historia (np. monety z ok. 600 dniami) jest poza
@@ -470,11 +683,18 @@ Każda alternatywa to nowe pytanie z własnym licznikiem (PRD §11.4) i własną
 2. **K-a ≤ 10 %** (karta nie podała progu), wybrane po pilotażu 64 paneli; patrz uzasadnienie.
 3. **K6 jako dwie bramki jednostronne** (po pilotażu 480; zmienia przewidywany wynik P przy 5 % z
    WSTRZYMANE na NIE, nie zmienia werdyktu rundy).
-4. **Komórki C1 i C2:** C1 decyduje, C2 jest opisem i sprawdzianem populacji F2-1b (karta: „n = 1 600
-   i 1 700 z F2-1b”); warunek „Zakres (b)” jest nowy.
+4. **Komórki C1 i C2:** C1 decyduje o werdykcie rundy, C2 jest sprawdzianem populacji F2-1b i warunkiem
+   „Zakres (b)” (karta: „n = 1 600 i 1 700 z F2-1b”); warunek „Zakres (b)” jest nowy, a po przeglądzie C2
+   przestała być nazywana „opisem” (dziś to jedyny osiągalny Zakres).
 5. **HAR i ogony empiryczne tylko jako opis** (karta: „HAR jako opis”, „ogon t5 i kwantyl empiryczny”).
 6. **Własny estymator GARCH-t** (ok. 1 140 dopasowań na panel × 5 000 paneli; pakiet `arch` byłby za wolny),
    zwalidowany pakietem `arch` w testach.
 7. **Data katalogu 2026-10-07** (karta wskazywała 2026-10-06 z dnia pisania kodu).
-8. Żaden z punktów 2–4 nie zmienia werdyktu rundy w pilotażu (MIERZALNA przez K), więc nie jest punktem
+8. Żaden z punktów 2–4 nie zmienia werdyktu rundy w pilotażu 480 (MIERZALNA przez K), więc nie jest punktem
    decyzyjnym dla użytkownika; wszystkie są do przeglądu.
+9. **Po przeglądzie, po fakcie:** (a) `dotyczy` w regule P (K6 i K7 bramkują tylko P-b; zmienia wyłącznie
+   WSTRZYMANE → NIE); (b) C2 jako warunek Zakresu (b) zamiast „opisu”; (c) ziarno LV2b `20261017` (recenzent
+   proponował to samo ziarno); (d) reguła flagi „blisko progu”; (e) warunki przeniesienia 1–5 (ρ_h zamiast VR,
+   dokładna komórka, jedno p albo korekta); (f) opcjonalny `--zapisz` i wymuszenie jednego wątku BLAS; (g) `_potomne`
+   zamiast `spawn` na stanie wspólnym. **Nie przyjęto:** ograniczenia K6a/K6b do pary głównej (zostaje jako
+   opcja diagnozy w LV2b). Punkty 9a–9d zmieniają tylko to, co wolno z wyniku wnioskować; **do przeglądu użytkownika**.

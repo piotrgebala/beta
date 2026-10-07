@@ -2,7 +2,8 @@
 LV2 — laboratorium VaR/ES dla prognoz ESTYMOWANYCH (okno, EWMA, GARCH-t, HAR). Zadanie 016.
 Pre-rejestracja: `runs/2026-10-07_lv2-var-es-estymowane/README.md`. Neutralny reporter (R14).
 
-    python -m symulacje.run_lv2 --workers 16 > runs/2026-10-07_lv2-var-es-estymowane/raw_output.txt
+    python -m symulacje.run_lv2 --workers 16 --zapisz data/lv2_wyniki_paneli.npz \
+        > runs/2026-10-07_lv2-var-es-estymowane/raw_output.txt
     python -m symulacje.run_lv2 --smoke      # małe panele: TYLKO sprawdzenie, że kod działa
 
 Pytania: (K) czy zbiorczy test wsteczny LV1 uczciwie ocenia prognozę ESTYMOWANĄ i poprawnie określoną
@@ -24,6 +25,7 @@ import os
 import sys
 import time
 from functools import cache
+from importlib.metadata import version
 
 import numpy as np
 
@@ -141,6 +143,15 @@ def _ziarno_int(ss: np.random.SeedSequence) -> int:
     return int(ss.generate_state(1, dtype=np.uint64)[0])
 
 
+def _potomne(ss: np.random.SeedSequence, n: int) -> list[np.random.SeedSequence]:
+    """Te same `n` potomnych SeedSequence co `ss.spawn(n)` na świeżym `ss`, ale bez zmiany stanu `ss`
+    (ponowne wywołanie panelu z tym samym `ss` daje ten sam wynik)."""
+    return [
+        np.random.SeedSequence(ss.entropy, spawn_key=(*ss.spawn_key, i), pool_size=ss.pool_size)
+        for i in range(n)
+    ]
+
+
 @cache
 def _c_zerowe(strata: str, c_a: float, p: float) -> float:
     return mnoznik_zerowy(c_a, p, NU, strata)
@@ -178,7 +189,7 @@ def porownania_komorki(straty: dict) -> np.ndarray:
 def przetworz_panel(arg) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Jeden panel → (STAT: komórki × p × prognozy × STAT, DM: komórki × p × porównania × 3, DIAG)."""
     ss, konfig = arg
-    ss_gen, ss_boot = ss.spawn(2)
+    ss_gen, ss_boot = _potomne(ss, 2)
     panel = generuj_panel(
         konfig["n_dni"], konfig["k_panel"], seed=_ziarno_int(ss_gen), nu=NU, rho=RHO
     )
@@ -220,7 +231,7 @@ def uruchom(konfig: dict, workers: int, ziarno: int = SEED) -> dict:
     procesów. Procesy startują przez forkserver, więc skrypt wołający musi mieć `__main__`.
     """
     for zmienna in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
-        os.environ.setdefault(zmienna, "1")
+        os.environ[zmienna] = "1"
     zadania = [(ss, konfig) for ss in np.random.SeedSequence(ziarno).spawn(konfig["panele"])]
     czesci: list[tuple] = []
     with mp.get_context("forkserver").Pool(workers) as pool:
@@ -343,10 +354,25 @@ def _blisko(wartosc: float, se: float, *progi: float) -> bool:
     return any(abs(wartosc - prog) < 2 * se for prog in progi)
 
 
+BRAMKI = ("obie", "TAK", "NIE")
+
+
 def _wiersz(
-    kod, grupa, opis, wartosc, wymaganie, ok, granica=False, jednostka="pct", bramka="obie"
+    kod,
+    grupa,
+    opis,
+    wartosc,
+    wymaganie,
+    ok,
+    granica=False,
+    jednostka="pct",
+    bramka="obie",
+    dotyczy=None,
 ):
-    """`bramka`: czego dotyczy kontrola — „obie” (każdy wniosek), „TAK” lub „NIE” (tylko ten wniosek)."""
+    """`bramka`: który wniosek kontrola bramkuje — „obie” (każdy), „TAK” albo „NIE” (tylko ten).
+    `dotyczy`: kody kryteriów, których wiarygodność kontrola warunkuje (None = wszystkich)."""
+    if bramka not in BRAMKI:
+        raise ValueError(f"bramka {bramka!r}: oczekiwano jednej z {BRAMKI}")
     return {
         "kod": kod,
         "grupa": grupa,
@@ -357,10 +383,11 @@ def _wiersz(
         "granica": bool(granica),
         "jednostka": jednostka,
         "bramka": bramka,
+        "dotyczy": None if dotyczy is None else tuple(dotyczy),
     }
 
 
-def _wiersze_k7(k7: dict) -> list[dict]:
+def _wiersze_k7(k7: dict, dotyczy=None) -> list[dict]:
     (nu, s_nu), (per, s_per) = k7["nu"], k7["pers"]
     (nz, s_nz), (br, s_br) = k7["nie_zbiezne"], k7["brzeg"]
     grupa = "KONTROLA ESTYMATORA"
@@ -374,6 +401,7 @@ def _wiersze_k7(k7: dict) -> list[dict]:
             GARCH_NU[0] <= nu <= GARCH_NU[1],
             _blisko(nu, s_nu, *GARCH_NU),
             "num",
+            dotyczy=dotyczy,
         ),
         _wiersz(
             "K7b",
@@ -384,6 +412,7 @@ def _wiersze_k7(k7: dict) -> list[dict]:
             GARCH_PERS[0] <= per <= GARCH_PERS[1],
             _blisko(per, s_per, *GARCH_PERS),
             "num3",
+            dotyczy=dotyczy,
         ),
         _wiersz(
             "K7c",
@@ -393,6 +422,7 @@ def _wiersze_k7(k7: dict) -> list[dict]:
             f"≤ {100 * GARCH_NIEZBIEZNE_MAX:.0f} %",
             nz <= GARCH_NIEZBIEZNE_MAX,
             _blisko(nz, s_nz, GARCH_NIEZBIEZNE_MAX),
+            dotyczy=dotyczy,
         ),
         _wiersz(
             "K7d",
@@ -402,25 +432,36 @@ def _wiersze_k7(k7: dict) -> list[dict]:
             f"≤ {100 * GARCH_BRZEG_MAX:.0f} %",
             br <= GARCH_BRZEG_MAX,
             _blisko(br, s_br, GARCH_BRZEG_MAX),
+            dotyczy=dotyczy,
         ),
     ]
 
 
 def _werdykt(kontrole: list[dict], kryteria: list[dict]) -> str:
-    """WSTRZYMANE, gdy zawodzi kontrola „obie” albo kontrola bramkująca wyciągnięty wniosek.
+    """TAK, NIE albo WSTRZYMANE.
 
-    Wniosek: TAK, gdy wszystkie kryteria spełnione, inaczej NIE. Kontrola „TAK” („NIE”) bramkuje
-    tylko wniosek TAK (NIE): zbyt liberalny test może tylko zawyżać moc (nie podważa NIE), zbyt
-    zachowawczy — tylko zaniżać (nie podważa TAK).
+    TAK: wszystkie kryteria spełnione i każda kontrola „obie” oraz „TAK” w porządku (TAK wymaga
+    wszystkich kryteriów, więc zależy od wszystkich kontroli, także tych z `dotyczy`).
+    NIE: niespełnione jest przynajmniej jedno kryterium, a kontrole „obie” i „NIE”, które to
+    kryterium obejmują (`dotyczy` None = każde kryterium), są w porządku — niespełnione kryterium
+    wystarcza do NIE, więc kontrola, która go nie dotyczy, nie może wstrzymać wniosku.
+    Inaczej WSTRZYMANE. Kontrola „TAK” („NIE”) bramkuje tylko wniosek TAK (NIE): zbyt liberalny test
+    może tylko zawyżać moc (nie podważa NIE), zbyt zachowawczy — tylko zaniżać (nie podważa TAK).
     """
+    if all(c["ok"] for c in kryteria):
+        bramkujace = (k for k in kontrole if k["bramka"] in ("obie", "TAK"))
+        return "TAK" if all(k["ok"] for k in bramkujace) else "WSTRZYMANE"
 
-    def spelnione(*bramki: str) -> bool:
-        return all(k["ok"] for k in kontrole if k["bramka"] in bramki)
+    def wiarygodne_nie(kryterium: dict) -> bool:
+        return all(
+            k["ok"]
+            for k in kontrole
+            if k["bramka"] in ("obie", "NIE")
+            and (k["dotyczy"] is None or kryterium["kod"] in k["dotyczy"])
+        )
 
-    if not spelnione("obie"):
-        return "WSTRZYMANE"
-    wniosek = "TAK" if all(k["ok"] for k in kryteria) else "NIE"
-    return wniosek if spelnione(wniosek) else "WSTRZYMANE"
+    niespelnione = (c for c in kryteria if not c["ok"])
+    return "NIE" if any(wiarygodne_nie(c) for c in niespelnione) else "WSTRZYMANE"
 
 
 def ocen_k(liczby: dict) -> dict:
@@ -499,11 +540,12 @@ def ocen_p(liczby: dict) -> dict:
     """Reguła P (test porównawczy DM-FZ0) dla jednego p w jednej komórce.
 
     `liczby`: k4, k6 — słowniki nazwa → (odsetek, SE); k5, pb — pary; k7; krzywa, krzywa_se — moc DM
-    na siatce X_GRID. Kontrole „obie” (bramkują każdy wniosek): K4 (rozmiar na parach zerowych),
-    K5 (moc wobec σ − 30 %), K7a–d. Kontrole HAC po wyśrodkowaniu na parach realistycznych: K6a
-    (największy rozmiar ≤ 7,5 %: test nie jest zbyt liberalny) bramkuje tylko wniosek TAK, K6b
-    (najmniejszy ≥ 2,5 %: nie jest zbyt zachowawczy) tylko wniosek NIE. Kryteria: P-a (MDE ≤ X_MAX),
-    P-b (moc pary głównej).
+    na siatce X_GRID. Kryteria: P-a (MDE ≤ X_MAX; dotyczy samego testu DM na prognozach wyroczni),
+    P-b (moc pary głównej; dotyczy też HAC na parach realistycznych i estymatora GARCH-t).
+    Kontrole „obie” (bramkują każdy wniosek): K4 (rozmiar na parach zerowych) i K5 (moc wobec σ − 30 %)
+    obejmują P-a i P-b; K7a–d (estymator) obejmują tylko P-b. Kontrole HAC po wyśrodkowaniu na parach
+    realistycznych obejmują tylko P-b: K6a (największy rozmiar ≤ 7,5 %: test nie jest zbyt liberalny)
+    bramkuje tylko wniosek TAK, K6b (najmniejszy ≥ 2,5 %: nie jest zbyt zachowawczy) tylko wniosek NIE.
     """
     lo, hi = ROZMIAR
     k4_ok, k4_gr, k4_naj = _w_przedziale(liczby["k4"])
@@ -514,7 +556,8 @@ def ocen_p(liczby: dict) -> dict:
     krz, krz_se = np.asarray(liczby["krzywa"], dtype=float), np.asarray(liczby["krzywa_se"])
     m = mde(np.asarray(X_GRID), krz, MOC_MIN)
     jx = X_GRID.index(X_MAX)  # x* leży na siatce, więc MDE ≤ x* ⇔ moc przy x* ≥ MOC_MIN
-    moc_xmax = float(np.maximum.accumulate(krz)[jx])  # bez zaokrągleń interpolacji na progu
+    jm = int(np.argmax(krz[: jx + 1]))  # maksimum bieżące krzywej do x*: tego punktu dotyczy próg
+    moc_xmax = float(krz[jm])  # bez zaokrągleń interpolacji na progu
     zakres = f"odsetek ∈ [{100 * lo:.1f}; {100 * hi:.1f}] %"
     kontrole = [
         _wiersz(
@@ -525,6 +568,7 @@ def ocen_p(liczby: dict) -> dict:
             zakres,
             k4_ok,
             k4_gr,
+            dotyczy=("P-a", "P-b"),
         ),
         _wiersz(
             "K5",
@@ -534,6 +578,7 @@ def ocen_p(liczby: dict) -> dict:
             f"odsetek ≥ {100 * MOC_KONTROLA:.0f} %",
             k5 >= MOC_KONTROLA,
             _blisko(k5, s5, MOC_KONTROLA),
+            dotyczy=("P-a", "P-b"),
         ),
         _wiersz(
             "K6a",
@@ -544,6 +589,7 @@ def ocen_p(liczby: dict) -> dict:
             k6a <= hi,
             _blisko(k6a, k6a_se, hi),
             bramka="TAK",
+            dotyczy=("P-b",),
         ),
         _wiersz(
             "K6b",
@@ -554,8 +600,9 @@ def ocen_p(liczby: dict) -> dict:
             k6b >= lo,
             _blisko(k6b, k6b_se, lo),
             bramka="NIE",
+            dotyczy=("P-b",),
         ),
-        *_wiersze_k7(liczby["k7"]),
+        *_wiersze_k7(liczby["k7"], dotyczy=("P-b",)),
     ]
     kryteria = [
         _wiersz(
@@ -565,7 +612,7 @@ def ocen_p(liczby: dict) -> dict:
             m,
             f"MDE ≤ {X_MAX:.2f}",
             moc_xmax >= MOC_MIN,
-            _blisko(krz[jx], krz_se[jx], MOC_MIN),
+            _blisko(krz[jm], krz_se[jm], MOC_MIN),
             "mde",
         ),
         _wiersz(
@@ -597,6 +644,10 @@ def regula_rundy(werdykt_k: str, werdykt_p: str) -> tuple[str, list[str]]:
 PRZEW_ODRZUCANE_MIN = (
     0.70  # W1: okno60_t5 i ewma94_t5 odrzucane przez test zbiorczy w ≥ 70 % paneli
 )
+
+
+def _kryterium(ocena: dict, kod: str) -> dict:
+    return next(k for k in ocena["kryteria"] if k["kod"] == kod)
 
 
 def przewidywania(wyn: dict, oceny: dict) -> list[dict]:
@@ -636,7 +687,7 @@ def przewidywania(wyn: dict, oceny: dict) -> list[dict]:
                 "kod": "W3",
                 "p": p,
                 "wartosc": float("nan"),
-                "ok": oceny[p]["P"]["kryteria"][0]["ok"] is False,
+                "ok": _kryterium(oceny[p]["P"], "P-a")["ok"] is False,
                 "tekst": "P-a niespełnione (MDE zaniżenia σ testu DM-FZ0 > 0,10)",
             }
         )
@@ -644,8 +695,8 @@ def przewidywania(wyn: dict, oceny: dict) -> list[dict]:
             {
                 "kod": "W4",
                 "p": p,
-                "wartosc": oceny[p]["P"]["kryteria"][1]["wartosc"],
-                "ok": oceny[p]["P"]["kryteria"][1]["ok"] is False,
+                "wartosc": _kryterium(oceny[p]["P"], "P-b")["wartosc"],
+                "ok": _kryterium(oceny[p]["P"], "P-b")["ok"] is False,
                 "tekst": "P-b niespełnione (moc DM-FZ0 pary ewma94_t5 → garch_tnu < 80 %)",
             }
         )
@@ -694,6 +745,8 @@ def _wypisz_ocene(ocena: dict, tytul: str) -> None:
         uwaga = "  [w granicach 2 SE od progu]" if k["granica"] else ""
         if k["bramka"] != "obie":
             uwaga += f"  [bramkuje tylko wniosek {k['bramka']}]"
+        if k["dotyczy"] is not None:
+            uwaga += f"  [dotyczy: {', '.join(k['dotyczy'])}]"
         print(
             f"    {k['kod']:4s} {k['grupa']:19s} {k['opis']}: {_wart_txt(k)} — {k['wymaganie']}: "
             f"{'TAK' if k['ok'] else 'NIE'}{uwaga}"
@@ -704,7 +757,11 @@ def _wypisz_ocene(ocena: dict, tytul: str) -> None:
 def _wypisz_kryteria(wyn: dict, konfig: dict) -> dict:
     oceny: dict = {}
     for ic, (k, n) in enumerate(konfig["komorki"]):
-        tytul = "KRYTERIA z pre-rejestracji" if ic == 0 else "OPIS (nie kryteria): ta sama reguła"
+        tytul = (
+            "KRYTERIA z pre-rejestracji"
+            if ic == 0
+            else "WARUNEK ZAKRESU (b), nie werdykt rundy: ta sama reguła w populacji F2-1b"
+        )
         print(f"\n{tytul} — komórka {OPIS_KOMORKI[ic]}: K = {k} monet, n = {n} dni, ρ = {RHO}")
         for ip, p in enumerate(POZIOMY):
             ok_k, ok_p = ocen_k(liczby_k(wyn, ic, ip)), ocen_p(liczby_p(wyn, ic, ip))
@@ -714,8 +771,13 @@ def _wypisz_kryteria(wyn: dict, konfig: dict) -> dict:
             )
             _wypisz_ocene(ok_p, "Reguła P — pytanie porównawcze (test DM na stracie FZ0)")
             runda, dozwolone = regula_rundy(ok_k["werdykt"], ok_p["werdykt"])
+            etykieta = (
+                "REGUŁA PIERWSZEJ RUNDY VaR/ES NA DANYCH"
+                if ic == 0
+                else "REGUŁA RUNDY W C2 (warunek Zakresu (b), nie werdykt rundy)"
+            )
             print(
-                f"  REGUŁA PIERWSZEJ RUNDY VaR/ES NA DANYCH, p = {p:.0%}: {runda}"
+                f"  {etykieta}, p = {p:.0%}: {runda}"
                 + (f" — dozwolone pytania: {'; '.join(dozwolone)}" if dozwolone else "")
             )
             if ic == 0:
@@ -748,8 +810,9 @@ def _wypisz_abs(wyn: dict, konfig: dict) -> None:
         "A, B, C = składniki na poziomie α/3 (zbiorczy = A lub B lub C); hit = średni odsetek trafień [%];"
     )
     print(
-        "U = średnia z r/(p·ES) po trafieniach, 1 przy prawdziwym ES; A>0 = A odrzuca „za dużo trafień”;"
+        "U = średnia po wszystkich parach (moneta, dzień) z 1{r<VaR}·r/(p·ES); 1 przy prawdziwych VaR i ES;"
     )
+    print("A>0 = składnik A odrzuca „za dużo trafień”;")
     print("VR = Var(S_t)/(K p (1 − p)); ± = SE po panelach. Opisy prognoz:")
     for nazwa in PROGNOZY:
         print(f"  {nazwa:16s} = {OPIS_PROGNOZ[nazwa]}")
@@ -871,6 +934,11 @@ def main(argv=None) -> None:
         "--panele", type=int, default=None, help="PILOTAŻ: inna liczba paneli niż w rejestrze"
     )
     ap.add_argument("--ziarno", type=int, default=SEED, help="PILOTAŻ: inne ziarno niż w rejestrze")
+    ap.add_argument(
+        "--zapisz",
+        default=None,
+        help="plik .npz na surowe tablice paneli, zapisywane zaraz po przebiegu (poza gitem)",
+    )
     args = ap.parse_args(argv)
     konfig = dict(KONFIG_SMOKE if args.smoke else KONFIG)
     if args.panele is not None:
@@ -891,7 +959,16 @@ def main(argv=None) -> None:
         f"{konfig['panele']} paneli, bootstrap po dniach {konfig['boot']} replikacji, poziom testów {100 * ALFA:.0f} %,"
         f" test DM dwustronny z = {Z_KRYT}."
     )
+    print(
+        "Wersje: python "
+        + sys.version.split()[0]
+        + "".join(f", {pakiet} {version(pakiet)}" for pakiet in ("numpy", "scipy", "pandas"))
+        + "."
+    )
     wyn = uruchom(konfig, args.workers, args.ziarno)
+    if args.zapisz:
+        os.makedirs(os.path.dirname(os.path.abspath(args.zapisz)), exist_ok=True)
+        np.savez_compressed(args.zapisz, **wyn)
     _wypisz_diag(wyn)
     oceny = _wypisz_kryteria(wyn, konfig)
     _wypisz_przewidywania(wyn, oceny)

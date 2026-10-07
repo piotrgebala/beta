@@ -1,0 +1,36 @@
+rho_h C1 p=1% wyr_t5: VR 3.01 -> 0.1058
+rho_h C1 p=1% garch_tnu: VR 3.17 -> 0.1142
+rho_h C1 p=5% wyr_t5: VR 6.31 -> 0.2795
+rho_h C1 p=5% garch_tnu: VR 6.36 -> 0.2821
+rho_h C2 p=1% wyr_t5: VR 2.48 -> 0.1057
+rho_h C2 p=1% garch_tnu: VR 2.6 -> 0.1143
+rho_h C2 p=5% wyr_t5: VR 4.92 -> 0.2800
+rho_h C2 p=5% garch_tnu: VR 4.95 -> 0.2821
+K-a C1 p=1%: 8.2 ± 0.39; zapas do 10 %: 1.8 pp = 4.6 SE; do 7,5 %: -0.7 pp
+K-b C1 p=1%: 98.8 ± 0.16; zapas do 80 %: 18.8 pp
+K1 C1 p=1%: 3.9 ± 0.27; do dolnej granicy 2,5: 1.4 pp = 5.2 SE
+K-a C1 p=5%: 5.5 ± 0.32; zapas do 10 %: 4.5 pp = 14.1 SE; do 7,5 %: +2.0 pp
+K-b C1 p=5%: 99.5 ± 0.10; zapas do 80 %: 19.5 pp
+K1 C1 p=5%: 3.6 ± 0.26; do dolnej granicy 2,5: 1.1 pp = 4.2 SE
+K-a C2 p=1%: 8.0 ± 0.38; zapas do 10 %: 2.0 pp = 5.3 SE; do 7,5 %: -0.5 pp
+K-b C2 p=1%: 98.4 ± 0.18; zapas do 80 %: 18.4 pp
+K1 C2 p=1%: 3.8 ± 0.27; do dolnej granicy 2,5: 1.3 pp = 4.8 SE
+K-a C2 p=5%: 5.0 ± 0.31; zapas do 10 %: 5.0 pp = 16.1 SE; do 7,5 %: +2.5 pp
+K-b C2 p=5%: 99.6 ± 0.09; zapas do 80 %: 19.6 pp
+K1 C2 p=5%: 3.6 ± 0.26; do dolnej granicy 2,5: 1.1 pp = 4.2 SE
+HAC C1 p=1% ewma94_t5__garch_tnu: SD/se = 0.916; d̄/SD = 1.816; orient. moc (norm., se=SD) = 44 %; moc zmierzona B>A = 35.6 %
+HAC C1 p=1% okno60_t5__ewma94_t5: SD/se = 1.134; d̄/SD = 3.590; orient. moc (norm., se=SD) = 95 %; moc zmierzona B>A = 99.1 %
+HAC C1 p=5% ewma94_t5__garch_tnu: SD/se = 0.862; d̄/SD = 2.829; orient. moc (norm., se=SD) = 81 %; moc zmierzona B>A = 73.3 %
+HAC C1 p=5% okno60_t5__ewma94_t5: SD/se = 1.196; d̄/SD = 4.364; orient. moc (norm., se=SD) = 99 %; moc zmierzona B>A = 100.0 %
+HAC C2 p=1% ewma94_t5__garch_tnu: SD/se = 0.931; d̄/SD = 1.735; orient. moc (norm., se=SD) = 41 %; moc zmierzona B>A = 33.8 %
+HAC C2 p=1% okno60_t5__ewma94_t5: SD/se = 1.114; d̄/SD = 3.484; orient. moc (norm., se=SD) = 94 %; moc zmierzona B>A = 98.3 %
+HAC C2 p=5% ewma94_t5__garch_tnu: SD/se = 0.865; d̄/SD = 2.810; orient. moc (norm., se=SD) = 80 %; moc zmierzona B>A = 73.1 %
+HAC C2 p=5% okno60_t5__ewma94_t5: SD/se = 1.186; d̄/SD = 4.313; orient. moc (norm., se=SD) = 99 %; moc zmierzona B>A = 99.9 %
+P-a C1 p=1%: moc DM-FZ0 przy x=0,10: 49.1 % (80 − 49.1 = 30.9 pp; SE ≈ 0.71 pp)
+P-a C1 p=5%: moc DM-FZ0 przy x=0,10: 59.6 % (80 − 59.6 = 20.4 pp; SE ≈ 0.69 pp)
+P-a C2 p=1%: moc DM-FZ0 przy x=0,10: 48.5 % (80 − 48.5 = 31.5 pp; SE ≈ 0.71 pp)
+P-a C2 p=5%: moc DM-FZ0 przy x=0,10: 61.5 % (80 − 61.5 = 18.5 pp; SE ≈ 0.69 pp)
+rozbicie nadwyżki C1 p=1%: wyrocznia 3.9 -> garch_t5 5.0 (+1.1, σ̂) -> garch_tnu 8.2 (+3.2, ν̂)
+rozbicie nadwyżki C1 p=5%: wyrocznia 3.6 -> garch_t5 5.0 (+1.4, σ̂) -> garch_tnu 5.5 (+0.5, ν̂)
+rozbicie nadwyżki C2 p=1%: wyrocznia 3.8 -> garch_t5 4.9 (+1.1, σ̂) -> garch_tnu 8.0 (+3.1, ν̂)
+rozbicie nadwyżki C2 p=5%: wyrocznia 3.6 -> garch_t5 5.0 (+1.4, σ̂) -> garch_tnu 5.0 (+0.0, ν̂)

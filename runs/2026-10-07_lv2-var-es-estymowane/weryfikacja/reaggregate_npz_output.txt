@@ -1,0 +1,59 @@
+npz: /home/dantey1/beta/data/lv2_wyniki_paneli.npz
+paneli 5000, prognoz 19, porównań 36
+
+bloki tabel w wydruku: 8 (4 prognoz, 4 DM)
+
+PORÓWNANIE Z WYDRUKIEM (tabele OPIS): porównanych liczb 1470, niezgodnych (> pół jednostki ostatniej cyfry) 0, maks. różnica = 0.50 jednostki ostatniej cyfry
+
+Linie VR w wydruku: 8 (kolejność C1 p=1,5; C2 p=1,5 × wyr_t5, garch_tnu)
+  C1 p=0.01 wyr_t5: moje 3.008 ± 0.008, wydruk 3.01 ± 0.01: OK
+  C1 p=0.01 garch_tnu: moje 3.167 ± 0.008, wydruk 3.17 ± 0.01: OK
+  C1 p=0.05 wyr_t5: moje 6.311 ± 0.009, wydruk 6.31 ± 0.01: OK
+  C1 p=0.05 garch_tnu: moje 6.363 ± 0.009, wydruk 6.36 ± 0.01: OK
+  C2 p=0.01 wyr_t5: moje 2.481 ± 0.006, wydruk 2.48 ± 0.01: OK
+  C2 p=0.01 garch_tnu: moje 2.603 ± 0.007, wydruk 2.6 ± 0.01: OK
+  C2 p=0.05 wyr_t5: moje 4.916 ± 0.007, wydruk 4.92 ± 0.01: OK
+  C2 p=0.05 garch_tnu: moje 4.952 ± 0.007, wydruk 4.95 ± 0.01: OK
+
+====================================================================================================
+KRYTERIA I REGUŁY PRZELICZONE OD ZERA Z npz (kod własny, z tekstu pre-rejestracji)
+
+C1 główna: K = 20, n = 1600, p = 1%
+  K1 3.9 %  K2 100.0 %  K7a 5.236  K7b 0.9720  K7c 0.00 %  K7d 2.23 %
+  K-a 8.2 %  K-b 98.8 %  → reguła K: TAK
+  K4 5.3 % (najgorsza ('fz0', 90))  K5 100.0 %
+  K6a 9.1 % (okno60_t5→ewma94_t5)  K6b 3.7 % (ewma94_t5→garch_tnu)
+  K6 wszystkie pary (FZ0): okno60_t5→ewma94_t5 9.1; ewma94_t5→garch_tnu 3.7; okno60_t5→garch_tnu 7.8; garch_tnu→garch_t5 5.7; ewma94_t5→har_t5 3.9; ewma94_t5→ewma94_ep 6.1
+  P-a MDE 0.139  P-b 35.6 %  (krzywa DM-FZ0: 5.3 / 12.4 / 49.1 / 89.1 / 99.5 / 100.0)  → reguła P: NIE
+  RUNDA: MIERZALNA   flagi „w granicach 2 SE od progu”: brak
+
+C1 główna: K = 20, n = 1600, p = 5%
+  K1 3.6 %  K2 100.0 %  K7a 5.236  K7b 0.9720  K7c 0.00 %  K7d 2.23 %
+  K-a 5.5 %  K-b 99.5 %  → reguła K: TAK
+  K4 4.7 % (najgorsza ('pinb', 90))  K5 100.0 %
+  K6a 10.1 % (okno60_t5→ewma94_t5)  K6b 2.7 % (ewma94_t5→garch_tnu)
+  K6 wszystkie pary (FZ0): okno60_t5→ewma94_t5 10.1; ewma94_t5→garch_tnu 2.7; okno60_t5→garch_tnu 8.4; garch_tnu→garch_t5 8.5; ewma94_t5→har_t5 3.5; ewma94_t5→ewma94_ep 4.2
+  P-a MDE 0.130  P-b 73.3 %  (krzywa DM-FZ0: 4.9 / 16.8 / 59.6 / 94.0 / 99.8 / 100.0)  → reguła P: NIE
+  RUNDA: MIERZALNA   flagi „w granicach 2 SE od progu”: ['K6b']
+
+C2 populacja F2-1b: K = 15, n = 1700, p = 1%
+  K1 3.8 %  K2 100.0 %  K7a 5.236  K7b 0.9720  K7c 0.00 %  K7d 2.23 %
+  K-a 8.0 %  K-b 98.4 %  → reguła K: TAK
+  K4 5.4 % (najgorsza ('fz0', 90))  K5 100.0 %
+  K6a 8.1 % (okno60_t5→ewma94_t5)  K6b 3.9 % (ewma94_t5→har_t5)
+  K6 wszystkie pary (FZ0): okno60_t5→ewma94_t5 8.1; ewma94_t5→garch_tnu 4.0; okno60_t5→garch_tnu 7.4; garch_tnu→garch_t5 5.6; ewma94_t5→har_t5 3.9
+  P-a MDE 0.140  P-b 33.8 %  (krzywa DM-FZ0: 5.4 / 12.4 / 48.5 / 88.1 / 99.5 / 100.0)  → reguła P: NIE
+  RUNDA: MIERZALNA   flagi „w granicach 2 SE od progu”: ['K6a']
+
+C2 populacja F2-1b: K = 15, n = 1700, p = 5%
+  K1 3.6 %  K2 100.0 %  K7a 5.236  K7b 0.9720  K7c 0.00 %  K7d 2.23 %
+  K-a 5.0 %  K-b 99.6 %  → reguła K: TAK
+  K4 4.2 % (najgorsza ('pinb', 90))  K5 100.0 %
+  K6a 10.1 % (okno60_t5→ewma94_t5)  K6b 2.7 % (ewma94_t5→garch_tnu)
+  K6 wszystkie pary (FZ0): okno60_t5→ewma94_t5 10.1; ewma94_t5→garch_tnu 2.7; okno60_t5→garch_tnu 8.5; garch_tnu→garch_t5 8.3; ewma94_t5→har_t5 3.8
+  P-a MDE 0.128  P-b 73.1 %  (krzywa DM-FZ0: 4.5 / 17.4 / 61.5 / 94.3 / 99.9 / 100.0)  → reguła P: NIE
+  RUNDA: MIERZALNA   flagi „w granicach 2 SE od progu”: ['K6b']
+
+PRZEWIDYWANIA (liczone od zera):
+  p=1%: W1 min odrzuceń 0.785 (≥ 0,70: True); W2 FZ0 ponad wyrocznię okno 0.0905 > ewma 0.0304 > garch_tnu 0.0116: True (okno − garch = 0.079); W3 MDE 0.139 > 0,10: True; W4 P-b 0.356 < 0,80: True
+  p=5%: W1 min odrzuceń 0.788 (≥ 0,70: True); W2 FZ0 ponad wyrocznię okno 0.0626 > ewma 0.0209 > garch_tnu 0.0052: True (okno − garch = 0.057); W3 MDE 0.130 > 0,10: True; W4 P-b 0.733 < 0,80: True

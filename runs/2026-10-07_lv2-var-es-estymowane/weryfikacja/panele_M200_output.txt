@@ -1,0 +1,96 @@
+# Porównanie kodu rejestrowego z przeliczeniem niezależnym; panele 0..199, ziarno 20261016
+
+## Test zbiorczy (C1): maks. |różnica| hit/u_sr/vr, liczba niezgodnych decyzji (z liczby paneli × p)
+prognoza              p   max|Δhit|  max|Δu_sr|    max|Δvr|      niezgodne A/B/C/bonf/prawa/niezdef  odrz.rej  odrz.nie
+wyr_t5             0.01    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     0.045     0.045
+zan05              0.01    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     0.460     0.460
+zan10              0.01    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+zan15              0.01    0.00e+00    4.44e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+zan20              0.01    0.00e+00    4.44e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+zan30              0.01    0.00e+00    8.88e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+okno60_t5          0.01    0.00e+00    4.44e-16    0.00e+00                             0/0/0/0/0/0     0.975     0.975
+ewma94_t5          0.01    0.00e+00    2.97e-11    0.00e+00                             0/0/0/0/0/0     0.795     0.795
+garch_t5           0.01    1.88e-04    1.52e-02    1.06e-01                             0/0/1/1/0/0     0.055     0.060
+garch_tnu          0.01    1.56e-04    1.34e-02    7.11e-02                             0/1/0/1/0/0     0.075     0.070
+garch_tnu_zan10    0.01    1.88e-04    1.53e-02    1.97e-01                             0/1/0/0/0/0     1.000     1.000
+garch_tnu_zan20    0.01    2.81e-04    2.65e-02    2.16e-01                             0/0/0/0/0/0     1.000     1.000
+wyr_t5             0.05    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     0.025     0.025
+zan05              0.05    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     0.525     0.525
+zan10              0.05    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     0.995     0.995
+zan15              0.05    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+zan20              0.05    0.00e+00    4.44e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+zan30              0.05    0.00e+00    8.88e-16    0.00e+00                             0/0/0/0/0/0     1.000     1.000
+okno60_t5          0.05    0.00e+00    2.22e-16    0.00e+00                             0/0/0/0/0/0     0.950     0.950
+ewma94_t5          0.05    0.00e+00    1.81e-11    0.00e+00                             0/0/0/0/0/0     0.810     0.810
+garch_t5           0.05    3.44e-04    6.34e-03    6.87e-02                             0/0/0/0/0/0     0.050     0.050
+garch_tnu          0.05    2.50e-04    4.82e-03    5.19e-02                             0/0/1/1/0/0     0.050     0.045
+garch_tnu_zan10    0.05    2.81e-04    7.07e-03    6.07e-02                             0/0/0/0/0/0     1.000     1.000
+garch_tnu_zan20    0.05    3.44e-04    8.87e-03    1.01e-01                             0/0/0/0/0/0     1.000     1.000
+
+## DM (C1): maks. |Δt| rejestr vs statsmodels-HAC, po porównaniach z niezależnymi prognozami
+kod                                           p     max|Δt|    max|Δśr|    max|Δse|
+zero_fz0_90                                0.01    1.01e-13    2.17e-15    3.92e-16
+zero_pinb_90                               0.01    2.46e-10    1.45e-13    2.66e-14
+zero_fz0_80                                0.01    1.04e-14    4.44e-16    5.55e-17
+zero_pinb_80                               0.01    2.56e-10    3.18e-13    5.55e-14
+moc_fz0_zan05                              0.01    1.78e-15    6.94e-18    3.47e-18
+moc_pinb_zan05                             0.01    2.32e-10    3.35e-14    6.27e-15
+moc_fz0_zan10                              0.01    1.78e-15    1.39e-17    8.67e-18
+moc_pinb_zan10                             0.01    2.27e-10    6.69e-14    1.25e-14
+moc_fz0_zan15                              0.01    3.55e-15    5.55e-17    1.04e-17
+moc_pinb_zan15                             0.01    2.16e-10    9.79e-14    1.99e-14
+moc_fz0_zan20                              0.01    4.44e-15    1.11e-16    1.39e-17
+moc_pinb_zan20                             0.01    1.95e-10    1.32e-13    2.81e-14
+moc_fz0_zan30                              0.01    5.33e-15    3.33e-16    3.47e-17
+moc_pinb_zan30                             0.01    1.52e-10    2.10e-13    4.51e-14
+wyr_fz0_okno60_t5                          0.01    3.55e-15    6.94e-17    1.39e-17
+wyr_pinb_okno60_t5                         0.01    2.14e-10    8.90e-14    1.96e-14
+wyr_fz0_ewma94_t5                          0.01    2.85e-09    2.57e-11    4.31e-12
+wyr_pinb_ewma94_t5                         0.01    2.92e-09    7.05e-13    7.89e-14
+wyr_fz0_garch_t5                           0.01    6.24e-01    3.91e-03    1.27e-03
+wyr_pinb_garch_t5                          0.01    4.16e-01    5.88e-05    2.20e-05
+wyr_fz0_garch_tnu                          0.01    5.12e-01    4.36e-03    1.35e-03
+wyr_pinb_garch_tnu                         0.01    3.93e-01    6.06e-05    2.08e-05
+real_fz0_okno60_t5__ewma94_t5              0.01    2.51e-09    2.57e-11    3.01e-12
+real_pinb_okno60_t5__ewma94_t5             0.01    2.63e-09    7.14e-13    1.54e-13
+real_fz0_ewma94_t5__garch_tnu              0.01    4.89e-01    4.36e-03    6.36e-04
+real_pinb_ewma94_t5__garch_tnu             0.01    2.97e-01    6.06e-05    7.68e-06
+real_fz0_okno60_t5__garch_tnu              0.01    2.65e-01    4.36e-03    7.87e-04
+real_pinb_okno60_t5__garch_tnu             0.01    1.49e-01    6.06e-05    9.00e-06
+real_fz0_garch_tnu__garch_t5               0.01    3.82e-01    6.09e-04    1.07e-04
+real_pinb_garch_tnu__garch_t5              0.01    2.97e-01    9.78e-06    1.78e-06
+zero_fz0_90                                0.05    3.80e-14    6.14e-16    1.04e-16
+zero_pinb_90                               0.05    3.51e-10    3.73e-13    2.30e-14
+zero_fz0_80                                0.05    5.11e-15    1.53e-16    1.39e-17
+zero_pinb_80                               0.05    3.56e-10    7.84e-13    4.71e-14
+moc_fz0_zan05                              0.05    1.33e-15    5.20e-18    1.30e-18
+moc_pinb_zan05                             0.05    3.47e-10    8.73e-14    6.09e-15
+moc_fz0_zan10                              0.05    1.78e-15    1.04e-17    3.47e-18
+moc_pinb_zan10                             0.05    3.46e-10    1.72e-13    1.19e-14
+moc_fz0_zan15                              0.05    2.66e-15    2.78e-17    6.94e-18
+moc_pinb_zan15                             0.05    3.48e-10    2.56e-13    1.74e-14
+moc_fz0_zan20                              0.05    3.55e-15    4.16e-17    6.94e-18
+moc_pinb_zan20                             0.05    3.48e-10    3.37e-13    2.41e-14
+moc_fz0_zan30                              0.05    5.33e-15    8.33e-17    1.39e-17
+moc_pinb_zan30                             0.05    3.31e-10    4.73e-13    3.92e-14
+wyr_fz0_okno60_t5                          0.05    3.55e-15    4.16e-17    6.94e-18
+wyr_pinb_okno60_t5                         0.05    5.46e-10    3.10e-13    2.82e-14
+wyr_fz0_ewma94_t5                          0.05    1.15e-09    9.30e-12    2.08e-12
+wyr_pinb_ewma94_t5                         0.05    1.10e-09    8.86e-13    1.82e-13
+wyr_fz0_garch_t5                           0.05    2.40e-01    1.46e-03    4.98e-04
+wyr_pinb_garch_t5                          0.05    3.56e-01    5.83e-05    2.32e-05
+wyr_fz0_garch_tnu                          0.05    2.39e-01    1.48e-03    4.98e-04
+wyr_pinb_garch_tnu                         0.05    3.79e-01    5.65e-05    2.48e-05
+real_fz0_okno60_t5__ewma94_t5              0.05    1.49e-09    9.30e-12    1.55e-12
+real_pinb_okno60_t5__ewma94_t5             0.05    1.97e-09    8.00e-13    1.12e-13
+real_fz0_ewma94_t5__garch_tnu              0.05    4.04e-01    1.48e-03    2.43e-04
+real_pinb_ewma94_t5__garch_tnu             0.05    2.56e-01    5.65e-05    1.57e-05
+real_fz0_okno60_t5__garch_tnu              0.05    1.01e-01    1.48e-03    3.24e-04
+real_pinb_okno60_t5__garch_tnu             0.05    9.39e-02    5.65e-05    1.52e-05
+real_fz0_garch_tnu__garch_t5               0.05    3.47e-01    8.05e-05    1.84e-05
+real_pinb_garch_tnu__garch_t5              0.05    2.95e-01    1.29e-05    2.58e-06
+
+## Diagnostyka GARCH: kod rejestrowy vs arch (średnie po panelach)
+persystencja: rejestr 0.97109, arch 0.97108; ν̂: rejestr 5.2450, arch 5.2485; niezbieżne w arch: 0.000 %
+
+## Zgodność z zapisanym npz (panele 0..199): abs identyczne co do bitu: True; dm identyczne co do bitu: True; kształty abs (5000, 2, 2, 19, 9), dm (5000, 2, 2, 36, 3)

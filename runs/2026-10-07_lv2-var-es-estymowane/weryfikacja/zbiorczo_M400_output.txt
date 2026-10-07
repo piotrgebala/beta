@@ -1,0 +1,36 @@
+# Niezależna symulacja zbiorcza: własny generator, prognozy (arch dla GARCH), test A/B/C; ziarno 424242, paneli 400
+prognoza              p  odrzucenia %   SE pp  trafienia %      VR
+wyr_t5             0.01          4.50    1.04       0.9986   2.976
+zan05              0.01         45.00    2.49       1.2053   3.927
+zan10              0.01         96.25    0.95       1.4581   5.169
+zan15              0.01        100.00    0.00       1.7706   6.838
+zan20              0.01        100.00    0.00       2.1626   9.146
+zan30              0.01        100.00    0.00       3.2634  16.547
+okno60_t5          0.01         97.75    0.74       1.3892   4.852
+ewma94_t5          0.01         81.25    1.95       1.2831   4.304
+garch_t5           0.01          5.25    1.12       1.0233   3.076
+garch_tnu          0.01          7.25    1.30       1.0388   3.137
+garch_tnu_zan10    0.01        100.00    0.00       1.5077   5.393
+garch_tnu_zan20    0.01        100.00    0.00       2.2268   9.472
+garch_t5@arch      0.01          5.25    1.12       1.0313   3.113
+garch_tnu@arch     0.01         10.75    1.55       1.0513   3.193
+garch_tnu_zan10@arch 0.01        100.00    0.00       1.5235   5.476
+garch_tnu_zan20@arch 0.01        100.00    0.00       2.2479   9.597
+wyr_t5             0.05          3.75    0.95       5.0008   6.275
+zan05              0.05         57.25    2.48       5.6911   7.494
+zan10              0.05         98.00    0.70       6.4778   8.940
+zan15              0.05        100.00    0.00       7.3699  10.623
+zan20              0.05        100.00    0.00       8.3951  12.585
+zan30              0.05        100.00    0.00      10.8771  17.475
+okno60_t5          0.05         93.25    1.26       5.8854   7.679
+ewma94_t5          0.05         78.75    2.05       5.8243   7.675
+garch_t5           0.05          6.50    1.23       5.0471   6.328
+garch_tnu          0.05          6.00    1.19       5.0558   6.349
+garch_tnu_zan10    0.05         99.75    0.25       6.5290   8.998
+garch_tnu_zan20    0.05        100.00    0.00       8.4499  12.644
+garch_t5@arch      0.05          7.00    1.28       5.0750   6.373
+garch_tnu@arch     0.05          6.75    1.26       5.0624   6.358
+garch_tnu_zan10@arch 0.05         99.75    0.25       6.5351   9.005
+garch_tnu_zan20@arch 0.05        100.00    0.00       8.4561  12.650
+GARCH (arch, backcast z próby): średnia persystencja 0.97199, średnie ν̂ 5.2273, niezbieżne 0.000 %
+GARCH (arch, backcast domyślny pakietu): średnia persystencja 0.97258, średnie ν̂ 5.2968, niezbieżne 0.000 %

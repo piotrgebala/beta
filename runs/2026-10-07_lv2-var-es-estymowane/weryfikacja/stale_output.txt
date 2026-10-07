@@ -1,0 +1,11 @@
+# Ogon t_ν: wzór vs całkowanie numeryczne oraz mnożniki par zerowych przez całkowanie
+p=0.01 ν=5: Q wzór -2.6064635694 całka -2.6064635694; ES wzór -3.4488367600 całka -3.4488367600
+p=0.01 ν=8: Q wzór -2.5084074627 całka -2.5084074627; ES wzór -3.1098020239 całka -3.1098020239
+p=0.05 ν=5: Q wzór -1.5608497583 całka -1.5608497583; ES wzór -2.2386842555 całka -2.2386842555
+p=0.05 ν=8: Q wzór -1.6104158401 całka -1.6104158401; ES wzór -2.1770604941 całka -2.1770604941
+
+Mnożniki c_B (ν = 5), całkowanie quad + brentq:
+p=0.01 fz0   c_A=0.9 → 1.126683   c_A=0.8 → 1.344627
+p=0.01 pinb  c_A=0.9 → 1.116078   c_A=0.8 → 1.276016
+p=0.05 fz0   c_A=0.9 → 1.120401   c_A=0.8 → 1.302395
+p=0.05 pinb  c_A=0.9 → 1.109835   c_A=0.8 → 1.243453

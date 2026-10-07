@@ -1,0 +1,27 @@
+plik data/lv2_wyniki_paneli.npz: abs (5000, 2, 2, 19, 9), dm (5000, 2, 2, 36, 3), diag (5000, 5)
+paneli: 5000
+
+## NaN w tablicy abs (komórka × p × prognoza × STAT) — tylko pola, które NIE są niezdef
+  komórka 0, p = 0.01: prognozy z NaN w statystykach: brak
+  komórka 0, p = 0.05: prognozy z NaN w statystykach: brak
+  komórka 1, p = 0.01: prognozy z NaN w statystykach: brak
+  komórka 1, p = 0.05: prognozy z NaN w statystykach: brak
+
+## niezdef (liczba nieokreślonych p-wartości testu zbiorczego na panel), średnia po panelach
+  komórka 0, p = 0.01: wszystkie p-wartości określone we wszystkich panelach
+  komórka 0, p = 0.05: wszystkie p-wartości określone we wszystkich panelach
+  komórka 1, p = 0.01: wszystkie p-wartości określone we wszystkich panelach
+  komórka 1, p = 0.05: wszystkie p-wartości określone we wszystkich panelach
+
+## DM: porównania z NaN lub nieskończonymi t/średnia/se (tylko tam, gdzie porównanie istnieje)
+  komórka 0, p = 0.01: istniejących porównań 36; z nieskończonościami/NaN: brak
+  komórka 0, p = 0.05: istniejących porównań 36; z nieskończonościami/NaN: brak
+  komórka 1, p = 0.01: istniejących porównań 34; z nieskończonościami/NaN: brak
+  komórka 1, p = 0.05: istniejących porównań 34; z nieskończonościami/NaN: brak
+
+## DIAG GARCH (po panelach): dopasowania, nie_zbiezne, brzeg, persystencja, nu
+  dopasowania    średnia 1140.00000  min 1140.00000  max 1140.00000  NaN 0
+  nie_zbiezne    średnia 0.01800  min 0.00000  max 1.00000  NaN 0
+  brzeg          średnia 25.38480  min 0.00000  max 366.00000  NaN 0
+  persystencja   średnia 0.97196  min 0.91796  max 0.99174  NaN 0
+  nu             średnia 5.23602  min 4.31755  max 6.95199  NaN 0

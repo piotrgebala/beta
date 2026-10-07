@@ -100,8 +100,17 @@ def main(argv: list[str] | None = None) -> int:
     panel, inw, wyciete = panel_wspolny(monety, a.katalog, a.do)
     print(m.tekst_inwentarza(inw, panel, wyciete, a.do))
     panel = ostatnie_wiersze(panel, a.ostatnie)
+    if a.ostatnie:
+        print(
+            f"Okno pomiaru: ostatnie {len(panel)} wierszy, {panel.index[0].date()} … {panel.index[-1].date()}"
+        )
+    pom = m.pomiar(panel.to_numpy())
+    if pom.diag["nie_zbiezne"]:
+        raise RuntimeError(
+            f"STOP (pre-rejestracja): niezbieżnych dopasowań {pom.diag['nie_zbiezne']}"
+        )
     print()
-    print(tekst_opisu(m.pomiar(panel.to_numpy())))
+    print(tekst_opisu(pom))
     if not a.bez_kontroli:
         n = len(panel)
         print()

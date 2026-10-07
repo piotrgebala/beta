@@ -2,7 +2,7 @@
 id: 017
 tytul: dane pod pierwszą rundę VaR/ES — inwentarz 15 monet i zależność trafień ρ_h (karta opisowa)
 typ: badawcze
-status: nowe
+status: do_przegladu
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; otwarcie rundy na danych rozstrzygnął Claude (STATUS.md, „Decyzje podjęte przez Claude”, pkt 1–4)"
 utworzono: 2026-10-07
@@ -64,4 +64,16 @@ te dwa warunki **bez oceniania jakiejkolwiek prognozy**, żeby pre-rejestracja k
 
 ## Wynik
 
-(dopisuje orkiestrator)
+Zrobione 2026-10-07. Runda: `runs/2026-10-07_017-inwentarz-i-rho/README.md` (pre-rejestracja `c9bee1c`, kod `9a4ea39`,
+werdykt **Caveats**; licznik „ryzyko 2021+” zostaje 0 — karta opisowa).
+
+- **Okno C2 nie domyka się:** wspólny panel 15 monet ma 2 091 wierszy (2021-01-02 … 2026-09-30), a okno C2 wymaga 2 100
+  (400 historii + 1 700 oceny); brakuje 9 dni. Dni oceny: 1 691. Dane za październik 2026 (spodziewane ok. 2026-11-01)
+  to zamkną.
+- **Bramka zależności NIE PRZECHODZI:** VR = 7,997 (laboratorium: 4,95), ρ̂ = 0,4998, SE = 0,0695 (bootstrap blokowy,
+  L = 20), ρ̂ + 2 SE = 0,639 > 0,282. Sam punkt ρ̂ leży powyżej progu; bramka przeszłaby dopiero przy ρ̂ ≤ ok. 0,14.
+- **Granica persystencji:** 227 z 855 dopasowań (27 %) GARCH-t dochodzi do granicy 0,9999 (laboratorium: 2,2 %).
+- Kontrole R8 zaliczone; druga droga (własny panel, zamrożone moduły LV2, inne ziarno) odtwarza VR i ρ̂ dokładnie,
+  SE 0,0675.
+- **Konsekwencja:** karta 018 nie startuje (→ `czeka_na_decyzje`); zlecona karta 019 (LV2c). Zastrzeżenie: VR przy
+  nominalnym p miesza zależność z poziomem trafień, więc „VR większe niż w laboratorium” to mniej niż „ρ większe”.

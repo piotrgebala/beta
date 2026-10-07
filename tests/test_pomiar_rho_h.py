@@ -13,6 +13,7 @@ from hypothesis import strategies as st
 
 from modele import pomiar_rho_h as m
 from symulacje.garch_panel import generuj_panel
+from symulacje.moc_var_es import wklady_dzienne
 from symulacje.prognozy_lv2 import START, prognoza, zbuduj_zrodla
 
 N_PARYTET = 520  # START + 120 dni: cztery bloki refitu (400, 430, 460, 490)
@@ -198,6 +199,87 @@ def test_pomiar_nie_przechowuje_odsetka_trafien():
 def test_kontrola_zwraca_po_jednym_rho_na_panel():
     wyn = m.kontrola(0.8, [1], k=3, n=520)
     assert len(wyn) == 1 and np.isfinite(wyn[0])
+
+
+# ── dopasowanie trafień do prognoz: ta sama liczba co zamrożony łańcuch LV2 (przegląd kodu 017, uwaga 1) ──
+def test_pomiar_zgodny_z_zamrozonym_lancuchem_wklady_dzienne(panel_parytetu, zrodla):
+    q_ref, es_ref = prognoza(zrodla, "garch_tnu", m.P)
+    s_ref, _ = wklady_dzienne(zrodla.r, q_ref, es_ref, m.P)
+    k = zrodla.r.shape[1]
+    vr_ref = float(s_ref.var(ddof=1)) / (k * m.P * (1 - m.P))
+    pom = m.pomiar(panel_parytetu["r"].to_numpy(), b=20)
+    assert pom.n_oos == len(s_ref)
+    assert pom.vr == pytest.approx(vr_ref, rel=1e-12)
+    assert pom.rho == pytest.approx((vr_ref - 1) / (k - 1), rel=1e-12)
+
+
+@pytest.mark.parametrize("rho_gen", [0.8, 0.0])
+def test_kontrola_zgodna_z_zamrozonym_lancuchem(rho_gen):
+    k, n, ziarno = 3, 520, 5
+    wyn = m.kontrola(rho_gen, [ziarno], k=k, n=n)[0]
+    zr = zbuduj_zrodla(generuj_panel(n, k, seed=ziarno, rho=rho_gen))
+    q, es = prognoza(zr, "garch_tnu", m.P)
+    s, _ = wklady_dzienne(zr.r, q, es, m.P)
+    vr = float(s.var(ddof=1)) / (k * m.P * (1 - m.P))
+    assert wyn == pytest.approx((vr - 1) / (k - 1), rel=1e-12)
+
+
+def test_kontrola_dodatnia_wieksza_niz_ujemna():
+    dodatnia = m.kontrola(0.8, [1, 2, 3], k=5, n=520)
+    ujemna = m.kontrola(0.0, [101, 102, 103], k=5, n=520)
+    assert np.mean(dodatnia) > np.mean(ujemna) + 0.05
+
+
+# ── stałe z pre-rejestracji (c9bee1c) przypięte testem ──────────────────────────────────────────────
+def test_stale_z_pre_rejestracji():
+    assert (m.P, m.PROG_RHO, m.BLOK, m.BLOKI_OPIS) == (0.05, 0.282, 20, (10, 40))
+    assert (m.B_BOOT, m.ZIARNO, m.N_C2) == (2000, 20261007, 2100)
+    assert (m.K_KONTROLI, m.N_KONTROLI) == (15, 2100)
+    assert list(m.ZIARNA_DODATNIEJ) == list(range(1, 11))
+    assert list(m.ZIARNA_UJEMNEJ) == list(range(101, 111))
+    assert m.PRZEDZIAL_DODATNIEJ == (0.242, 0.322) and m.PROG_UJEMNEJ == 0.03
+
+
+# ── bootstrap: struktura bloków przy n niepodzielnym przez blok, SE z ddof = 1 ─────────────────────
+def _bootstrap_petla(s, k, p, blok, b, ziarno):
+    n = len(s)
+    rng = np.random.default_rng(ziarno)
+    starty = rng.integers(0, n, size=(b, -(-n // blok)))
+    wyn = []
+    for wiersz in starty:
+        x = np.concatenate([s[(a + np.arange(blok)) % n] for a in wiersz])[:n]
+        wyn.append((x.var(ddof=1) / (k * p * (1 - p)) - 1) / (k - 1))
+    return np.array(wyn)
+
+
+@pytest.mark.parametrize("n, blok", [(1691, 20), (97, 10), (97, 40), (100, 20)])
+def test_bootstrap_zgodny_z_naiwna_petla(n, blok):
+    s = np.random.default_rng(n).binomial(15, 0.05, size=n).astype(float)
+    np.testing.assert_allclose(
+        m.rho_bootstrap(s, 15, 0.05, blok, 30, 12345),
+        _bootstrap_petla(s, 15, 0.05, blok, 30, 12345),
+        rtol=1e-12,
+    )
+
+
+def test_se_w_pomiarze_to_odchylenie_z_ddof_1():
+    r = generuj_panel(520, 2, seed=4, m_intraday=24)["r"].to_numpy()
+    pom = m.pomiar(r, b=40, ziarno=9)
+    q, _ = m.prognoza_garch_tnu(r)
+    s = (r[START:] < q).sum(axis=1).astype(float)
+    for blok in (20, 10, 40):
+        assert pom.se[blok] == pytest.approx(
+            np.std(m.rho_bootstrap(s, 2, m.P, blok, 40, 9), ddof=1), rel=1e-12
+        )
+
+
+# ── granica bramki: równość przechodzi (≤) ──────────────────────────────────────────────────────────
+def test_bramka_na_granicy_przechodzi_a_tuz_nad_nie(monkeypatch):
+    pom = _pom(0.2, 0.03)
+    monkeypatch.setattr(m, "PROG_RHO", pom.gorna)
+    assert pom.bramka
+    monkeypatch.setattr(m, "PROG_RHO", np.nextafter(pom.gorna, 0.0))
+    assert not pom.bramka
 
 
 # ── teksty ──────────────────────────────────────────────────────────────────────────────────────────

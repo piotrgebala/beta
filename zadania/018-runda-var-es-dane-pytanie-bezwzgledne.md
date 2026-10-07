@@ -2,11 +2,11 @@
 id: 018
 tytul: pierwsza runda VaR/ES na prawdziwych danych — pytanie bezwzględne, GARCH-t, p = 5 %
 typ: badawcze
-status: nowe
+status: czeka_na_decyzje
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; otwarcie rundy rozstrzygnął Claude (STATUS.md, „Decyzje podjęte przez Claude”, pkt 1–4); uruchomienie dopiero po 017 i po zapisaniu pre-rejestracji w gicie"
 utworzono: 2026-10-07
-zalezy_od: [016, 017]
+zalezy_od: [016, 017, 019]
 budzet: "Opus, 1–2 sesje"
 ---
 
@@ -64,4 +64,17 @@ liczniku „ryzyko 2021+” (PRD §11.4), nie w rejestrze zwrotów alpha. Odrzuc
 
 ## Wynik
 
-(dopisuje orkiestrator)
+**Nie uruchomiona (2026-10-07).** Karta 017 dała wynik „bramka zależności NIE PRZECHODZI” (ρ̂ + 2 SE = 0,639 > 0,282;
+okno C2 ma 2 091 z 2 100 wierszy), więc zgodnie z pre-rejestracją 017 ta runda nie startuje. Żadnych odsetków trafień
+na prawdziwych danych nie policzono.
+
+Wznowienie wymaga łącznie:
+
+1. karta 019 (LV2c) pokazuje, że reguła K (rozmiar ≤ 10 %, moc ≥ 80 %) jest MIERZALNA w laboratorium o VR ≈ 8
+   i trwałości blisko granicy;
+2. dane za październik 2026 domykają okno 2 100 wierszy;
+3. powtórka 017 na ostatecznym oknie jest zgodna z założeniami LV2c;
+4. własna pre-rejestracja 018 zapisana w gicie przed przebiegiem.
+
+Dopiero wtedy status wraca na `nowe` (decyzja orkiestratora; licznik „ryzyko 2021+” rośnie z 0 do 1 dopiero przy
+przebiegu).

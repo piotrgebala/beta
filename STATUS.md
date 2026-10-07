@@ -34,10 +34,11 @@ GitHub i klucze), zostały po Twojej stronie.
 | 2 | 016(b): odczytanie Zakresu (b), 15 monet × 1 700 dni | **Przyjmuję odczytanie z README rundy, pkt 10:** zakres (b) jest otwarty tylko dla pytania bezwzględnego K. | Trzy flagi leżą na kontrolach reguły porównawczej P, której nie używamy; w regule K (komórka C2) flag nie ma. Surowsze odczytanie zamknęłoby jedyny dostępny zakres bez realnego powodu. **Uwaga:** odczytanie zaproponowałem ja i ja je zatwierdzam, więc to słabsza kontrola niż Twoja. | Odrzuć: 018 na `odrzucone`; pierwsza runda czeka na ≥ 20 monet z ≥ 1 600 dniami (np. top-50). |
 | 3 | 016(c): próg K-a ≤ 10 % | **Przyjmuję.** | Przy jedynym poziomie p = 5 % nie rozstrzyga: fałszywy alarm 5,5 % (C1) i 5,0 % (C2). Próg wybrany po pilotażu zostaje w README jako jeden z powodów werdyktu Caveats. | Zmiana progu po fakcie to ścieżka rozwidlenia; jeśli chcesz inny, zapisz go przed 018. |
 | 4 | 016(d): poziom VaR | **Jedyny poziom: p = 5 %.** | Fałszywy alarm 5,5 % zamiast 8,2 %; mała wrażliwość na konwencję startu GARCH (6,0 % wobec 6,75 %); jedno p nie wymaga korekty α/2. | Zmiana na 1 % albo dwa poziomy: przed pre-rejestracją 018; dwa poziomy wymagają α/2. |
-| 5 | 016(e): czy zlecić LV2c | **Nie zlecam.** Trafia do Backlogu z wyzwalaczami (niżej). | Do pierwszej rundy bezwzględnej nie jest potrzebne; pytanie porównawcze (reguła P) jest NIEMIERZALNE i nikt go teraz nie zadaje. | Napisz „zleć LV2c”, a założę kartę. |
+| 5 | 016(e): czy zlecić LV2c | **Nie zlecam.** Trafia do Backlogu z wyzwalaczami (niżej). **Unieważniona pkt. 9 (2026-10-07, po wyniku 017): wyzwalacz (i) zadziałał.** | Do pierwszej rundy bezwzględnej nie jest potrzebne; pytanie porównawcze (reguła P) jest NIEMIERZALNE i nikt go teraz nie zadaje. | Napisz „zleć LV2c”, a założę kartę. |
 | 6 | D3: rola oceny sekwencyjnej wobec ADR-09 alpha | **(a) tylko reporter obok z = 2,31** (rekomendacja PRD §15). | Dziennik alpha jest tylko do odczytu (R23), a nowy test nie powinien zmieniać kryterium, na którym stoi kapitał (R13). | Zmiana na (b) musi być zapisana przed 2026-12-24. |
 | 7 | 013: cztery repo na GitHubie (bundle, miara, kolektory, wykonanie) | **Odkładam** (status `odrzucone` = „nie teraz”, karta zostaje do wznowienia). | Praca leży w `beta`, push działa, a cztery puste repo niczego nie odblokowują; migracja `miara` jest po E2 (ADR `bundle/0001` pkt 3). Zakładanie wymaga Twojego konta i kluczy, których Claude nie tworzy. Ryzyko: szkielety bundla (po jednym commicie) mają jedną kopię, na serwerze. | Zmień status karty 013 na `nowe` i załóż puste repo wg `~/bundle/README.md`. |
 | 8 | Skład top-20 po 2026-06 | **Odkładam.** | Aktualizacja listy to Poprawka w alpha (R23, karta 015 w alpha). Pierwsza runda używa 15 monet z pełną historią od 2021, których zmiana składu nie dotyczy. | Wyzwalacz w Backlogu. |
+| 9 | Po wyniku 017: czy zlecić LV2c i co z 018 | **Zlecam LV2c jako kartę 019** (laboratorium z VR ≈ 8 i trwałością zmienności blisko granicy 0,9999; tylko p = 5 %, komórka C2, reguła K bez zmian); **018 → `czeka_na_decyzje`** (nie uruchamiam). Szerszego koszyka nie wybieram. Licznik „ryzyko 2021+” zostaje 0. | 017 pokazała na prawdziwych danych VR = 8,0 wobec 4,95 w laboratorium (ρ̂ 0,50, dolny koniec 0,36 > 0,282), 27 % dopasowań GARCH-t przy granicy persystencji (lab.: 2,2 %) i okno 2 091 z 2 100 wierszy. Wyzwalacz (i) z pkt. 5 zadziałał; LV2c to dane syntetyczne, bez licznika. Szerszy koszyk nie pomaga: ρ̂ jest własnością rynku, a młodsze monety nie mają 2 100 dni. | Karta 019 → `odrzucone`; wtedy 018 zostaje wstrzymana (albo `odrzucone`, jeśli nie chcesz rundy VaR/ES na danych). Wznowienie 018: warunki w karcie 018. |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -49,10 +50,15 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 
 **Nowe — do wykonania (`nowe`):**
 
-- **017** — dane pod pierwszą rundę VaR/ES: inwentarz 15 monet × 2 100 dni zwrotów i zależność trafień ρ_h na
-  prawdziwych danych (karta opisowa; nie ocenia żadnej prognozy; licznik „ryzyko 2021+” zostaje 0).
+- **019** — LV2c: laboratorium z zależnością trafień (VR ≈ 8) i trwałością zmienności blisko granicy, jak na
+  prawdziwych danych; pytanie: czy reguła K (rozmiar ≤ 10 %, moc ≥ 80 %) zostaje mierzalna. Dane syntetyczne, bez
+  licznika. Najpierw pre-rejestracja w gicie. Zlecona pkt. 9 wyżej.
+
+**Czekają na decyzję (`czeka_na_decyzje`):**
+
 - **018** — pierwsza runda VaR/ES na danych: pytanie bezwzględne, `dopasuj_garch_t`, p = 5 %, 15 × 1 700 dni.
-  Zależy od 017. Najpierw pre-rejestracja w gicie, potem uruchomienie (licznik 0 → 1).
+  **Wstrzymana** po wyniku 017 (zależność ponad laboratorium, okno 2 091 < 2 100). Wznowienie: LV2c (019) mierzalne
+  przy VR ≈ 8 + dane za październik 2026 + powtórka 017 na końcowym oknie + własna pre-rejestracja (licznik 0 → 1).
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
@@ -70,6 +76,10 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 - **009** — LV1: **MIERZALNA** przy p = 1 % i 5 % (Caveats; realistyczne prognozy odrzucane → LV2).
 - **011** — F2-1b: MIERZALNA, **NIEPOZYTYWNY** (11/15 przy wymaganych 12); licznik „zmienność 2021+” = 1; HAR odłożony.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
+- **017** — inwentarz 15 monet i zależność trafień ρ_h (karta opisowa, Caveats): VR = 8,0 wobec 4,95 w LV2
+  (ρ̂ 0,50; dolny koniec 0,36 > 0,282), bramka zależności NIE PRZECHODZI (ostrożna: nie przechodzi też w laboratorium),
+  okno C2 NIE DOMYKA SIĘ (2 091 z 2 100 wierszy), 27 % dopasowań GARCH-t przy granicy persystencji (lab.: 2,2 %).
+  Licznik „ryzyko 2021+” = 0. Konsekwencja: 018 wstrzymana, zlecona 019.
 - **016** — LV2: **MIERZALNA, ale tylko z pytaniem bezwzględnym** (Caveats). Dobry, lecz estymowany GARCH-t test
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
@@ -80,10 +90,11 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 
 ## Kolejka
 
-1. **017** (opisowa, bez oceny prognozy) → **018** (pierwsza runda VaR/ES na danych; pre-rejestracja przed
-   uruchomieniem; tylko pytanie bezwzględne, `dopasuj_garch_t`, 15 monet × 1 700 dni, p = 5 %). Jeśli 017 pokaże,
-   że ρ̂ + 2 SE > 0,282 albo że okno 2 100 dni nie domyka się dla któreś z 15 monet, 018 nie startuje, a ja
-   wracam do Ciebie z opcjami (LV2c z silniejszą zależnością albo szerszy koszyk).
+1. **019** (LV2c: pre-rejestracja w gicie → kalibracja generatora na ziarnach pilotażowych → przebieg rejestrowy).
+   Dalej, dopiero po jej wyniku i po danych za październik 2026 (spodziewane ok. 2026-11-01): powtórka 017 na
+   końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja przed uruchomieniem). Jeśli
+   LV2c wyjdzie NIEMIERZALNA przy VR ≈ 8, wracam do Ciebie z opcjami (inna reguła K′, szerszy koszyk albo zamknięcie
+   rundy VaR/ES na danych).
 2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 3. E3: reporter sekwencyjny gotowy przed 2026-12-24 (D3-a).
 
@@ -92,17 +103,17 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 Z zasady po Twojej stronie (nie mogę ich podjąć za Ciebie):
 
 1. **Scalenie do `main`** — praca leży na gałęzi `claude/fervent-fermi-vfctk6`; na `main` trafia nowym PR.
-2. **Odbiór kart `do_przegladu`** (001–012, 014–016) — przegląd i przeniesienie na `zrobione`.
-3. **Zmiana któregokolwiek z ośmiu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer.
+2. **Odbiór kart `do_przegladu`** (001–012, 014–017) — przegląd i przeniesienie na `zrobione`.
+3. **Zmiana któregokolwiek z dziewięciu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 9: zlecenie LV2c).
 4. **Konto GitHub i klucze** — tylko jeśli wznowisz 013.
 
 Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i niczego nie ruszałem.
 
 ## Backlog (bez kart)
 
-- **LV2c** (błąd standardowy testu DM, wrażliwość na konwencję startu GARCH parami, ewentualna reguła P′). Wyzwalacz:
-  (i) 017 pokaże ρ̂ + 2 SE > 0,282, wtedy potrzebna nowa komórka z silniejszą zależnością; albo (ii) ktoś chce
-  porównywać prognozy testem DM na n rzędu 1 700.
+- **LV2c — część porównawcza** (błąd standardowy testu DM, wrażliwość na konwencję startu GARCH parami, ewentualna
+  reguła P′). Wyzwalacz (i) zadziałał (017: ρ̂ + 2 SE = 0,64 > 0,282) i dał kartę **019** (komórka z zależnością jak na
+  danych, reguła K). Reszta zostaje tu z wyzwalaczem (ii): ktoś chce porównywać prognozy testem DM na n rzędu 1 700.
 - **Trop z ogonem EWMA** (`ewma94_ep` odrzucana w 4,1 / 4,6 % paneli wobec 78,5 / 78,8 % z ogonem t5; README LV2).
   Karta opisowa na zapisanych panelach; wyzwalacz: gdy któraś runda zacznie używać prognozy EWMA.
 - Skład top-20 po 2026-06 (pkt 8 wyżej) — wyzwalacz: runda wymagająca top-50 albo nowych wejść do top-20; wymaga
@@ -115,10 +126,13 @@ Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i nicz
 - Wolumen 5m vs 1d różny w 600 dniach (161 symboli) — przyczyny nie badano (karta 014).
 - Drobne uwagi do kodu LV2 (do poprawienia przy następnej zmianie kodu): etykieta „siatka X_GRID” w wydruku, zdublowane
   `POZIOMY`/`NU`, martwa stała `N_DNI`, kolejność argumentów `fz0`.
+- Drobne uwagi do kodu 017 (przegląd, uwagi 6–7; poprawić przy następnej zmianie kodu, przed kartą 018): sprawdzenie
+  `panel.index[-1] == do` w `panel_wspolny`, `do` bez strefy czasowej → czytelny błąd, walidacja cen po obcięciu do `do`,
+  import listy monet z `run_f21b` zamiast kopii, jeden generator losowy dla wszystkich L.
 
 ## Ryzyka
 
 Pełna tabela: `docs/PRD.md` §14. Najważniejsze: traktowanie nowego repo jako „świeżego startu” licznika prób
 (zasada 22) i oczekiwanie, że ML znajdzie przewagę tam, gdzie alpha zmierzyła jej brak. Dodatkowe, z delegacji
-2026-10-07: osiem decyzji wyżej podjął ten sam wykonawca, który napisał badanie — nie ma przy nich drugiej pary
+2026-10-07: dziewięć decyzji wyżej podjął ten sam wykonawca, który napisał badanie — nie ma przy nich drugiej pary
 oczu poza Twoim przeglądem.

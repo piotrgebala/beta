@@ -1,0 +1,15 @@
+Bramka 0.282 na panelach syntetycznych ρ = 0,8 (15 × 2100), L = 20
+ziarno |      ρ̂ |      SE |  ρ̂+2SE | bramka
+     1 |  0.2620 |  0.0351 |  0.3321 | NIE PRZECHODZI
+     2 |  0.3122 |  0.0327 |  0.3777 | NIE PRZECHODZI
+     3 |  0.2950 |  0.0354 |  0.3658 | NIE PRZECHODZI
+     4 |  0.2824 |  0.0362 |  0.3548 | NIE PRZECHODZI
+     5 |  0.3046 |  0.0353 |  0.3753 | NIE PRZECHODZI
+     6 |  0.2850 |  0.0315 |  0.3480 | NIE PRZECHODZI
+     7 |  0.2836 |  0.0298 |  0.3431 | NIE PRZECHODZI
+     8 |  0.3082 |  0.0366 |  0.3814 | NIE PRZECHODZI
+     9 |  0.3221 |  0.0367 |  0.3955 | NIE PRZECHODZI
+    10 |  0.2622 |  0.0358 |  0.3338 | NIE PRZECHODZI
+średnie: ρ̂ 0.2917, SE 0.0345, ρ̂+2SE 0.3607
+rozrzut ρ̂ między panelami (SD, ddof=1): 0.0204
+paneli z bramką PRZECHODZI: 0 z 10

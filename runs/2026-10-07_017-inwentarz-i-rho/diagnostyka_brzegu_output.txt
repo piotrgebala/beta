@@ -1,0 +1,18 @@
+dopasowań: 855; przy granicy: 227
+   227  persystencja ≈ 0,9999
+przy granicy wg monet (refit z oknem historii ≤ 1200 dni / dłuższym):
+  BNBUSDT    13  24
+  BTCUSDT    11  30
+  ETHUSDT     9  30
+  XRPUSDT     0   8
+  SOLUSDT     0   0
+  DOGEUSDT   27  16
+  ADAUSDT     2   0
+  LINKUSDT    0   0
+  AVAXUSDT    9   2
+  LTCUSDT     0   0
+  BCHUSDT     0   0
+  DOTUSDT     7   1
+  FILUSDT     8   0
+  ETCUSDT     9   6
+  NEARUSDT    8   7

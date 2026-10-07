@@ -1,0 +1,38 @@
+Inwentarz świec 1d (dane do 2026-09-30 włącznie, R16: od 2021-01-01)
+moneta     | świec | pierwsza   | ostatnia   | zwroty | braki w kalendarzu
+BNBUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+BTCUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+ETHUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+XRPUSDT    |  2094 | 2021-01-01 | 2026-09-30 |   2091 | 2022-02-26, 2022-02-27, 2022-02-28, 2022-04-01, 2022-04-02
+SOLUSDT    |  2094 | 2021-01-01 | 2026-09-30 |   2091 | 2022-02-26, 2022-02-27, 2022-02-28, 2022-04-01, 2022-04-02
+DOGEUSDT   |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+ADAUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+LINKUSDT   |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+AVAXUSDT   |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+LTCUSDT    |  2094 | 2021-01-01 | 2026-09-30 |   2091 | 2022-02-26, 2022-02-27, 2022-02-28, 2022-04-01, 2022-04-02
+BCHUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+DOTUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+FILUSDT    |  2094 | 2021-01-01 | 2026-09-30 |   2091 | 2022-02-26, 2022-02-27, 2022-02-28, 2022-04-01, 2022-04-02
+ETCUSDT    |  2099 | 2021-01-01 | 2026-09-30 |   2098 | -
+NEARUSDT   |  2094 | 2021-01-01 | 2026-09-30 |   2091 | 2022-02-26, 2022-02-27, 2022-02-28, 2022-04-01, 2022-04-02
+
+Daty wycięte z panelu wspólnego przez dziurę u którejś monety (7): 2022-02-26, 2022-02-27, 2022-02-28, 2022-03-01, 2022-04-01, 2022-04-02, 2022-04-03
+Panel wspólny: 2091 wierszy, 2021-01-02 … 2026-09-30, monet: 15
+
+Okno C2: potrzeba 2100 wierszy wspólnych (400 historii + 1700 oceny), jest 2091 → NIE DOMYKA SIĘ (brakuje 9)
+
+Pomiar zależności dziennej liczby przekroczeń VaR 5 % (GARCH-t, refit co 30 dni, K = 15)
+  dni oceny: 1691
+  dopasowań GARCH: 855, niezbieżnych: 0, przy granicy: 227, średnia persystencja α+β 0.9688, średnie ν̂ 4.14
+  VR = Var(S_t) / (K p (1 − p)) = 7.997
+  ρ̂ = (VR − 1) / (K − 1) = 0.4998
+  SE (bootstrap blokowy, L = 20, B = 2000, ziarno 20261007) = 0.0695
+  wrażliwość SE (opis, nie bramka): L = 10: 0.0724, L = 40: 0.0661
+  ρ̂ + 2 SE = 0.6388; próg 0.282
+Bramka zależności (ρ̂ + 2 SE ≤ 0.282): NIE PRZECHODZI
+
+Kontrole R8 (10 paneli syntetycznych po 15 monet × 2100 dni, ta sama funkcja pomiarowa)
+  dodatnia (ρ = 0.8, oczekiwane ≈ 0.282): ρ̂ na panelach 0.262 0.312 0.295 0.282 0.305 0.285 0.284 0.308 0.322 0.262
+    średnia 0.2917, kryterium [0.242; 0.322] → ZALICZONA
+  ujemna (ρ = 0, monety niezależne, oczekiwane ≈ 0): ρ̂ na panelach -0.004 0.000 0.000 0.006 -0.008 -0.001 -0.000 0.001 0.001 0.003
+    średnia 0.0000, kryterium |średnia| ≤ 0.03 → ZALICZONA

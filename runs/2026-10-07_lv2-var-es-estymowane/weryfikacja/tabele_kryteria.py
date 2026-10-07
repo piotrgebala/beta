@@ -153,4 +153,45 @@ for b in BLOKI:
             + f" | {pl(mde)} |"
         )
 (OUT / "tab_siatka.md").write_text("\n".join(w) + "\n", encoding="utf-8")
-print("OK: tab_kryteria.md tab_siatka.md ->", OUT)
+
+# --- K6: rozmiar DM po wyśrodkowaniu, wszystkie pary realistyczne ---------------------------------
+i6 = next(i for i, t in enumerate(linie) if t.startswith("OPIS (K6)"))
+para6 = re.compile(r"^  (\S+) → (\S+): fz0\s+([\d.]+), pinb\s+([\d.]+)$")
+k6: dict[tuple[str, int], dict[str, tuple[str, str]]] = {}
+cur = None
+for t in linie[i6:]:
+    m = blok.match(t)
+    if m:
+        cur = ("C1" if m.group(1).startswith("C1") else "C2", int(m.group(2)))
+        k6[cur] = {}
+        continue
+    r = para6.match(t)
+    if r and cur:
+        k6[cur][f"{r.group(1)} → {r.group(2)}"] = (r.group(3), r.group(4))
+assert len(k6) == 4 and {len(v) for v in k6.values()} == {5, 6}, {b: len(v) for b, v in k6.items()}
+PARY_K6 = [
+    ("okno60_t5 → ewma94_t5", "okno60 → ewma94"),
+    ("ewma94_t5 → garch_tnu", "ewma94 → garch_tnu (para główna P-b)"),
+    ("okno60_t5 → garch_tnu", "okno60 → garch_tnu"),
+    ("garch_tnu → garch_t5", "garch_tnu → garch_t5"),
+    ("ewma94_t5 → har_t5", "ewma94 → har"),
+    ("ewma94_t5 → ewma94_ep", "ewma94 → ewma94_ep (tylko C1)"),
+]
+
+
+def kom_k6(s: str) -> str:
+    return f"**{pl(s)}**" if not 2.5 <= float(s) <= 7.5 else pl(s)
+
+
+w = [
+    "| para realistyczna (A → B) | C1, p = 1 % | C1, p = 5 % | C2, p = 1 % | C2, p = 5 % |",
+    "|---|---:|---:|---:|---:|",
+]
+for klucz, nazwa in PARY_K6:
+    kol = [nazwa]
+    for b in BLOKI:
+        fz0_pinb = k6[b].get(klucz)
+        kol.append("—" if fz0_pinb is None else f"{kom_k6(fz0_pinb[0])} / {kom_k6(fz0_pinb[1])}")
+    w.append("| " + " | ".join(kol) + " |")
+(OUT / "tab_k6.md").write_text("\n".join(w) + "\n", encoding="utf-8")
+print("OK: tab_kryteria.md tab_siatka.md tab_k6.md ->", OUT)

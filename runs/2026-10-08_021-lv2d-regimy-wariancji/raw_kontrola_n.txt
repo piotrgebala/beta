@@ -1,0 +1,10 @@
+021 — LV2d: laboratorium VaR/ES dla K = 4 z poziomem wariancji (karta 021)
+Wersje: python 3.12.3, numpy 2.5.3, scipy 1.18.1, pandas 3.0.6.
+Czas 18 s (28 procesów)
+K-gen-N (R8, ujemna): ρ = 0, ρ_szok = 0, α + β = 0.98, bez poziomu wariancji, ziarno 20262101, 400 paneli
+  VR 1.006 ± 0.003, ρ̂ 0.0021, przy granicy 2.3 % ± 0.2 pp, niezbieżne 0.00 %, persystencja 0.9720, ν̂ 5.26 (400 paneli), rozrzut skali P90/P10 2.38
+  średnie ρ̂ +0.0021 ± 0.0010; wymaganie ∈ [-0.02; 0.02]: ZALICZONA
+
+real	0m18.590s
+user	0m0.693s
+sys	0m0.102s

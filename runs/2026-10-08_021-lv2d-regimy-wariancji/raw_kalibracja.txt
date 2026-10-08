@@ -1,0 +1,38 @@
+021 — LV2d: laboratorium VaR/ES dla K = 4 z poziomem wariancji (karta 021)
+Wersje: python 3.12.3, numpy 2.5.3, scipy 1.18.1, pandas 3.0.6.
+Czas 2218 s (28 procesów)
+KALIBRACJA (pilotaż): ziarno 20262101, konfig {'n_dni': 2091, 'start': 400, 'boot': 999}; drukowane tylko VR, ρ̂, odsetek przy granicy, niezbieżne, persystencja, ν̂, rozrzut skali.
+KROK 1: amplituda s przy D = 300 (ρ = 0.8, ρ_szok = 0.5, α + β = 0.98)
+  D = 300, s = 0.00: VR 2.176 ± 0.007, ρ̂ 0.3919, przy granicy 2.3 % ± 0.2 pp, niezbieżne 0.00 %, persystencja 0.9714, ν̂ 5.25 (1000 paneli), rozrzut skali P90/P10 2.39
+  D = 300, s = 0.25: VR 2.185 ± 0.007, ρ̂ 0.3951, przy granicy 3.5 % ± 0.2 pp, niezbieżne 0.00 %, persystencja 0.9757, ν̂ 5.21 (1000 paneli), rozrzut skali P90/P10 2.49
+  D = 300, s = 0.50: VR 2.197 ± 0.008, ρ̂ 0.3991, przy granicy 13.3 % ± 0.6 pp, niezbieżne 0.00 %, persystencja 0.9820, ν̂ 5.12 (1000 paneli), rozrzut skali P90/P10 2.85
+  D = 300, s = 0.75: VR 2.218 ± 0.008, ρ̂ 0.4061, przy granicy 29.8 % ± 0.9 pp, niezbieżne 0.00 %, persystencja 0.9864, ν̂ 5.05 (1000 paneli), rozrzut skali P90/P10 3.37
+  D = 300, s = 1.00: VR 2.231 ± 0.010, ρ̂ 0.4104, przy granicy 46.9 % ± 1.1 pp, niezbieżne 0.00 %, persystencja 0.9897, ν̂ 5.01 (1000 paneli), rozrzut skali P90/P10 4.29
+  D = 300, s = 1.25: VR 2.295 ± 0.010, ρ̂ 0.4316, przy granicy 59.8 % ± 1.0 pp, niezbieżne 0.00 %, persystencja 0.9916, ν̂ 4.98 (1000 paneli), rozrzut skali P90/P10 5.42
+  D = 300, s = 1.50: VR 2.358 ± 0.010, ρ̂ 0.4528, przy granicy 67.9 % ± 1.0 pp, niezbieżne 0.00 %, persystencja 0.9930, ν̂ 4.93 (1000 paneli), rozrzut skali P90/P10 7.32
+  s* = 1.086 (interpolacja do środka celu (51,3 %))
+  potwierdzenie amplitudy 0: s = 1.086: VR 2.274 ± 0.010, ρ̂ 0.4247, przy granicy 52.5 % ± 1.1 pp, niezbieżne 0.00 %, persystencja 0.9908, ν̂ 4.95 (1000 paneli), rozrzut skali P90/P10 4.61 → przy granicy TAK (okno 41.3–61.3 %), niezbieżne TAK
+N2 (opis): ρ = 0, ρ_szok = 0, s = 1.086, D = 300
+  VR 1.052 ± 0.005, ρ̂ 0.0173, przy granicy 51.0 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9908, ν̂ 4.97 (500 paneli), rozrzut skali P90/P10 4.48
+KROK 2: ścieżki VR przy (s*, D*)
+  ścieżka S, rho_szok = 0.00: VR 1.928 ± 0.011, ρ̂ 0.3094, przy granicy 49.9 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9903, ν̂ 5.00 (500 paneli), rozrzut skali P90/P10 4.44
+  ścieżka S, rho_szok = 0.25: VR 2.097 ± 0.013, ρ̂ 0.3658, przy granicy 51.2 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9911, ν̂ 4.96 (500 paneli), rozrzut skali P90/P10 4.59
+  ścieżka S, rho_szok = 0.50: VR 2.261 ± 0.012, ρ̂ 0.4203, przy granicy 50.0 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9904, ν̂ 5.00 (500 paneli), rozrzut skali P90/P10 4.63
+  ścieżka S, rho_szok = 0.75: VR 2.450 ± 0.014, ρ̂ 0.4834, przy granicy 50.0 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9907, ν̂ 4.98 (500 paneli), rozrzut skali P90/P10 4.49
+  ścieżka S, rho_szok = 1.00: VR 2.698 ± 0.015, ρ̂ 0.5660, przy granicy 55.1 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9914, ν̂ 5.01 (500 paneli), rozrzut skali P90/P10 4.62
+  ścieżka R_gora, rho = 0.80: VR 2.698 ± 0.015, ρ̂ 0.5660, przy granicy 54.3 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9909, ν̂ 4.97 (500 paneli), rozrzut skali P90/P10 4.74
+  ścieżka R_gora, rho = 0.85: VR 2.901 ± 0.016, ρ̂ 0.6337, przy granicy 53.3 % ± 1.6 pp, niezbieżne 0.00 %, persystencja 0.9914, ν̂ 4.96 (500 paneli), rozrzut skali P90/P10 4.78
+  ścieżka R_gora, rho = 0.90: VR 3.113 ± 0.018, ρ̂ 0.7042, przy granicy 51.6 % ± 1.6 pp, niezbieżne 0.00 %, persystencja 0.9904, ν̂ 5.04 (500 paneli), rozrzut skali P90/P10 4.84
+  ścieżka R_gora, rho = 0.95: VR 3.399 ± 0.020, ρ̂ 0.7998, przy granicy 54.2 % ± 1.6 pp, niezbieżne 0.00 %, persystencja 0.9918, ν̂ 5.00 (500 paneli), rozrzut skali P90/P10 4.68
+  ścieżka R_dol, rho = 0.20: VR 1.185 ± 0.006, ρ̂ 0.0618, przy granicy 55.5 % ± 1.4 pp, niezbieżne 0.00 %, persystencja 0.9915, ν̂ 4.99 (500 paneli), rozrzut skali P90/P10 4.77
+  ścieżka R_dol, rho = 0.35: VR 1.307 ± 0.007, ρ̂ 0.1024, przy granicy 50.7 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9907, ν̂ 4.98 (500 paneli), rozrzut skali P90/P10 4.57
+  ścieżka R_dol, rho = 0.50: VR 1.486 ± 0.008, ρ̂ 0.1620, przy granicy 50.9 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9906, ν̂ 4.99 (500 paneli), rozrzut skali P90/P10 4.53
+  ścieżka R_dol, rho = 0.65: VR 1.689 ± 0.010, ρ̂ 0.2296, przy granicy 51.9 % ± 1.4 pp, niezbieżne 0.00 %, persystencja 0.9908, ν̂ 4.98 (500 paneli), rozrzut skali P90/P10 4.50
+  ścieżka R_dol, rho = 0.80: VR 1.949 ± 0.012, ρ̂ 0.3162, przy granicy 50.5 % ± 1.5 pp, niezbieżne 0.00 %, persystencja 0.9904, ν̂ 5.01 (500 paneli), rozrzut skali P90/P10 4.60
+  B1 potwierdzenie 0: rho = 0.666: VR 1.712 ± 0.007, ρ̂ 0.2372, przy granicy 50.7 % ± 1.0 pp, niezbieżne 0.00 %, persystencja 0.9908, ν̂ 4.98 (1000 paneli), rozrzut skali P90/P10 4.63 → VR TAK (cel 1.717 ± 0.14), niezbieżne TAK
+  B2 potwierdzenie 0: rho_szok = 0.504: VR 2.266 ± 0.009, ρ̂ 0.4221, przy granicy 51.5 % ± 1.1 pp, niezbieżne 0.00 %, persystencja 0.9910, ν̂ 4.98 (1000 paneli), rozrzut skali P90/P10 4.48 → VR TAK (cel 2.264 ± 0.14), niezbieżne TAK
+  B3 potwierdzenie 0: rho = 0.828: VR 2.788 ± 0.011, ρ̂ 0.5960, przy granicy 54.0 % ± 1.1 pp, niezbieżne 0.00 %, persystencja 0.9910, ν̂ 4.95 (1000 paneli), rozrzut skali P90/P10 4.59 → VR TAK (cel 2.811 ± 0.14), niezbieżne TAK
+WYNIK B1: ok, parametry {'rho': 0.666, 'rho_szok': 0.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}
+WYNIK B2: ok, parametry {'rho': 0.8, 'rho_szok': 0.504, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}
+WYNIK B3: ok, parametry {'rho': 0.828, 'rho_szok': 1.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}
+exit=0

@@ -2,7 +2,7 @@
 id: 021
 tytul: LV2d — nowa pre-rejestracja po STOP 1 karty 019 (laboratorium z przesunięciami poziomu wariancji; scenariusz LV2 dla K = 4)
 typ: badawcze
-status: nowe
+status: w_toku
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; kartę otworzył Claude po STOP 1 w karcie 019 (README rundy 019, „Wynik”); wykonanie nie jest jeszcze zlecone"
 utworzono: 2026-10-08

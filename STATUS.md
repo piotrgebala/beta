@@ -51,6 +51,7 @@ GitHub i klucze), zostały po Twojej stronie.
 | 10 | Po wyniku 020: co z 019 przy K = 4 | **019 przeliczona na K = 4 z celem VR = 2,26 (ρ̂ 0,42) i drugim scenariuszem LV2 (ρ = 0,8, bez wspólnego szoku, VR ≈ 1,85).** Moc reguły K przy K = 4 nie jest dziedziczona z LV2. 018 zostaje wstrzymana. Licznik „ryzyko 2021+” zostaje 0. | 020: ρ̂ = 0,42, SE 0,09, przedział 0,24–0,60 obejmuje laboratorium (0,282); reguły z pre-rejestracji 020 dają dokładnie ten krok. Cztery monety niosą dziennie ok. 1,8 niezależnej monety, więc moc trzeba zmierzyć, a nie zakładać. Dane syntetyczne, bez licznika. | Karta 019 → `odrzucone`; 018 zostaje wstrzymana (albo `odrzucone`, jeśli nie chcesz rundy VaR/ES na danych). |
 | 11 | Projekt pre-rejestracji 019 (2026-10-08) | **(i)** α jako pokrętło odsetka dopasowań przy granicy (karta mówiła tylko „α + β do 0,9999”); **(ii)** trzy scenariusze zależności A0/A1/A2 i dwie komórki opisowe A3/A4 zamiast jednego punktu; **(iii)** K7b i K7d nie bramkują w komórkach z trwałością przy granicy (bramkuje KAL); **(iv)** krzywa mocy `garch_tnu` jako opis. | Rozpoznanie (112 paneli) pokazało nasycenie odsetka przy α = 0,08 na ≈ 40 %; 020 dała SE ρ̂ = 0,091 z dolnym końcem poniżej LV2, a tabela decyzji z 020 wymaga scenariusza LV2 dla K = 4; K7b/K7d są sprzeczne z celem 27 → 51 % przy granicy. Dane syntetyczne, bez licznika. | (i) zostać przy α = 0,08 i uznać cel odsetka za nieosiągalny; (ii) werdykt tylko z A1; (iii) raportować K7b/K7d jako opis; (iv) pominąć. Szczegóły: README rundy 019. |
 | 12 | Po STOP 1 w 019 (2026-10-08): co dalej | **019 zamknięta z werdyktem Revision** (reguła STOP 1 z pre-rejestracji; przebiegu rejestrowego nie ma, runner odmawia). **Otwieram kartę 021** (nowa pre-rejestracja: generator z przesunięciami poziomu wariancji + komórka A0), **nie wykonuję jej w tej sesji.** **Nie luzuję** progu 46,3 % po fakcie. 018 zostaje wstrzymana. Licznik „ryzyko 2021+” zostaje 0. | Najlepszy punkt kalibracji 44,5 % ± 1,3 pp < 46,3 % (druga droga: 37–44 %), płaskowyż od α = 0,12; VR w tolerancji. Pre-rejestracja zabrania zmiany generatora i progów po STOP 1, a przesunięcie progu po obejrzeniu wyniku byłoby przesunięciem słupków. Mechanizm (przesunięcia poziomu wariancji) to hipoteza, jeszcze niemierzona. Dane syntetyczne, bez licznika. | Kartę 021 zmienić na `odrzucone` albo wskazać inny kierunek: (a) luzowanie celu odsetka (jawnie jako przesunięcie słupków), (b) generator z reżimami, (c) sama komórka A0; 018 zostaje wstrzymana (albo `odrzucone`). |
+| 13 | Projekt pre-rejestracji 021 (2026-10-08) | **(i)** mechanizm = wspólny poziom wariancji w reżimach (średnia długość *D* = 300 dni, zapasowo 150) nałożony na bazę LV2 (α + β = 0,98), **nie** na trwałość 0,9999 z 019; **(ii)** okno celu odsetka dopasowań przy granicy [41,3; 61,3] % zamiast [46,3; 56,3] % (jawnie po fakcie, środek celu 51,3 % bez zmian); **(iii)** komórki A0 (scenariusz LV2 dla K = 4) i B1/B2/B3 (dół/środek/góra przedziału VR z 020, B2 główna); **(iv)** K7a bramkuje tylko w A0; **(v)** kolumny wyroczni `zan10`/`zan20` jako opis; **(vi)** 1 000 paneli na punkt kalibracji, kalibracja dwuetapowa (odsetek, potem VR); **(vii)** nowe ziarna; poprawki z przeglądu 019 w nowym runnerze `run_lv2d.py`. Karta 021 → `w_toku`. Licznik „ryzyko 2021+” zostaje 0. | Przegląd 019 pokazał, że przy trwałości 0,9999 panel jest „zapadniętym IGARCH” (mediana |r| ≈ 0,12 %), a SD pojedynczego panelu odsetka to ok. 26 pp, więc okno ± 5 pp było fałszywie dokładne. Okno luzuję jawnie, bo mechanizm ma być sprawdzony na realistycznej bazie; jeśli B2 przejdzie tylko dolną częścią okna, wniosek brzmi „poziom wariancji nic nie dodał do LV2c”. Dane syntetyczne, bez licznika. | (i) komórki B z α + β = 0,9999 jak w 019; (ii) stare okno i próg STOP 1 = 46,3 %; (iii) werdykt tylko z B2 i A0; (iv) bramka K7a także w B; (vi) 400 paneli jak w 019. Szczegóły: README rundy 021. |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -60,11 +61,7 @@ Brak. D3 rozstrzygnięta na delegację (pkt 6 wyżej), D1, D2, D4, D5, D6 rozstr
 
 Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
 
-**Nowe — do wykonania (`nowe`):**
-
-- **021** — LV2d: nowa pre-rejestracja po STOP 1 karty 019 — generator z przesunięciami poziomu wariancji (cel: ok. 51 % dopasowań przy granicy
-  przy VR 2,26) + komórka A0 (scenariusz LV2 dla K = 4); reguła K i progi bez zmian. Dane syntetyczne, bez licznika. Najpierw pre-rejestracja w gicie.
-  Otwarta 2026-10-08, jeszcze niewykonana.
+**Nowe — do wykonania (`nowe`):** nic.
 
 **Czekają na decyzję (`czeka_na_decyzje`):**
 
@@ -108,13 +105,17 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
 
 **Odłożone (`odrzucone`):** 013 — repo bundla na GitHubie (pkt 7 wyżej).
 
-**W toku:** nic.
+**W toku (`w_toku`):**
+
+- **021** — LV2d: generator ze wspólnymi przesunięciami poziomu wariancji (commit `1d1f90c`) + komórki A0 i B1/B2/B3 dla K = 4; reguła K i progi bez zmian.
+  Pre-rejestracja zapisana w gicie przed pilotażami (`runs/2026-10-08_021-lv2d-regimy-wariancji/README.md`). Dalej: runner `run_lv2d.py` z poprawkami
+  z przeglądu 019 → kalibracja → przebieg rejestrowy (jeden). Dane syntetyczne, bez licznika.
 
 ## Kolejka
 
 0. ~~**020**~~ — zrobiona 2026-10-07 (`do_przegladu`).
-1. ~~**019**~~ — zrobiona 2026-10-08, werdykt Revision (STOP 1; `do_przegladu`). **021** (LV2d: nowa pre-rejestracja → kalibracja generatora
-   z przesunięciami poziomu wariancji → przebieg rejestrowy z komórką A0). Dalej, dopiero po jej wyniku i po danych za październik 2026
+1. ~~**019**~~ — zrobiona 2026-10-08, werdykt Revision (STOP 1; `do_przegladu`). **021** w toku (LV2d: pre-rejestracja zapisana → runner → kalibracja generatora
+   z przesunięciami poziomu wariancji → przebieg rejestrowy z komórką A0 i B1–B3). Dalej, dopiero po jej wyniku i po danych za październik 2026
    (spodziewane ok. 2026-11-01): powtórka 020 na końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja
    przed uruchomieniem). Jeśli 021 wyjdzie NIEMIERZALNA przy K = 4 albo znów zatrzyma się na kalibracji, wracam do Ciebie z opcjami (inna
    reguła K′, szerszy koszyk albo zamknięcie rundy VaR/ES na danych).

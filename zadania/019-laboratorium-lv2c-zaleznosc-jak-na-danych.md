@@ -2,7 +2,7 @@
 id: 019
 tytul: LV2c — laboratorium z zależnością trafień i trwałością zmienności na wzór prawdziwych danych (rozmiar i moc testu K)
 typ: badawcze
-status: nowe
+status: do_przegladu
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; zlecenie LV2c rozstrzygnął Claude po wyniku karty 017 (README rundy 017, „Decyzje wykonawcy”); na tym punkcie unieważnia decyzję 5 z STATUS.md"
 utworzono: 2026-10-07
@@ -82,4 +82,13 @@ trwałości zmienności**. Nie wiemy z góry, czy test zbiorczy się psuje; to w
 
 ## Wynik
 
-(dopisuje orkiestrator)
+**Revision, reguła STOP 1 z pre-rejestracji (2026-10-08).** Pre-rejestracja `6787a2a`, generator `ad6fc17`, runner `cd4d5fd`; README rundy:
+`runs/2026-10-08_019-lv2c-4-monety/README.md`.
+
+- Generator LV2c dochodzi do celu VR (2,20–2,22 wobec 2,264 ± 0,14), ale **nie do celu odsetka dopasowań przy granicy persystencji**: maksimum
+  44,5 % ± 1,3 pp (α = 0,16) wobec progu 46,3 % (cel z 020: 51,3 %); niezbieżne ≈ 0 %. Druga droga (wprost z `dopasuj_garch_t`, inne ziarno)
+  potwierdza poziom 37–44 %.
+- Przebiegu rejestrowego z regułą K nie było (runner odmawia), więc **mierzalność reguły K przy K = 4 pozostaje niezmierzona**.
+  K-gen-N zaliczona (ρ̂ +0,0044 ± 0,0014). Licznik „ryzyko 2021+” = 0, rejestr alpha nietknięty.
+- Dalszy krok: karta **021** (nowa pre-rejestracja: generator z przesunięciami poziomu wariancji + komórka A0). 018 pozostaje wstrzymana.
+- Do Twojej decyzji (nie blokuje niczego): odbiór karty `do_przegladu`. Karta 021 stoi w kolejce (`nowe`) i nie była wykonywana w tej sesji; jeśli wolisz inny kierunek niż generator z przesunięciami wariancji, napisz.

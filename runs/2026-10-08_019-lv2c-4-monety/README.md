@@ -12,8 +12,9 @@
   pre-rejestracją), runner `symulacje/run_lv2c.py` (po pre-rejestracji, przed pilotażami formalnymi). Pliki LV2 zamrożone od `24c8863`
   (`garch_panel.py`, `garch_t.py`, `prognozy_lv2.py`, `moc_var_es.py`, `run_lv2.py`, `porownanie_lv2.py`) i miara 017/020
   (`modele/pomiar_rho_h.py`, `modele/opis_rho_h.py`) **bez zmian**; runner je importuje.
-- Status tego pliku: **pre-rejestracja** (commit pre-rejestracji poprzedza pilotaże formalne i przebieg rejestrowy; hash dopisany w sekcji
-  „Wynik”). Sekcje „Wynik” i dalsze zostaną dopisane po przebiegu.
+- Status tego pliku: **pre-rejestracja** (commit `6787a2a`, poprzedza pilotaże formalne i przebieg rejestrowy; tekst pre-rejestracji poniżej
+  nie został zmieniony) **oraz wynik**: runda zakończyła się regułą STOP 1 na kalibracji, **przebiegu rejestrowego z regułą K nie było**,
+  werdykt **Revision** (sekcja „Wynik”, na końcu pliku).
 
 ## Pre-rejestracja (zapisana przed pilotażami formalnymi i przed przebiegiem rejestrowym)
 
@@ -207,6 +208,155 @@ przy granicy ∈ [41; 61] %. Jeśli A2 nie wyszła TAK, kryterium dotyczy najwy�
    a ich funkcję (kontrola estymatora) pełni KAL oraz K7a/K7c. Ścieżka odwrotu: raportować je jako opis (robię to i tak).
 4. **Krzywa mocy `garch_tnu` jako opis** (MDE dla ewentualnej reguły K′): bez wpływu na werdykt.
 
+## Wynik
+
+Pliki wynikowe w tym katalogu: `raw_pilot_kontrola_n.txt` (K-gen-N), `raw_pilot_kalibracja.txt` + `kalibracja.json` (krok 1, STOP 1),
+`raw_rejestr_odmowa.txt` (runner odmawia przebiegu rejestrowego), `druga_droga_brzeg.py` + `raw_druga_droga.txt` (weryfikacja
+niezależna). Osobnego `raw_output.txt` przebiegu rejestrowego **nie ma, bo przebieg się nie odbył**; jego rolę pełnią pliki `raw_*`.
+Kolejność: pre-rejestracja `6787a2a` → runner `cd4d5fd` (przed pilotażami) → pilotaże (ziarno `SeedSequence(20_261_091)`) → STOP 1 →
+druga droga (ziarno 31 415 926). Żadnego odrzucenia testu zbiorczego ani odsetka trafień nie policzono.
+
+### Co się stało, w prostych słowach
+
+Laboratorium miało udawać cztery prawdziwe monety. Dwie rzeczy miało robić naraz: trafienia VaR mają się zbiegać w tych samych dniach
+tak jak w 020 (VR 2,264) i model GARCH-t ma dochodzić do granicy trwałości (0,9999) w około połowie dopasowań (51,3 % w 020). Pierwsza
+rzecz wychodzi od razu (VR 2,20–2,22, czyli w tolerancji 2,264 ± 0,14). Druga nie wychodzi: **żadne ustawienie generatora nie
+doprowadziło odsetka dopasowań przy granicy do 46,3 %** (najlepsze 44,5 % ± 1,3 pp). Pre-rejestracja mówiła z góry, co wtedy: nie robię
+przebiegu rejestrowego i kończę rundę werdyktem Revision. Tak zrobiłem. **Na pytanie rundy — czy reguła K jest mierzalna dla czterech
+monet — ta runda nie odpowiada ani na tak, ani na nie.**
+
+### Kontrola ujemna generatora (K-gen-N, R8)
+
+ρ = 0, ρ_szok = 0, α + β = 0,98, 200 paneli, ziarna pilotażowe: VR 1,013 ± 0,004, ρ̂ **+0,0044 ± 0,0014**, wymaganie ρ̂ ∈ [−0,02; 0,02]
+→ **ZALICZONA.** Bez zależności miara niczego nie wymyśla. (Przewidywanie „zaliczona”, 90 % → trafione.) K-gen-P (parytet z `generuj_panel`
+bit w bit i parytet VR runnera z `modele.pomiar_rho_h.vr_rho`) sprawdzają testy jednostkowe w repozytorium (zielone). K-gen-D wymaga
+komórki A0 z przebiegu rejestrowego, więc **nie oceniona.**
+
+### Krok 1 kalibracji (400 paneli na punkt, ρ = 0,8, ρ_szok = 0,5, α + β = 0,9999)
+
+| α | VR ± SE | ρ̂ | przy granicy ± SE | niezbieżne | średnia persystencja | średnie ν̂ |
+|---|---|---|---|---|---|---|
+| 0,08 | 2,200 ± 0,011 | 0,4000 | 36,6 % ± 1,2 pp | 0,00 % | 0,9932 | 5,32 |
+| 0,12 | 2,219 ± 0,011 | 0,4065 | 41,2 % ± 1,3 pp | 0,00 % | 0,9915 | 5,33 |
+| **0,16** | 2,215 ± 0,011 | 0,4051 | **44,5 % ± 1,3 pp** | 0,00 % | 0,9899 | 5,25 |
+| 0,20 | 2,221 ± 0,011 | 0,4070 | 41,6 % ± 1,4 pp | 0,00 % | 0,9873 | 5,30 |
+| 0,25 | 2,214 ± 0,011 | 0,4047 | 43,9 % ± 1,3 pp | 0,00 % | 0,9855 | 5,31 |
+| 0,30 | 2,217 ± 0,011 | 0,4057 | 44,1 % ± 1,3 pp | 0,00 % | 0,9835 | 5,34 |
+
+Wymagane: ≥ 46,3 % **i** niezbieżne ≤ 2 %. Niezbieżnych jest ≈ 0, więc warunek zawodzi wyłącznie na odsetku przy granicy: maksimum
+44,5 % leży 1,8 pp (ok. 1,4 SE) pod progiem, a od α = 0,12 odsetek leży na płaskowyżu 41–45 % (nie rośnie z α). → **STOP 1.** VR (cel
+2,264 ± 0,14) leży w tolerancji przy ρ_szok = 0,5 w każdym wierszu, czyli kalibracja VR byłaby osiągalna; zawodzi tylko drugi cel.
+Wynik z pliku `kalibracja.json` (klucze `krok1`, `stop`; `krok2a` puste, `alfa_star` null, bo kroki 2–3 nie ruszały).
+
+### Odmowa runnera
+
+`python -m symulacje.run_lv2c rejestr --kalibracja kalibracja.json` kończy się natychmiast komunikatem „STOP: kalibracja A1 nie powiodła
+się — przebiegu rejestrowego nie ma”, kod wyjścia 1 (`raw_rejestr_odmowa.txt`). Reguła nie jest tylko zapisem w README, runner jej pilnuje.
+
+### Weryfikacja niezależna (druga droga)
+
+`druga_droga_brzeg.py` liczy odsetek przy granicy **wprost z `dopasuj_garch_t`** na świeżych panelach (ziarno 31 415 926, rozłączne z pilotażowym
+i rejestrowym), z tym samym harmonogramem dopasowań (co 30 dni, okno rosnące od 400), ale bez `run_lv2c`, bez `prognoza_garch_tnu` i bez agregacji
+runnera. To **opis po STOP 1**, nie kalibracja i nie przebieg rejestrowy. 100 paneli × 4 monety × 57 dopasowań = 22 800 dopasowań na punkt.
+
+| punkt (α, ρ_szok) | druga droga | pilotaż (400 paneli) | różnica / SE różnicy |
+|---|---|---|---|
+| 0,16; 0,5 | 41,1 % ± 2,5 pp | 44,5 % ± 1,3 pp | 3,4 / 2,8 = 1,2 |
+| 0,30; 0,5 | 43,6 % ± 2,5 pp | 44,1 % ± 1,3 pp | 0,5 / 2,8 = 0,2 |
+| 0,20; 1,0 | 36,6 % ± 2,9 pp | 41,6 % ± 1,4 pp (przy ρ_szok = 0,5) | 5,0 / 3,2 = 1,6 |
+
+Wniosek z porównania: **druga droga potwierdza poziom 37–44 % i brak dojścia do 46,3 %.** Różnice mieszczą się w 1,6 SE; trzeci punkt jest
+najniższy, bo przy ρ_szok = 1 cztery monety dzielą tę samą ścieżkę zmienności, więc 100 paneli niesie mniej niezależnej informacji (stąd
+większe SE). Własność „rozkład pojedynczej monety nie zależy od ρ_szok” stoi w testach generatora; rozbieżność trzeciego punktu o 1,6 SE
+traktuję jako szum, nie jako jej złamanie. Rozbicie po parametrach: **100 % przypadków „przy granicy” to granica persystencji**; ω, udział α
+i ν nigdy nie stoją na swoich granicach. Zależność od długości okna uczącego jest słaba i niejednolita (α = 0,16: 42,0 / 42,0 / 39,8 % dla okien
+400–800 / 800–1 400 / 1 400–2 100 dni; α = 0,30: 41,9 / 44,2 / 44,1 %), więc dłuższe okno nie dowozi brakujących 2–7 pp. Średnia
+persystencja dopasowań 0,976–0,992 (nie 0,9999): estymator zaniża prawdziwą, ledwie stacjonarną trwałość.
+
+### Sprzeczność z rozpoznaniem (jawnie)
+
+Rozpoznanie przed pre-rejestracją (ziarna 9001+, 112 paneli) dało przy α = 0,20 ≈ 47 % i przy α = 0,30 ≈ 48,5 %, więc uznałem próg 46,3 % za
+osiągalny. Formalny pilotaż (400 paneli, ziarna rozłączne) dał 41,6 % i 44,1 %, a druga droga przy α = 0,30 43,6 %. Rozpoznanie miało SE rzędu
+2,5 pp (112 paneli), więc różnica wobec pilotażu to ok. 2 SE: albo szczęśliwy szum, albo coś, czego nie umiem rozstrzygnąć (ta sama wielkość,
+ten sam kod, inne ziarna). **Liczy się pilotaż formalny**, bo tylko on był zapisany z góry. Moja pre-rejestrowa pewność 90 %, że kalibracja jest
+możliwa, była zawyżona (przewidywanie **chybione**).
+
+### Dlaczego tak wychodzi (hipoteza, nie wynik)
+
+Przy prawdziwej wartości α + β dokładnie na granicy jednostronnej estymator ląduje na niej asymptotycznie w ok. 50 % przypadków (typowy
+efekt „piętrzenia się” estymatora na brzegu przestrzeni parametrów; **z pamięci, nie sprawdzone tu w źródle**), a w skończonej próbie mniej: tu 37–45 %. Dane (51,3 %) leżą powyżej tego pułapu, co
+sugeruje, że w prawdziwych szeregach trwałość jest „poza granicą” (przesunięcia poziomu wariancji, reżimy), czego stacjonarny GARCH z
+α + β ≤ 0,9999 nie wytworzy. **Tego tu nie zmierzyłem** (nie badałem prawdziwych szeregów; rozbicie po oknach jest zgodne, nie dowodzi). To jest
+treść karty 021.
+
+### Przewidywania z pre-rejestracji — rozliczenie
+
+| wielkość | przewidywanie | wynik |
+|---|---|---|
+| kalibracja możliwa (nie STOP 1) | istnieje, 90 % | **chybione** (STOP 1) |
+| K-gen-N | zaliczone, 90 % | trafione (ρ̂ +0,0044) |
+| pozostałe (K-gen-D, K1, K2, K7c, K-a, K-b, werdykty A1, konieczność kroku 2b) | — | **nieocenione** — przebiegu rejestrowego nie było |
+
+### Co na plus (+) / Co na minus (−)
+
+**+** STOP 1 zadziałał tak, jak zapisano z góry: nie dobierałem ziaren ani progów, nie zmieniłem generatora po obejrzeniu wyniku, runner
+odmawia przebiegu. **+** Pilotaż nie pokazał żadnego odrzucenia testu K, więc rundę da się powtórzyć w nowej pre-rejestracji bez skażenia
+generatora. **+** VR (cel z 020) jest osiągalny bez korekty, więc w kolejnej rundzie zostaje jedno pokrętło do znalezienia, nie dwa. **+** Druga
+droga (inne ziarna, inny kod) zgadza się co do poziomu 37–44 %. **+** Granica to w 100 % persystencja, więc brakujący mechanizm dotyczy
+persystencji, nie ν ani ω.
+
+**−** **Pytanie rundy bez odpowiedzi:** mierzalność reguły K przy K = 4 nadal nieznana; 018 nadal stoi. **−** Próg 46,3 % i tolerancja ± 5 pp
+wzięły się z rozpoznania, które okazało się zawyżone; STOP 1 zadziałał na progu, który sam ustaliłem, więc przy innym progu (np. 40 %) kalibracja
+by przeszła, i nie wolno tego robić po fakcie. **−** Pułap ok. 44 % jest hipotezą o brzegu parametru, nie zmierzonym faktem. **−** Laboratorium to
+ν = 5 (w 020 ν̂ = 4,14), jednakowa persystencja dla czterech monet (w 020 SOL ma 0 dopasowań przy granicy), bez dźwigni i skoków, kopuła
+gaussowska; nawet udana kalibracja VR i granicy zostawiłaby te uproszczenia. **−** Druga droga ma 100 paneli (SE 2,5 pp), więc tylko
+potwierdza poziom, nie ostrzy go.
+
+### Kogo NIE ma w zbiorze
+
+Panele, w których estymator nie dochodzi do granicy, są w zbiorze (to ok. 55–63 % dopasowań), niezbieżnych praktycznie nie ma (< 0,01 %), więc
+wynik nie powstaje z odfiltrowania. Nie ma natomiast: (1) komórek A0–A4 w ogóle (ani jednego odrzucenia testu K), (2) kroków 2a, 2b i
+potwierdzenia, (3) żadnych prawdziwych szeregów (poziom wariancji w czasie nie był badany), (4) kombinacji α > 0,30, ρ_szok ≠ 0,5 w pilotażu
+(druga droga zajrzała w ρ_szok = 1 na jednym punkcie), (5) generatora z reżimami wariancji (karta 021).
+
+### Weryfikacja i przegląd kodu
+
+- **Liczba przeliczona drugą drogą:** odsetek przy granicy (tabela wyżej), z niezależnym kodem i ziarnem; zgodność w 1,6 SE.
+- **K-gen-N** zaliczona; **kontrole generatora** w testach: 11 testów generatora (parytet z LV2 bit w bit, niezależność brzegu pojedynczej
+  monety od ρ i ρ_szok, determinizm, `hypothesis`), 43 testy runnera (m.in. że pilotaż nie liczy statystyk reguły K); pełny zestaw 1 237 przeszedł.
+- **Błąd kodu znaleziony w rundzie:** `roznica_se` dzieliło przez zero przy SE = 0 (wykryte przy próbie dymnej, naprawione i opisane testem).
+  Nie dotyczy liczb STOP 1 (funkcja służy porównaniu komórek A3/A4 w przebiegu rejestrowym, którego nie było).
+- **Przegląd diffu (`engineering:code-review`):** wynik w sekcji „Przegląd kodu” poniżej.
+- **Przeoczenie wykonawcze:** pierwsza wersja drugiej drogi nie ustawiała jednowątkowego BLAS i przeciążyła maszynę (obciążenie 180); poprawiona
+  (te same punkty, 39 s). Nie wpływa na liczby, wpływa na czas.
+
+### Wniosek
+
+Reguła K dla czterech monet pozostaje **niezmierzona**. Generator LV2c nie potrafi odtworzyć granicy persystencji w 51 % dopasowań, najwyżej
+w ok. 44 %. To nie jest wynik o rynku ani o regule K, tylko o ograniczeniu laboratorium. Nie wolno z tego wyciągać, że reguła K jest dobra
+albo zła.
+
+### Rekomendacja
+
+Otwieram kartę **021** (nowa pre-rejestracja): generator z przesunięciami poziomu wariancji, komórka A0 (scenariusz LV2 dla K = 4)
+w tej samej rundzie, bez zmiany progów i reguły K. Poluzowanie celu odsetka przy granicy odradzam jako samodzielne rozwiązanie (przesunięcie
+słupków po fakcie). Kartę 018 trzymam wstrzymaną.
+
+### Werdykt (podpisuje Claude, 2026-10-08, R14)
+
+**Revision.** Powód wprost z pre-rejestracji (STOP 1): kalibracja generatora nie osiągnęła zapisanego celu, przebiegu rejestrowego nie ma.
+Skrypt był neutralnym reporterem; ocena i werdykt są moje.
+
 ### Użyte skille
 
-(do uzupełnienia po przebiegu)
+- `data:statistical-analysis` — SE różnicy dwóch odsetków, porównanie pilotażu z drugą drogą w jednostkach SE, wnioski ostrożne wobec małej próby
+  drugiej drogi (100 paneli).
+- `data:validate-data` — lista kontrolna: źródło liczby, niezależne przeliczenie, „kogo nie ma w zbiorze”, ostrzeżenie o wyniku idealnie
+  potwierdzającym hipotezę (tu wynik jej NIE potwierdza).
+- `engineering:code-review` — przegląd diffu runnera i generatora (sekcja „Przegląd kodu”).
+- `clas5-runda` — procedura rundy: pre-rejestracja przed wynikiem, wpis w pamięci projektu (`runs/INDEX.md`), rejestr STOP.
+  (Rejestr `runs/skille/` z alpha nie istnieje w beta; użycia wpisane ręcznie.)
+
+### Przegląd kodu
+
+(przegląd niezależnego recenzenta był w toku w chwili tego commitu; jego wynik jest dopisany w następnym commicie)

@@ -1,0 +1,4 @@
+019 — LV2c: laboratorium VaR/ES dla K = 4 (karta 019)
+Wersje: python 3.12.3, numpy 2.5.3, scipy 1.18.1, pandas 3.0.6.
+STOP: kalibracja A1 nie powiodła się — przebiegu rejestrowego nie ma
+kod wyjścia: 1

@@ -1,0 +1,31 @@
+Druga droga STOP 1: dopasowania wprost z dopasuj_garch_t, ziarno 31415926
+
+α = 0.16, ρ_szok = 0.50, α + β = 0,9999, ρ = 0,8; 100 paneli, 22800 dopasowań
+  przy granicy (flaga `brzeg`): 41.1 % ± 2.5 pp
+    z tego parametr „log omega”: 0.0 % dopasowań
+    z tego parametr „persystencja”: 41.1 % dopasowań
+    z tego parametr „udział alfa”: 0.0 % dopasowań
+    z tego parametr „nu”: 0.0 % dopasowań
+    okno uczące 400–800: przy granicy 42.0 %, średnia persystencja 0.9844
+    okno uczące 800–1400: przy granicy 42.0 %, średnia persystencja 0.9902
+    okno uczące 1400–2100: przy granicy 39.8 %, średnia persystencja 0.9924
+
+α = 0.30, ρ_szok = 0.50, α + β = 0,9999, ρ = 0,8; 100 paneli, 22800 dopasowań
+  przy granicy (flaga `brzeg`): 43.6 % ± 2.5 pp
+    z tego parametr „log omega”: 0.0 % dopasowań
+    z tego parametr „persystencja”: 43.6 % dopasowań
+    z tego parametr „udział alfa”: 0.0 % dopasowań
+    z tego parametr „nu”: 0.0 % dopasowań
+    okno uczące 400–800: przy granicy 41.9 %, średnia persystencja 0.9762
+    okno uczące 800–1400: przy granicy 44.2 %, średnia persystencja 0.9840
+    okno uczące 1400–2100: przy granicy 44.1 %, średnia persystencja 0.9878
+
+α = 0.20, ρ_szok = 1.00, α + β = 0,9999, ρ = 0,8; 100 paneli, 22800 dopasowań
+  przy granicy (flaga `brzeg`): 36.6 % ± 2.9 pp
+    z tego parametr „log omega”: 0.0 % dopasowań
+    z tego parametr „persystencja”: 36.6 % dopasowań
+    z tego parametr „udział alfa”: 0.0 % dopasowań
+    z tego parametr „nu”: 0.0 % dopasowań
+    okno uczące 400–800: przy granicy 30.5 %, średnia persystencja 0.9753
+    okno uczące 800–1400: przy granicy 35.1 %, średnia persystencja 0.9850
+    okno uczące 1400–2100: przy granicy 41.6 %, średnia persystencja 0.9903

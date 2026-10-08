@@ -1,0 +1,5 @@
+019 — LV2c: laboratorium VaR/ES dla K = 4 (karta 019)
+Wersje: python 3.12.3, numpy 2.5.3, scipy 1.18.1, pandas 3.0.6.
+K-gen-N (R8, ujemna): ρ = 0, ρ_szok = 0, α + β = 0.98, ziarna pilotażowe (etap 5), 200 paneli
+  VR 1.013 ± 0.004, ρ̂ 0.0044, przy granicy 2.0 % ± 0.2 pp, niezbieżne 0.00 %, persystencja 0.9727, ν̂ 5.24 (200 paneli)
+  średnie ρ̂ +0.0044 ± 0.0014; wymaganie ∈ [-0.02; 0.02]: ZALICZONA

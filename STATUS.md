@@ -49,6 +49,8 @@ GitHub i klucze), zostały po Twojej stronie.
 | 8 | Skład top-20 po 2026-06 | **Odkładam.** | Aktualizacja listy to Poprawka w alpha (R23, karta 015 w alpha). Pierwsza runda używa 15 monet z pełną historią od 2021, których zmiana składu nie dotyczy. | Wyzwalacz w Backlogu. |
 | 9 | Po wyniku 017: czy zlecić LV2c i co z 018 | **Zlecam LV2c jako kartę 019** (laboratorium z VR ≈ 8 i trwałością zmienności blisko granicy 0,9999; tylko p = 5 %, komórka C2, reguła K bez zmian); **018 → `czeka_na_decyzje`** (nie uruchamiam). Szerszego koszyka nie wybieram. Licznik „ryzyko 2021+” zostaje 0. | 017 pokazała na prawdziwych danych VR = 8,0 wobec 4,95 w laboratorium (ρ̂ 0,50, dolny koniec 0,36 > 0,282), 27 % dopasowań GARCH-t przy granicy persystencji (lab.: 2,2 %) i okno 2 091 z 2 100 wierszy. Wyzwalacz (i) z pkt. 5 zadziałał; LV2c to dane syntetyczne, bez licznika. Szerszy koszyk nie pomaga: ρ̂ jest własnością rynku, a młodsze monety nie mają 2 100 dni. | Karta 019 → `odrzucone`; wtedy 018 zostaje wstrzymana (albo `odrzucone`, jeśli nie chcesz rundy VaR/ES na danych). Wznowienie 018: warunki w karcie 018. |
 | 10 | Po wyniku 020: co z 019 przy K = 4 | **019 przeliczona na K = 4 z celem VR = 2,26 (ρ̂ 0,42) i drugim scenariuszem LV2 (ρ = 0,8, bez wspólnego szoku, VR ≈ 1,85).** Moc reguły K przy K = 4 nie jest dziedziczona z LV2. 018 zostaje wstrzymana. Licznik „ryzyko 2021+” zostaje 0. | 020: ρ̂ = 0,42, SE 0,09, przedział 0,24–0,60 obejmuje laboratorium (0,282); reguły z pre-rejestracji 020 dają dokładnie ten krok. Cztery monety niosą dziennie ok. 1,8 niezależnej monety, więc moc trzeba zmierzyć, a nie zakładać. Dane syntetyczne, bez licznika. | Karta 019 → `odrzucone`; 018 zostaje wstrzymana (albo `odrzucone`, jeśli nie chcesz rundy VaR/ES na danych). |
+| 11 | Projekt pre-rejestracji 019 (2026-10-08) | **(i)** α jako pokrętło odsetka dopasowań przy granicy (karta mówiła tylko „α + β do 0,9999”); **(ii)** trzy scenariusze zależności A0/A1/A2 i dwie komórki opisowe A3/A4 zamiast jednego punktu; **(iii)** K7b i K7d nie bramkują w komórkach z trwałością przy granicy (bramkuje KAL); **(iv)** krzywa mocy `garch_tnu` jako opis. | Rozpoznanie (112 paneli) pokazało nasycenie odsetka przy α = 0,08 na ≈ 40 %; 020 dała SE ρ̂ = 0,091 z dolnym końcem poniżej LV2, a tabela decyzji z 020 wymaga scenariusza LV2 dla K = 4; K7b/K7d są sprzeczne z celem 27 → 51 % przy granicy. Dane syntetyczne, bez licznika. | (i) zostać przy α = 0,08 i uznać cel odsetka za nieosiągalny; (ii) werdykt tylko z A1; (iii) raportować K7b/K7d jako opis; (iv) pominąć. Szczegóły: README rundy 019. |
+| 12 | Po STOP 1 w 019 (2026-10-08): co dalej | **019 zamknięta z werdyktem Revision** (reguła STOP 1 z pre-rejestracji; przebiegu rejestrowego nie ma, runner odmawia). **Otwieram kartę 021** (nowa pre-rejestracja: generator z przesunięciami poziomu wariancji + komórka A0), **nie wykonuję jej w tej sesji.** **Nie luzuję** progu 46,3 % po fakcie. 018 zostaje wstrzymana. Licznik „ryzyko 2021+” zostaje 0. | Najlepszy punkt kalibracji 44,5 % ± 1,3 pp < 46,3 % (druga droga: 37–44 %), płaskowyż od α = 0,12; VR w tolerancji. Pre-rejestracja zabrania zmiany generatora i progów po STOP 1, a przesunięcie progu po obejrzeniu wyniku byłoby przesunięciem słupków. Mechanizm (przesunięcia poziomu wariancji) to hipoteza, jeszcze niemierzona. Dane syntetyczne, bez licznika. | Kartę 021 zmienić na `odrzucone` albo wskazać inny kierunek: (a) luzowanie celu odsetka (jawnie jako przesunięcie słupków), (b) generator z reżimami, (c) sama komórka A0; 018 zostaje wstrzymana (albo `odrzucone`). |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -56,18 +58,19 @@ Brak. D3 rozstrzygnięta na delegację (pkt 6 wyżej), D1, D2, D4, D5, D6 rozstr
 
 ## Bieżące zadania
 
-Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
+Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
 
 **Nowe — do wykonania (`nowe`):**
 
-- **019** — LV2c dla K = 4: laboratorium z zależnością trafień jak na prawdziwych danych czwórki (cel VR = 2,26 z 020; drugi scenariusz: LV2 bez wspólnego szoku, VR ≈ 1,85) i trwałością zmienności blisko granicy (ok. 50 % dopasowań); pytanie: czy reguła K (rozmiar ≤ 10 %, moc ≥ 80 %) zostaje mierzalna. Dane syntetyczne, bez
-  licznika. Najpierw pre-rejestracja w gicie. Zlecona pkt. 9 i 10 wyżej.
+- **021** — LV2d: nowa pre-rejestracja po STOP 1 karty 019 — generator z przesunięciami poziomu wariancji (cel: ok. 51 % dopasowań przy granicy
+  przy VR 2,26) + komórka A0 (scenariusz LV2 dla K = 4); reguła K i progi bez zmian. Dane syntetyczne, bez licznika. Najpierw pre-rejestracja w gicie.
+  Otwarta 2026-10-08, jeszcze niewykonana.
 
 **Czekają na decyzję (`czeka_na_decyzje`):**
 
 - **018** — pierwsza runda VaR/ES na danych: pytanie bezwzględne, `dopasuj_garch_t`, p = 5 %, od 2026-10-07 **4 monety** (BTC, ETH, SOL, BNB) × ok. 1 690 dni
   zamiast 15 × 1 700. **Wstrzymana** po wyniku 017 (zależność ponad laboratorium, okno 2 091 < 2 100). Wznowienie:
-  LV2c dla K = 4 (019) mierzalne przy VR ≈ 2,26 (020) + dane za październik 2026 + powtórka 020 na końcowym oknie +
+  LV2c dla K = 4 (019 skończona STOP 1 bez odpowiedzi; dalej 021) mierzalne przy VR ≈ 2,26 (020) + dane za październik 2026 + powtórka 020 na końcowym oknie +
   własna pre-rejestracja (licznik 0 → 1).
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
@@ -94,6 +97,9 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
   0,24–0,60), nie do odróżnienia od laboratorium (0,282) ani od 15 monet (0,50); ok. 1,8 niezależnej monety dziennie;
   117 z 228 dopasowań przy granicy (te same co w 017); kontrole R8 ✓, druga droga ✓. Licznik „ryzyko 2021+” = 0.
   Konsekwencja: 019 na K = 4 z celem VR = 2,26, 018 wstrzymana.
+- **019** — LV2c dla K = 4 (**Revision, STOP 1**): generator doszedł do celu VR (2,20–2,22 wobec 2,264 ± 0,14), ale nie do odsetka dopasowań
+  przy granicy persystencji (max 44,5 % ± 1,3 pp przy progu 46,3 %; druga droga 37–44 %); przebiegu rejestrowego z regułą K nie było, więc
+  mierzalność reguły K przy K = 4 pozostaje niezmierzona. K-gen-N ✓. Licznik „ryzyko 2021+” = 0. Konsekwencja: karta 021, 018 wstrzymana.
 - **016** — LV2: **MIERZALNA, ale tylko z pytaniem bezwzględnym** (Caveats). Dobry, lecz estymowany GARCH-t test
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
@@ -105,11 +111,11 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 ## Kolejka
 
 0. ~~**020**~~ — zrobiona 2026-10-07 (`do_przegladu`).
-1. **019** (LV2c dla K = 4: pre-rejestracja w gicie → kalibracja generatora na ziarnach pilotażowych → przebieg rejestrowy; cel VR = 2,26 i scenariusz LV2).
-   Dalej, dopiero po jej wyniku i po danych za październik 2026 (spodziewane ok. 2026-11-01): powtórka 020 na
-   końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja przed uruchomieniem). Jeśli
-   019 wyjdzie NIEMIERZALNA przy K = 4, wracam do Ciebie z opcjami (inna reguła K′, szerszy koszyk albo zamknięcie
-   rundy VaR/ES na danych).
+1. ~~**019**~~ — zrobiona 2026-10-08, werdykt Revision (STOP 1; `do_przegladu`). **021** (LV2d: nowa pre-rejestracja → kalibracja generatora
+   z przesunięciami poziomu wariancji → przebieg rejestrowy z komórką A0). Dalej, dopiero po jej wyniku i po danych za październik 2026
+   (spodziewane ok. 2026-11-01): powtórka 020 na końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja
+   przed uruchomieniem). Jeśli 021 wyjdzie NIEMIERZALNA przy K = 4 albo znów zatrzyma się na kalibracji, wracam do Ciebie z opcjami (inna
+   reguła K′, szerszy koszyk albo zamknięcie rundy VaR/ES na danych).
 2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 3. E3: reporter sekwencyjny gotowy przed 2026-12-24 (D3-a).
 
@@ -118,8 +124,8 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-07.
 Z zasady po Twojej stronie (nie mogę ich podjąć za Ciebie):
 
 1. **Scalenie do `main`** — praca leży na gałęzi `claude/fervent-fermi-vfctk6`; na `main` trafia nowym PR.
-2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 020) — przegląd i przeniesienie na `zrobione`.
-3. **Zmiana któregokolwiek z dziesięciu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 9: zlecenie LV2c).
+2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 019, 020) — przegląd i przeniesienie na `zrobione`.
+3. **Zmiana któregokolwiek z dwunastu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 12: kierunek po STOP 1 w 019).
 4. **Konto GitHub i klucze** — tylko jeśli wznowisz 013.
 
 Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i niczego nie ruszałem.

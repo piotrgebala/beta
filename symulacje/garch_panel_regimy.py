@@ -29,9 +29,11 @@ SOL_POZIOMU = 21  # osobny strumień losowań poziomu: losowania LV2c zostają n
 
 def poziom_wariancji(n_days: int, amplituda: float, dlugosc: float, seed: int) -> np.ndarray:
     """L_t (n_days,), stałe w reżimie, E[L] = 1; `amplituda = 0` daje same jedynki."""
-    if amplituda < 0.0:
+    if n_days < 1:
+        raise ValueError("n_days >= 1")
+    if not amplituda >= 0.0:
         raise ValueError("amplituda >= 0")
-    if dlugosc < 1.0:
+    if not dlugosc >= 1.0:
         raise ValueError("dlugosc >= 1")
     if amplituda == 0.0:
         return np.ones(n_days)

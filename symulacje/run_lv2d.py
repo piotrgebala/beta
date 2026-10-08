@@ -591,7 +591,7 @@ def _wiersz_prognozy(wyn: dict, nazwa: str) -> str:
     )
 
 
-def wypisz_komorke(nazwa: str, spec: dict, wyn: dict) -> dict:
+def wypisz_komorke(nazwa: str, spec: dict, wyn: dict, n_oceny: int) -> dict:
     ocena = ocen_komorke(wyn, spec)
     par, k7 = spec["par"], liczby_k7(wyn)
     print(f"\n=== Komórka {nazwa}: {OPIS_KOMOREK[nazwa]} ===")
@@ -615,7 +615,8 @@ def wypisz_komorke(nazwa: str, spec: dict, wyn: dict) -> dict:
         f"  parytet VR runnera z `vr_rho`: max |różnica| = "
         f"{np.max(np.abs(wyn['stat'][:, PROG_D.index(KA), IDX['vr']] - wyn['vr_pom'])):.2e}"
     )
-    print(f"  REGUŁA K, p = 5 %, K = {K}, n = 1 691")
+    n_txt = f"{n_oceny:,}".replace(",", " ")
+    print(f"  REGUŁA K, p = 5 %, K = {K}, n = {n_txt}")
     _wypisz_ocene(ocena, "kontrole i kryteria")
     for k in ocena["opis_k7"]:
         w = k["wartosc"]
@@ -832,7 +833,8 @@ def _tryb_rejestr(pula, konfig: dict, a) -> None:
         np.savez_compressed(
             a.zapisz, **{f"{n}_{k}": v for n, w in wyniki.items() for k, v in w.items()}
         )
-    oceny = {n: wypisz_komorke(n, spec[n], wyniki[n]) for n in wyniki}
+    n_oceny = konfig["n_dni"] - konfig["start"]
+    oceny = {n: wypisz_komorke(n, spec[n], wyniki[n], n_oceny) for n in wyniki}
     wypisz_porownanie(wyniki)
     vr_a0, ok_d = rc.kgen_d(wyniki["A0"])
     print(

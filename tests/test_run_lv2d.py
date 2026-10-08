@@ -747,3 +747,75 @@ def test_rejestr_smoke_na_kalibracji_z_niedostepnymi_komorkami(tmp_path, capsys)
     assert "=== Komórka A0" in out and "=== Komórka B2" in out and "=== Komórka B3" not in out
     assert "B1: NIEDOSTĘPNA" in out and "B3: NIEDOSTĘPNA" in out
     assert "K-gen-D" in out and "WERDYKTY KOMÓREK" in out and "PRZEWIDYWANIA" in out
+    assert "K = 4, n = 300" in out  # smoke: 700 − 400 dni oceny, nie wpisane na sztywno 1 691
+
+
+# --- druk i przewidywania (opis, nie kryteria) ----------------------------------------------------------
+
+
+@pytest.mark.parametrize("n_oceny, tekst", [(1691, "K = 4, n = 1 691"), (300, "K = 4, n = 300")])
+def test_wypisz_komorke_drukuje_prawdziwa_liczbe_dni_oceny(capsys, n_oceny, tekst):
+    spec = SPEC_B | {"par": PAR_Z_POZIOMEM}
+    rd.wypisz_komorke("B2", spec, _wyn(), n_oceny)
+    assert tekst in capsys.readouterr().out
+
+
+def test_porownanie_z_a0_drukuje_z_roznicy_i_oznacza_ponad_3_se(capsys):
+    a0, b2 = _wyn(ka=0.05), _wyn(ka=0.45)
+    rd.wypisz_porownanie({"A0": a0, "B2": b2})
+    out = capsys.readouterr().out
+    ka_a, ka_b = (w["stat"][:, rd.PROG_D.index(rd.KA), IDX["zb_bonf"]] for w in (b2, a0))
+    se = np.hypot(ka_a.std(ddof=1), ka_b.std(ddof=1)) / np.sqrt(len(ka_a))
+    oczekiwane = (ka_a.mean() - ka_b.mean()) / se
+    linia = next(w for w in out.splitlines() if w.strip().startswith("B2 − A0, K-a"))
+    assert float(linia.split(":")[1].split()[0]) == pytest.approx(oczekiwane, abs=0.01)
+    assert "[> 3 SE]" in linia
+    assert "B1 − A0" not in out
+
+
+def test_porownanie_bez_a0_nic_nie_drukuje(capsys):
+    rd.wypisz_porownanie({"B2": _wyn()})
+    assert capsys.readouterr().out == ""
+
+
+def _kal_przew(**zmiany):
+    kal = {
+        "amp_star": 1.086,
+        "dlugosc_star": 300.0,
+        "krok1": {"1.0": [{"brzeg": (0.52, 0.01)}], "0.5": [{"brzeg": (0.40, 0.01)}]},
+        "komorki": {
+            "B1": {"status": "ok", "sciezka": "R_dol"},
+            "B2": {"status": "ok", "sciezka": "S"},
+            "B3": {"status": "ok", "sciezka": "R_gora"},
+        },
+    }
+    return kal | zmiany
+
+
+def test_przewidywania_licza_sie_z_wyniku_i_kalibracji():
+    wyniki = {"A0": _wyn(ka=0.06, kb=0.5), "B2": _wyn(ka=0.40, kb=0.07, nz=0.0)}
+    oceny = {"A0": {"werdykt": "NIE"}, "B2": {"werdykt": "NIE"}}
+    w = dict(rd.przewidywania(oceny, wyniki, _kal_przew()))
+    assert w["D* = 300 (przewidywane)"] and w["s* ∈ [0,5; 1,25]"] and w["B3 na ścieżce R↑"]
+    assert w["odsetek przy granicy w ogóle sięga 51,3 % (surowy punkt siatki)"]
+    assert w["A0: K-a ∈ [5%; 8%]"] and w["B2: K-a ∈ [8%; 16%]"] is False
+    assert w["B2: K-a ≤ 10 % (przewidywane 40 %)"] is False
+    assert w["B2: K-b ≥ 80 % (przewidywane 7 %)"] is False
+    assert w["werdykt A0 = NIE"] and w["werdykt B2 = NIE"]
+    assert "B1: K-a ∈ [7%; 14%]" not in w  # komórek bez wyniku nie oceniamy
+
+
+def test_przewidywania_przy_stop_1_nie_zakladaja_amplitudy():
+    kal = _kal_przew(amp_star=None, dlugosc_star=None, krok1={})
+    w = dict(rd.przewidywania({}, {}, kal))
+    assert w["kalibracja odsetka możliwa (nie STOP 1)"] is False
+    assert w["s* ∈ [0,5; 1,25]"] is False
+    assert w["odsetek przy granicy w ogóle sięga 51,3 % (surowy punkt siatki)"] is False
+
+
+def test_ziarno_drugiej_drogi_w_skrypcie_jest_tym_z_modulu():
+    skrypt = (
+        Path(rd.__file__).parents[1] / "runs/2026-10-08_021-lv2d-regimy-wariancji/druga_droga.py"
+    )
+    tekst = skrypt.read_text(encoding="utf-8")
+    assert f"ZIARNO = {rd.SEED_DRUGA:_}" in tekst

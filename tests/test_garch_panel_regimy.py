@@ -88,16 +88,18 @@ def test_poziom_jest_wspolny_dla_monet():
     assert np.allclose(iloraz, iloraz[:, [0]])
 
 
+@pytest.mark.parametrize("seed", [1, 2, 3])
 @pytest.mark.parametrize("rho_szok", [0.0, 0.5, 1.0])
-def test_rozklad_pojedynczej_monety_nie_zalezy_od_rho_szok_ani_rho(rho_szok):
-    # moneta 0 (nie jej sąsiedzi) ma ten sam szereg bez względu na zależność między monetami —
-    # tylko w sensie rozkładu; sprawdzamy, że kwantyle |r| są zgodne w dużej próbie
+def test_rozklad_pojedynczej_monety_nie_zalezy_od_rho_szok_ani_rho(rho_szok, seed):
+    # to samo ziarno = ta sama ścieżka poziomu L (osobny strumień), więc różnica kwantyli |r| to tylko
+    # szum innowacji; zmierzone najwyżej 0,03, próg 0,08 łapie błąd skali rzędu 10 %
     n = 20_000
-    bazowy = generuj_panel_lv2d(n, 1, seed=1, amplituda=0.5, rho=0.0, rho_szok=0.0)["r"]
-    inny = generuj_panel_lv2d(n, 1, seed=2, amplituda=0.5, rho=0.8, rho_szok=rho_szok)["r"]
+    bazowy = generuj_panel_lv2d(n, 1, seed=seed, amplituda=0.5, rho=0.0, rho_szok=0.0)["r"]
+    inny = generuj_panel_lv2d(n, 1, seed=seed, amplituda=0.5, rho=0.8, rho_szok=rho_szok)["r"]
     qa = np.quantile(np.abs(bazowy.to_numpy()[:, 0]), [0.25, 0.5, 0.75])
     qb = np.quantile(np.abs(inny.to_numpy()[:, 0]), [0.25, 0.5, 0.75])
-    assert np.allclose(qa, qb, rtol=0.35)
+    assert np.allclose(qa, qb, rtol=0.08)
+    assert not np.allclose(qa, 1.15 * qb, rtol=0.08)
 
 
 def test_rejestr_wariancji_podnosi_kurtoze_zwrotow_wspolna_miara():
@@ -118,6 +120,8 @@ def test_rejestr_wariancji_podnosi_kurtoze_zwrotow_wspolna_miara():
         ({"amplituda": -0.1}, "amplituda"),
         ({"amplituda": 0.5, "dlugosc": 0.5}, "dlugosc"),
         ({"amplituda": 0.0, "dlugosc": 0.0}, "dlugosc"),
+        ({"amplituda": float("nan")}, "amplituda"),
+        ({"amplituda": 0.5, "dlugosc": float("nan")}, "dlugosc"),
     ],
 )
 def test_niepoprawne_argumenty_dostaja_blad(kw, wyjatek):
@@ -138,3 +142,8 @@ def test_poziom_wlasnosci_dla_dowolnych_argumentow(n, s, d, seed):
     assert np.all(np.isfinite(poziom)) and np.all(poziom > 0.0)
     if s == 0.0:
         assert np.all(poziom == 1.0)
+
+
+def test_zero_dni_dostaje_czytelny_blad():
+    with pytest.raises(ValueError, match="n_days"):
+        generuj_panel_lv2d(0, 2, seed=1, amplituda=0.5, **PARAMETRY)

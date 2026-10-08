@@ -1,0 +1,68 @@
+
+=== A0 (4000 paneli; cel VR 1.846) ===
+  K-a  rozmiar garch_x1.00 (zb_bonf), %: 5.400 ± 0.357 pp
+  K-b  moc garch_x0.90 (zb_bonf), %:     96.850 ± 0.276 pp
+  K1   rozmiar wyr_t5, %:                4.450 ± 0.326 pp
+  K2   moc zan30, %:                     100.000 ± 0.000 pp
+  moc zan10 / zan20, %: 95.9 / 100.0
+  VR garch_x1.00 (kolumna vr):           1.855 ± 0.003
+  VR z osobnej kolumny vr_pom:           1.855 ± 0.003
+  max |vr − vr_pom|:                     0.00e+00
+  odsetek trafień garch_x1.00, %:        5.046 ± 0.006 pp
+  U (u_sr) garch_x1.00:                  1.014 ± 0.001
+  przy granicy, %: 2.18; niezbieżne, %: 0.00; dopasowań na panel: 228–228
+  persystencja 0.9719, ν̂ 5.236
+  zb_bonf = max(zb_a, zb_b, zb_c) w każdym panelu i prognozie: True
+  niezdefiniowane p-wartości łącznie: 0
+  rząd wielkości (tylko trafienia): n_eff = n·K/VR = 3646, SE odsetka = 0.36 pp, nadwyżka x0.90 = 1.52 pp → z = 4.21
+
+=== B1 (4000 paneli; cel VR 1.717) ===
+  K-a  rozmiar garch_x1.00 (zb_bonf), %: 28.750 ± 0.716 pp
+  K-b  moc garch_x0.90 (zb_bonf), %:     93.675 ± 0.385 pp
+  K1   rozmiar wyr_t5, %:                4.550 ± 0.330 pp
+  K2   moc zan30, %:                     100.000 ± 0.000 pp
+  moc zan10 / zan20, %: 98.1 / 100.0
+  VR garch_x1.00 (kolumna vr):           1.722 ± 0.004
+  VR z osobnej kolumny vr_pom:           1.722 ± 0.004
+  max |vr − vr_pom|:                     0.00e+00
+  odsetek trafień garch_x1.00, %:        5.217 ± 0.009 pp
+  U (u_sr) garch_x1.00:                  1.057 ± 0.002
+  przy granicy, %: 52.77; niezbieżne, %: 0.00; dopasowań na panel: 228–228
+  persystencja 0.9909, ν̂ 4.985
+  zb_bonf = max(zb_a, zb_b, zb_c) w każdym panelu i prognozie: True
+  niezdefiniowane p-wartości łącznie: 0
+  rząd wielkości (tylko trafienia): n_eff = n·K/VR = 3927, SE odsetka = 0.35 pp, nadwyżka x0.90 = 1.68 pp → z = 4.83
+
+=== B2 (4000 paneli; cel VR 2.264) ===
+  K-a  rozmiar garch_x1.00 (zb_bonf), %: 20.275 ± 0.636 pp
+  K-b  moc garch_x0.90 (zb_bonf), %:     90.175 ± 0.471 pp
+  K1   rozmiar wyr_t5, %:                4.350 ± 0.323 pp
+  K2   moc zan30, %:                     100.000 ± 0.000 pp
+  moc zan10 / zan20, %: 92.5 / 100.0
+  VR garch_x1.00 (kolumna vr):           2.272 ± 0.005
+  VR z osobnej kolumny vr_pom:           2.272 ± 0.005
+  max |vr − vr_pom|:                     0.00e+00
+  odsetek trafień garch_x1.00, %:        5.204 ± 0.009 pp
+  U (u_sr) garch_x1.00:                  1.054 ± 0.002
+  przy granicy, %: 52.12; niezbieżne, %: 0.00; dopasowań na panel: 228–228
+  persystencja 0.9909, ν̂ 4.980
+  zb_bonf = max(zb_a, zb_b, zb_c) w każdym panelu i prognozie: True
+  niezdefiniowane p-wartości łącznie: 0
+  rząd wielkości (tylko trafienia): n_eff = n·K/VR = 2977, SE odsetka = 0.40 pp, nadwyżka x0.90 = 1.67 pp → z = 4.17
+
+=== B3 (4000 paneli; cel VR 2.811) ===
+  K-a  rozmiar garch_x1.00 (zb_bonf), %: 17.000 ± 0.594 pp
+  K-b  moc garch_x0.90 (zb_bonf), %:     86.075 ± 0.547 pp
+  K1   rozmiar wyr_t5, %:                3.875 ± 0.305 pp
+  K2   moc zan30, %:                     100.000 ± 0.000 pp
+  moc zan10 / zan20, %: 85.5 / 100.0
+  VR garch_x1.00 (kolumna vr):           2.795 ± 0.006
+  VR z osobnej kolumny vr_pom:           2.795 ± 0.006
+  max |vr − vr_pom|:                     0.00e+00
+  odsetek trafień garch_x1.00, %:        5.211 ± 0.010 pp
+  U (u_sr) garch_x1.00:                  1.056 ± 0.002
+  przy granicy, %: 51.89; niezbieżne, %: 0.00; dopasowań na panel: 228–228
+  persystencja 0.9907, ν̂ 4.984
+  zb_bonf = max(zb_a, zb_b, zb_c) w każdym panelu i prognozie: True
+  niezdefiniowane p-wartości łącznie: 0
+  rząd wielkości (tylko trafienia): n_eff = n·K/VR = 2420, SE odsetka = 0.44 pp, nadwyżka x0.90 = 1.68 pp → z = 3.78

@@ -214,7 +214,24 @@ Pliki wynikowe w tym katalogu: `raw_pilot_kontrola_n.txt` (K-gen-N), `raw_pilot_
 `raw_rejestr_odmowa.txt` (runner odmawia przebiegu rejestrowego), `druga_droga_brzeg.py` + `raw_druga_droga.txt` (weryfikacja
 niezależna). Osobnego `raw_output.txt` przebiegu rejestrowego **nie ma, bo przebieg się nie odbył**; jego rolę pełnią pliki `raw_*`.
 Kolejność: pre-rejestracja `6787a2a` → runner `cd4d5fd` (przed pilotażami) → pilotaże (ziarno `SeedSequence(20_261_091)`) → STOP 1 →
-druga droga (ziarno 31 415 926). Żadnego odrzucenia testu zbiorczego ani odsetka trafień nie policzono.
+druga droga (ziarno 31 415 926). **Przebieg rejestrowy (2 091 dni, B = 999) nie odbył się, więc żadnego odrzucenia testu zbiorczego z niego nie ma.**
+Jedno odstępstwo ujawniam niżej: próbny przebieg dymny runnera (`rejestr --smoke`), który wydrukował takie odrzucenia na maleńkich panelach.
+
+### Ujawnienie: próba dymna runnera (`rejestr --smoke`)
+
+O 16:14, po napisaniu runnera, a PRZED jego commitem (`cd4d5fd`, 16:19) i przed pilotażami formalnymi (od 16:19), uruchomiłem tryb dymny
+`rejestr --smoke` (plus `kontrola-n --smoke` i `kalibruj --smoke`), żeby sprawdzić, że kod w ogóle działa. Tryb `--smoke` to 4 panele na komórkę po
+700 dni, B = 99 i kalibracja dymna (α* = 0,12, A2 „niedostępna”), ale z ziarnem rejestrowym `SEED_REJ` = 20 261 019. Wydruk zawierał więc odrzucenia
+testu zbiorczego i odsetki trafień, np. w komórce A0: K1 0,0 %, K2 100 %, K-a 0,0 %, K-b 50 % (z 4 paneli, SE 29 pp), odsetek trafień
+`garch_tnu` 5,10 %. Wyniki z 4 paneli to szum; nie wpłynęły na żadną decyzję: STOP 1 zależy tylko od odsetka przy granicy i VR z pilotażu
+formalnego, a pilotaż formalny (`pilot_panel`) odsetka trafień ani testu zbiorczego nie liczy.
+
+Mimo to wcześniejsze zdanie „żadnego odrzucenia nie policzono” było nieścisłe i je poprawiłem. **Skutek dla przyszłości:** pierwsze cztery ziarna
+paneli każdej komórki dymnej są te same, co ziarna pierwszych czterech paneli przyszłego przebiegu z tym ziarnem (panele są jednak różne, bo
+długość 700 vs 2 091 dni zmienia losowania; wspólny jest co najwyżej początek czynnika wspólnego). Dlatego **pre-rejestracja 021 dostanie nowe
+ziarno rejestrowe** (zapisane w karcie 021), a ziarno 20 261 019 uznaję za częściowo odsłonięte.
+
+Zasada na przyszłość (do nowej pre-rejestracji): próby dymne uruchamiać na ziarnie spoza ziaren pilotażowych i rejestrowych.
 
 ### Co się stało, w prostych słowach
 
@@ -300,7 +317,7 @@ treść karty 021.
 ### Co na plus (+) / Co na minus (−)
 
 **+** STOP 1 zadziałał tak, jak zapisano z góry: nie dobierałem ziaren ani progów, nie zmieniłem generatora po obejrzeniu wyniku, runner
-odmawia przebiegu. **+** Pilotaż nie pokazał żadnego odrzucenia testu K, więc rundę da się powtórzyć w nowej pre-rejestracji bez skażenia
+odmawia przebiegu. **+** Pilotaż formalny nie pokazał żadnego odrzucenia testu K (próba dymna pokazała szum z 4 paneli — patrz „Ujawnienie”), więc rundę da się powtórzyć w nowej pre-rejestracji z nowymi ziarnami bez skażenia
 generatora. **+** VR (cel z 020) jest osiągalny bez korekty, więc w kolejnej rundzie zostaje jedno pokrętło do znalezienia, nie dwa. **+** Druga
 droga (inne ziarna, inny kod) zgadza się co do poziomu 37–44 %. **+** Granica to w 100 % persystencja, więc brakujący mechanizm dotyczy
 persystencji, nie ν ani ω.
@@ -315,7 +332,7 @@ potwierdza poziom, nie ostrzy go.
 ### Kogo NIE ma w zbiorze
 
 Panele, w których estymator nie dochodzi do granicy, są w zbiorze (to ok. 55–63 % dopasowań), niezbieżnych praktycznie nie ma (< 0,01 %), więc
-wynik nie powstaje z odfiltrowania. Nie ma natomiast: (1) komórek A0–A4 w ogóle (ani jednego odrzucenia testu K), (2) kroków 2a, 2b i
+wynik nie powstaje z odfiltrowania. Nie ma natomiast: (1) komórek A0–A4 w przebiegu rejestrowym (odrzucenia testu K widział tylko tryb dymny na 4 panelach po 700 dni, patrz „Ujawnienie”), (2) kroków 2a, 2b i
 potwierdzenia, (3) żadnych prawdziwych szeregów (poziom wariancji w czasie nie był badany), (4) kombinacji α > 0,30, ρ_szok ≠ 0,5 w pilotażu
 (druga droga zajrzała w ρ_szok = 1 na jednym punkcie), (5) generatora z reżimami wariancji (karta 021).
 
@@ -323,7 +340,7 @@ potwierdzenia, (3) żadnych prawdziwych szeregów (poziom wariancji w czasie nie
 
 - **Liczba przeliczona drugą drogą:** odsetek przy granicy (tabela wyżej), z niezależnym kodem i ziarnem; zgodność w 1,6 SE.
 - **K-gen-N** zaliczona; **kontrole generatora** w testach: 11 testów generatora (parytet z LV2 bit w bit, niezależność brzegu pojedynczej
-  monety od ρ i ρ_szok, determinizm, `hypothesis`), 43 testy runnera (m.in. że pilotaż nie liczy statystyk reguły K); pełny zestaw 1 237 przeszedł.
+  monety od ρ i ρ_szok, determinizm, `hypothesis`), 43 testy runnera (m.in. że pilotaż nie liczy statystyk reguły K); pełny zestaw po przeglądzie: 1 251 przeszło, 1 pominięty, 2 znane braki zapisane jako `xfail` (przed przeglądem 1 237).
 - **Błąd kodu znaleziony w rundzie:** `roznica_se` dzieliło przez zero przy SE = 0 (wykryte przy próbie dymnej, naprawione i opisane testem).
   Nie dotyczy liczb STOP 1 (funkcja służy porównaniu komórek A3/A4 w przebiegu rejestrowym, którego nie było).
 - **Przegląd diffu (`engineering:code-review`):** wynik w sekcji „Przegląd kodu” poniżej.
@@ -359,4 +376,29 @@ Skrypt był neutralnym reporterem; ocena i werdykt są moje.
 
 ### Przegląd kodu
 
-(przegląd niezależnego recenzenta był w toku w chwili tego commitu; jego wynik jest dopisany w następnym commicie)
+Przegląd diffu (generator `garch_panel_wspolny_szok.py`, runner `run_lv2c.py`, oba pliki testów) zrobił niezależny recenzent: świeży agent bez
+wglądu w moje rozumowanie, z wczytanym skillem `engineering:code-review`, pracujący na kopii kodu w katalogu roboczym (repo nietknięte). Sprawdzał też
+kod mutacjami: celowo psuł jedną linię i patrzył, czy któryś test to zauważy. **Werdykt recenzenta: żadnego błędu wysokiej wagi; żaden z błędów nie
+zmienia liczb STOP 1** (odsetek przy granicy, VR i ρ̂ policzone poprawnie, zgodnie z drugą drogą; ziarna bez kolizji; pilotaż nie ujawnia
+odrzuceń ani odsetka trafień; brak globalnego stanu losowego).
+
+| # | waga | co znalazł (prosto) | co z tym zrobiłem |
+|---|---|---|---|
+| 1 | średnia | Nic nie przypinało `pilot_panel` do niezależnego obliczenia: zamiana kolumn „przy granicy” i „niezbieżne” przechodziła wszystkie testy. | **Naprawione testem** `test_pilot_panel_zgadza_sie_z_obliczeniem_pisanym_od_nowa` (liczy VR, ρ̂, brzeg, niezbieżne, persystencję i ν̂ od nowa, pętlą po dniach); mutacja zamiany kolumn jest teraz wykrywana. Druga zgłoszona mutacja (`<` → `>` w definicji trafienia) jest **równoważna** dla liczb pilotażu: VR zależy tylko od wariancji liczby trafień, a ta nie zmienia się przy S → K − S (zapisane testem `test_vr_nie_odroznia_trafien_od_ich_dopelnienia`), więc w pilotażu nie ma czego wykryć; w torze rejestrowym kierunek wchodzi do odsetka trafień — tam kierunek (`hit = r < q`) siedzi w zamrożonej `statystyki_komorki` z LV2, którą testuje `tests/test_lv2.py` (VaR za głęboko / za płytko). |
+| 2 | średnia | Trzy zachowania bez testu: bramka potwierdzenia `ok_br` (46,3–56,3 %), szok w kroku 1 (`SZOK_KROK1` = 0,5), rozdział ziaren komórek rejestrowych. | **Naprawione testami** (przedział włącznie na obu końcach, tolerancja VR, parametry i ziarna kroku 1, ziarna komórek). Sprawdziłem mutacjami: 5 z 5 wykrytych (brak dolnej granicy, brak górnej, szok = 0, wspólne ziarno komórek, zamiana kolumn). |
+| 3 | średnia | Reguła STOP (3) „NaN w wynikach → STOP” **nie jest zaimplementowana**: NaN w VR pilotażu daje fałszywe „niedostępna”, NaN w odsetku przy granicy może dać fałszywy STOP 1. | **Odłożone do 021** (runner zamrożony, bo wytworzył wynik STOP 1). Dla 019 bez skutku: w czterech plikach `raw_*` nie ma ani jednego NaN. |
+| 4 | średnia (projekt) | α nie jest prawdziwym pokrętłem: dla α ≥ 0,16 odsetek stoi na 42–45 %. Szum pojedynczego panelu jest duży (SD ok. 26 pp), więc 51,3 % z danych (4 monety) ma podobny błąd, a tolerancja ± 5 pp jest wąska. 100 % trafień w granicę to górna granica trwałości: estymator ma sufit ok. 0,99980, a generator do 0,9999. α* wybierane jako pierwsze α powyżej progu (przekleństwo zwycięzcy) przeszłoby potwierdzenie ok. w połowie przypadków. | **Opisane w „Co na minus” i w karcie 021** (projekt kolejnej pre-rejestracji musi to uwzględnić). |
+| 5 | średnia/niska (projekt) | Przy α + β = 0,9999 panel jest „zapadniętym IGARCH”: mediana |r| ok. 0,12 % przy `daily_vol` 4 %, z rzadkimi skokami (mediana maksimum ok. 5,9 %). Estymator jest niewrażliwy na skalę, ale A1 i A2 testowałyby zdegenerowany reżim zmienności. | **Opisane w „Co na minus” i w karcie 021.** |
+| 6 | niska | `korekta_sieczna` nie pilnuje znaku nachylenia: przy ujemnym nachyleniu oddala się od celu. | **Odłożone do 021**; zapisane jako `xfail(strict=True)` (test padnie głośno, gdy ktoś to naprawi). |
+| 7 | niska | `potwierdz` zużywa korekty, gdy VR jest w tolerancji, a zawodzi tylko odsetek przy granicy (od x niezależny). | **Odłożone do 021** (nie wystąpiło: do potwierdzeń nie doszło). |
+| 8 | niska | Krok 2b: cel tuż poniżej v na początku siatki daje `None`, czyli fałszywe „niedostępna” zamiast ρ = 0,80. | **Odłożone do 021**; zapisane jako `xfail(strict=True)`. Nie wystąpiło (krok 2b nie ruszył). |
+| 9 | niska | Przy `workers <= 1` runner nie ustawia jednowątkowego BLAS (17 s zamiast kilku, przeciążenie maszyny). | **Odłożone do 021.** Pilotaże formalne szły z 28 procesami, gdzie BLAS jest ustawiony; liczby bez zmian. |
+| 10 | niska | Słabe testy: rozłączność ziaren porównywała tylko dwie stałe; K-gen-N testowana luźno (|ρ̂| < 0,25 na 6 panelach); „brak podglądu” to lista zakazanych słów, a nie sprawdzenie zachowania; tryby `kalibruj` i `kontrola-n` w `main` bez testu. | **Częściowo:** rozłączność ziaren sprawdzana teraz na faktycznie wyliczonych ziarnach 600 paneli pilotażowych i 500 rejestrowych (`test_ziarna_paneli_pilotazowych_i_rejestrowych_sie_nie_pokrywaja`). Reszta odłożona do 021. |
+| 11 | niska | `rejestr --smoke` drukuje odrzucenia testu zbiorczego na ziarnie rejestrowym. | **Ujawnione wyżej** („Ujawnienie”); nowe ziarno w 021. |
+
+Co zmieniłem w kodzie: **nic w runnerze ani generatorze** (zamrożone, bo runner wytworzył wynik STOP 1); dopisałem tylko
+`tests/test_run_lv2c_przeglad.py` (14 testów + 2 znane braki jako `xfail(strict=True)`). Odłożone poprawki (3, 6–9 i reszta 10) wchodzą do
+przygotowania karty 021, razem z nową pre-rejestracją.
+
+Werdykt przeglądu: **Share with caveats** — kod rundy jest poprawny tam, gdzie decyduje (STOP 1), a braki dotyczą ścieżek, które nie zostały
+uruchomione, oraz testów; wszystkie są zapisane.

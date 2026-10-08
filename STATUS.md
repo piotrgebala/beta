@@ -99,7 +99,9 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
   Konsekwencja: 019 na K = 4 z celem VR = 2,26, 018 wstrzymana.
 - **019** — LV2c dla K = 4 (**Revision, STOP 1**): generator doszedł do celu VR (2,20–2,22 wobec 2,264 ± 0,14), ale nie do odsetka dopasowań
   przy granicy persystencji (max 44,5 % ± 1,3 pp przy progu 46,3 %; druga droga 37–44 %); przebiegu rejestrowego z regułą K nie było, więc
-  mierzalność reguły K przy K = 4 pozostaje niezmierzona. K-gen-N ✓. Licznik „ryzyko 2021+” = 0. Konsekwencja: karta 021, 018 wstrzymana.
+  mierzalność reguły K przy K = 4 pozostaje niezmierzona. K-gen-N ✓. Przegląd kodu (niezależny recenzent): bez błędu wysokiej wagi, żaden błąd nie zmienia
+  liczb STOP 1; dopisane testy (14 + 2 znane braki `xfail`), poprawki runnera odłożone do 021. Ujawnione w README: wcześniejsza próba dymna `--smoke` (4 panele
+  po 700 dni) wydrukowała szum odrzuceń testu K — bez wpływu na decyzje, ale 021 dostaje nowe ziarno. Licznik „ryzyko 2021+” = 0. Konsekwencja: karta 021, 018 wstrzymana.
 - **016** — LV2: **MIERZALNA, ale tylko z pytaniem bezwzględnym** (Caveats). Dobry, lecz estymowany GARCH-t test
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.

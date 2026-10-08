@@ -355,3 +355,175 @@ PYTHONPATH=. python -m symulacje.run_lv2d rejestr --workers 28 \
 Jeden przebieg, A0 + B1 + B2 + B3 po 4 000 paneli, ziarno 20_262_021. Powtórka jest dozwolona wyłącznie po **awarii technicznej** (przerwany proces, brak
 miejsca), na tych samych ziarnach i z jawnym zapisem w README; powtórka z powodu wyniku jest niedozwolona. Niezależna druga droga na 100 panelach (powyżej)
 idzie po przebiegu rejestrowym, żeby nie wpływać na jego konfigurację.
+
+---
+
+## Wynik (przebieg rejestrowy z 2026-10-08, ziarno 20 262 021; `raw_output.txt`)
+
+Jeden przebieg, A0 + B1 + B2 + B3 po 4 000 paneli, exit 0, bez powtórek i bez zmian po obejrzeniu wyniku. Werdykty komórek liczy zamrożony `_werdykt`
+(skrypt jest neutralnym reporterem, R14); podpis Claude jest w sekcji „Werdykt” niżej.
+
+### Tabela komórek
+
+| komórka | VR (cel) | przy granicy | K1 rozmiar wyroczni | K2 moc `zan30` | **K-a** rozmiar GARCH-t (≤ 10 %) | **K-b** moc GARCH-t σ̂ × 0,9 (≥ 80 %) | moc wyroczni `zan10` | werdykt |
+|---|---|---|---|---|---|---|---|---|
+| A0 (bez poziomu) | 1,855 (1,846 ± 0,09) | 2,2 % | 4,5 % | 100 % | **5,4 %** TAK | **96,9 %** TAK | 95,9 % | **TAK** (MIERZALNE) |
+| B1 (VR 1,717) | 1,722 | 52,8 % | 4,5 % | 100 % | **28,7 %** NIE | 93,7 % TAK | 98,1 % | **NIE** (NIEMIERZALNE) |
+| B2 (VR 2,264) | 2,272 | 52,1 % | 4,3 % | 100 % | **20,3 %** NIE | 90,2 % TAK | 92,5 % | **NIE** (NIEMIERZALNE) |
+| B3 (VR 2,811) | 2,795 | 51,9 % | 3,9 % | 100 % | **17,0 %** NIE | 86,1 % TAK | 85,5 % | **NIE** (NIEMIERZALNE) |
+
+SE wszystkich odsetków ≤ 0,7 pp (4 000 paneli). Kontrole zaliczone we wszystkich czterech komórkach: K1 ∈ [2,5; 7,5] %, K2 ≥ 95 %, K7c = 0 % niezbieżnych,
+K-gen-D (A0: VR 1,855 wobec 1,846 ± 0,09), a w B także KAL-VR (|VR − cel| ≤ 0,14) i KAL-BRZEG (okno [41,3; 61,3] %). K7a–d w A0 zaliczone
+(ν̂ 5,24; α̂ + β̂ 0,972; przy granicy 2,2 %). W B: ν̂ 4,98, α̂ + β̂ 0,991, przy granicy 52 % (opis, nie bramkują). Niezdefiniowanych p-wartości: 0.
+
+Co jeszcze pokazuje wydruk (opis): odsetek trafień `garch_tnu` 5,05 % w A0 i 5,20–5,22 % w B1–B3; wskaźnik U (ocena ogona łącznie z ES) 1,014 w A0 i 1,054–1,057
+w B; krzywa mocy `garch_tnu` × (1 − x) dla x = 0,10: 96,9 / 93,7 / 90,2 / 86,1 %, MDE(80 %) = 0,082 / 0,076 / 0,085 / 0,092. Różnica B − A0 w K-a: +29,2 / +20,4 / +16,7
+SE różnicy; w K-b: −6,7 / −12,2 / −17,6 SE.
+
+### Który wiersz z góry zapisanej tabeli konsekwencji zachodzi
+
+T0 = TAK, T1 = T2 = T3 = NIE, K-a > 10 %, K-b ≥ 80 %, moc wyroczni `zan10` ≥ 80 % w każdej komórce. Zachodzi wiersz:
+**„T2 = NIE, K-a > 10 %, K-b ≥ 80 % — reguła K ma moc, ale odrzuciłaby estymowany GARCH-t przy przesunięciach poziomu; K nie nadaje się jako bramka dla GARCH-t bez korekty poziomu;
+opcje jak wyżej.”** Nie zachodzi żaden z wierszy o niewystarczającej mocy: nie ma „strukturalnie za mało niezależnych monet”.
+
+### Wniosek prostym językiem
+
+1. **Sam test działa przy czterech monetach.** Pytanie, które w 019 zostało bez odpowiedzi — czy z 4 monet i 1 691 dni da się wykryć o 10 % za niskie σ — ma odpowiedź TAK:
+   moc wyroczni 85,5–98,1 % w każdej komórce, a oba testy „na ślepo” są w porządku (rozmiar wyroczni 3,9–4,5 %, wykrycie zaniżenia o 30 % w 100 %). Moje
+   przewidywanie sprzed przebiegu („K-b w A0 w przedziale 40–75 %; reguła niemierzalna już w A0” z prawdopodobieństwem 70 %) było **błędne**.
+2. **Kłopot jest gdzie indziej, i ma dwie warstwy.** Gdy poziom zmienności przesuwa się skokami (komórki B, skalibrowane do liczb z 020), GARCH-t tego poziomu nie widzi: średnio
+   daje ogon o ok. 0,2 pp za lekki (trafień 5,2 % zamiast 5,0 %; wskaźnik U 1,055). Zamrożona reguła K odrzuca taki model w 17–29 % porównań, a dopuszcza najwyżej 10 %.
+   Diagnostyka **po fakcie** (opis, nie kryterium; `raw_przeliczenie.txt`) pokazuje, że **sama ta średnia różnica tego nie tłumaczy**: gdyby liczyła się tylko ona, test A
+   odrzucałby ok. 2,5–3,2 %, a odrzuca 10–17 %. Reszta to rozrzut: odsetek trafień GARCH-t różni się między panelami **1,40–1,64 raza mocniej**, niż wynika z błędu standardowego
+   dla niezależnych dni (wyrocznia: 1,00–1,01), a wskaźnik U 1,43–1,74 raza mocniej niż u wyroczni. Najprawdopodobniej dlatego, że błędy GARCH-t idą fazami (w jednym poziomie
+   zmienności model przez setki dni zaniża, w innym zawyża), a bootstrap testu losuje dni niezależnie i tych faz nie widzi (to hipoteza zgodna z liczbami, bezpośrednio jej nie mierzyłem).
+   Ślad w lewym ogonie: odrzuceń w stronę „za mało trafień” (model zawyża ryzyko), choć średni błąd idzie w stronę przeciwną, jest 4,0 / 3,3 / 2,6 % wobec 1,0 / 1,5 / 1,6 % u wyroczni.
+   Największa składowa to test ES (C), nie średnia trafień (A): dla GARCH-t w B1 / B2 / B3 A 16,8 / 11,7 / 10,1 %, B (skupienie trafień) 5,7 / 4,0 / 2,9 %, C 21,2 / 14,4 / 12,6 % (u wyroczni
+   1,4–2,1 % każda). Wniosek: K-a w B mierzy mieszankę **prawdziwego, małego zaniżenia ryzyka i zbyt wąskiego błędu testu przy zależnych trafieniach**; z tego wydruku nie da się powiedzieć,
+   ile jest której. Moje wcześniejsze zdanie, że to „nie fałszywy alarm, tylko rzeczywiste zaniżenie”, było za mocne i je wycofuję.
+3. **Skutek formalny (R3):** przy zamrożonej regule K runda VaR/ES na prawdziwych danych (karta 018) dla GARCH-t w obecnej postaci jest **NIEMIERZALNA** w scenariuszu, który
+   odtwarza oba mierzone na danych cechy (VR i ok. połowę dopasowań przy granicy); **018 nie startuje, zostaje wstrzymana.** W scenariuszu bez przesunięć poziomu (A0) reguła byłaby mierzalna,
+   ale A0 nie odtwarza 51 % dopasowań przy granicy (wychodzi 2,2 %), więc nie jest scenariuszem „jak na danych”.
+4. **Granice tego wniosku:** komórki B to jeden z możliwych mechanizmów (wspólny mnożnik poziomu), wybrany po obejrzeniu STOP 1 w 019 i skalibrowany na dwa cele, więc zgodność z 020 w tych
+   dwóch liczbach wynika z konstrukcji i nie dowodzi, że to właśnie ten mechanizm działa w danych. Poziom jest wspólny dla wszystkich monet, więc więcej monet nie dodaje niezależnych „faz”.
+
+### Ocena przewidywań z pre-rejestracji (uczciwie)
+
+33 przewidywania z wydruku: **23 trafione, 10 chybionych.** (Wydruk pisze TAK/NIE przy *zdarzeniu*, nie przy trafieniu; dwie linie z podanym prawdopodobieństwem liczę według niego: „B2: K-b ≥ 80 %
+(przewidywane 7 %)” zaszło, więc chybione, a „B2: K-a ≤ 10 % (przewidywane 40 %)” nie zaszło, więc zgodne.) Trafione: wszystkie dotyczące kalibracji i mechaniki (D\* = 300, *s*\* ∈ [0,5; 1,25],
+B1/B2/B3 osiągalne, B3 na ścieżce R↑, odsetek przy granicy sięgający 51,3 %), K-a w A0 (5,4 %) i B3 (17,0 %, przy górnej krawędzi przedziału 9–18 %), K1, K2, K7c, K-gen-D, „werdykt B2 = NIE”
+i „K-a ≤ 10 % w B2 nie zajdzie”. Chybione, i to **systematycznie w jedną stronę**: wszystkie cztery przedziały K-b (przewidywałem 25–75 %, wyszło 86–97 %), „K-b w B2 ≥ 80 %”, moc wyroczni `zan10`
+w B2 (przewidywałem 35–68 %, wyszło 92,5 %), K-a w B1 i B2 (przewidywałem 7–16 %, wyszło 20–29 %), N2 (sam poziom daje VR 1,05, nie 1,3–1,9) i werdykt A0 (przewidywałem NIE z 70 %, wyszło TAK).
+Przyczyna jest widoczna po fakcie: liczba niezależnych obserwacji to n·K/VR = 2 400–3 900 (nie „mało”), a z niej wychodzi z = 3,8–4,8 dla zaniżenia σ o 10 %, czyli moc rzędu 92–99 %
+w samych trafieniach; **tego rachunku nie zrobiłem przed zapisaniem przewidywań**, zgadywałem z intuicji „1,8 niezależnej monety dziennie to mało”. Rachunek wprost zawyża moc w B o ok. 6 pp
+(99,3 / 96,2 / 91,8 % wobec 93,7 / 90,2 / 86,1 %), bo test używa też ES i bootstrapu-t; w A0 zgadza się (96,6 % wobec 96,9 %). Przewidywania nie były kryteriami, więc żaden werdykt się
+przez to nie zmienia, ale na przyszłość: **przewidywanie mocy zapisuję dopiero po rachunku z n_eff.**
+
+### Kontrole (bramka `data:validate-data`) i ich granice
+
+- **Przeliczenie z surowych tablic** (`przeliczenie_niezalezne.py` → `raw_przeliczenie.txt`): zwykły numpy na zapisanym `data/lv2d_wyniki_paneli.npz`, bez żadnej funkcji runnera i bez zamrożonego
+  `_werdykt`. Odtwarza wydruk co do zaokrąglenia: K-a 5,40 / 28,75 / 20,28 / 17,00 %; K-b 96,85 / 93,68 / 90,18 / 86,08 %; K1 4,45 / 4,55 / 4,35 / 3,88 %; K2 100 %; VR 1,855 / 1,722 / 2,272 / 2,795; odsetki
+  przy granicy 2,18 / 52,77 / 52,12 / 51,89 %. Spójność wewnętrzna: flaga testu zbiorczego = max(A, B, C) w każdej z 40 000 par panel × prognoza (w każdej komórce); `vr` z tablicy = `vr_pom` z osobnej ścieżki (różnica 0).
+  **Co to potwierdza:** arytmetykę wydruku. **Czego nie potwierdza:** samego testu zbiorczego (flagi A/B/C pochodzą z tych samych tablic) ani generatora. Układ kolumn jest przepisany ręcznie;
+  chronią go asercja kształtu i niezmienniki (flagi ∈ {0, 1}, A-prawa ≤ A, odsetek trafień w (0; 0,5), VR > 0), a tożsamość kolumny A przypina diagnostyka niżej (zwykłe z naiwne z kolumn `hit` i `vr`
+  odtwarza A z dokładnością do 0,6 pp w każdej komórce). Zamiany B ↔ C skrypt sam nie wyłapie.
+- **Druga droga** (`druga_droga.py` → `raw_druga_droga.txt`, 100 świeżych paneli na komórkę, ziarno 27 182 818, bez `run_lv2d`, `prognoza_garch_tnu`, `filtr_sigma2`, `vr_rho`; własna rekurencja σ² i `scipy.stats.t`):
+
+| komórka | VR (rejestr / druga droga ± SE) | przy granicy % | α̂ + β̂ | ν̂ | niezbieżne |
+|---|---|---|---|---|---|
+| A0 | 1,855 / 1,858 ± 0,019 | 2,2 / 3,4 ± 0,7 | 0,972 / 0,972 | 5,24 / 5,20 ± 0,04 | 0 / 0 |
+| B1 | 1,722 / 1,721 ± 0,023 | 52,8 / 55,3 ± 3,5 | 0,991 / 0,992 | 4,99 / 4,93 ± 0,04 | 0 / 0 |
+| B2 | 2,272 / 2,230 ± 0,027 | 52,1 / 53,3 ± 3,4 | 0,991 / 0,991 | 4,98 / 4,92 ± 0,04 | 0 / 0 |
+| B3 | 2,795 / 2,812 ± 0,034 | 51,9 / 52,0 ± 3,7 | 0,991 / 0,991 | 4,98 / 5,02 ± 0,07 | 0 / 0 |
+
+  Największa różnica to 1,7 SE (przy granicy w A0: 1,2 pp), pozostałe do 1,6 SE. **We wszystkich czterech komórkach** odsetek przy granicy w drugiej drodze jest wyżej niż w rejestrze (o 0,1–2,5 pp);
+  przy 100 panelach i SE 0,7–3,7 pp to w granicach szumu, ale kierunek jest jednakowy, więc nie wykluczam drobnej różnicy implementacji dopasowania. **Granica niezależności:** druga droga używa tego
+  samego generatora (`generuj_panel_lv2d`) i tego samego estymatora (`dopasuj_garch_t`) i nie dotyka testu zbiorczego, więc potwierdza filtr σ², VR i kwantyle, a nie K-a ani generator.
+- **Diagnostyka po fakcie** (opis, nie kryterium, ten sam skrypt przeliczenia): rozrzut odsetka trafień i wskaźnika U między panelami wobec rozrzutu wyroczni; liczby w „Wniosku” pkt 2. Zwykłe z naiwne
+  (odsetek trafień minus 5 %, dzielone przez błąd standardowy dla niezależnych dni) odtwarza kolumnę A w trzech komórkach B jako 16,3 / 11,1 / 9,5 % wobec zapisanych 16,8 / 11,7 / 10,1 %, a u wyroczni
+  jako 1,6–2,2 % wobec zapisanych 1,4–1,8 %. Wskaźnik U porównuję z rozrzutem wyroczni jako przybliżeniem błędu przy niezależnych dniach (przybliżenie, nie dokładny błąd).
+- **Przegląd wiarygodności (red-flagi):** wynik nie potwierdza idealnie hipotezy (pre-rejestracja przewidywała co innego); K-a i K-b zmieniają się monotonicznie z zależnością (więcej zależności
+  = szerszy bootstrap = mniej odrzuceń: K-a 28,7 → 20,3 → 17,0 %, K-b 93,7 → 90,2 → 86,1 %); K1 stały (3,9–4,5 %) mimo zmiany scenariusza; brak NaN i niezbieżnych; równe liczby paneli w komórkach
+  (brak „średniej ze średnich”); żadnych identycznych wartości między komórkami poza K2 = 100 % (zan30 ma ogromną moc wszędzie, co jest sensowne).
+
+### Co na plus (+) / Co na minus (−)
+
+**Na plus**
+
+- Wszystkie kontrole R8 zaliczone w czterech komórkach, kalibracja potwierdzona na 4 000 paneli, 0 niezbieżnych dopasowań, 0 niezdefiniowanych p-wartości.
+- Arytmetyka wydruku odtworzona z surowych tablic (co do 0,1 pp), a VR, ν̂, persystencja i odsetek przy granicy — drugą drogą na świeżych panelach (< 2 SE); granice niezależności opisane wyżej.
+- Wynik odpowiada na pytanie z 019 w obu kierunkach: test **ma** moc przy K = 4 (MDE 7,6–9,2 %), a bramką, która zawodzi, jest K-a.
+- Brak dostrajania po wyniku: jedno przejście, przewidywania i tabela konsekwencji zapisane z góry, a chybione przewidywania ujawnione. Przegląd kodu nie znalazł niczego, co zmieniałoby wynik.
+
+**Na minus**
+
+- Moje przewidywania mocy i K-a były chybione systematycznie (10 z 33), bo nie policzyłem mocy z n_eff przed ich zapisaniem; zmniejsza to wiarygodność moich „zgadywanek” z kart 016–021 w
+  tej klasie, nie werdyktów.
+- B to jeden mechanizm, wymyślony po STOP 1 i skalibrowany na dwa cele; inne przyczyny 51 % dopasowań przy granicy (zmiany parametrów, asymetria, skoki) nie są sprawdzone.
+- B1–B3 różnią się nie tylko VR, lecz i drogą dojścia do VR (R↓, S, R↑); N2 = 1,05 mówi, że sam wspólny poziom prawie nie wytwarza zależności trafień, więc VR z 020 niosą w modelu `rho` i `rho_szok`.
+- K-a w B nie da się rozłożyć na „wadę modelu” i „wadę testu” (pkt 2 wniosku); mechanizm faz to hipoteza, a diagnostyka powstała po obejrzeniu wyniku — jest opisem, nie dowodem.
+- K-b w B zawiera odrzucanie bazowe źle wyspecyfikowanego GARCH-t (17–29 % już przy x = 0), więc nie jest czystą mocą; czysta moc to wyrocznia `zan10`.
+- Jeden estymator (GARCH-t), jedno p (5 %), horyzont 1 dzień, n = 1 691; progi 10 % i 80 % zamrożone z LV2 dla innej sytuacji.
+- Rząd wielkości mocy z samych trafień zawyża moc w B o ok. 6 pp; nie zastępuje przebiegu.
+- Przeliczenie i druga droga potwierdzają arytmetykę i filtr, nie sam test zbiorczy ani generator (patrz „Kontrole”).
+
+### Kogo NIE ma w zbiorze
+
+- **Prawdziwych danych** — żadnych; scenariusze B są hipotezą o mechanizmie. Nie wiem, czy w BTC/ETH/SOL/BNB 2021–2026 poziom wariancji zmienia się w reżimach o średniej długości 300 dni; nie
+  sprawdzałem tego na szeregach (osobny, opisowy odczyt danych, poza tą rundą).
+- **Innych estymatorów i prognoz:** EGARCH/GJR (asymetria), prognoz z krótkim oknem, symulacji historycznej z przeskalowaniem, HAR; nie wiadomo, czy któryś przechodzi K-a w B.
+- **Innych mechanizmów** wytwarzających 51 % dopasowań przy granicy i VR 2,26 (np. zmienne α/β, skoki wspólne, łamanie struktury).
+- **Innych poziomów p i horyzontów** (tylko p = 5 %, 1 dzień) oraz innego koszyka niż cztery monety (decyzja użytkownika z 2026-10-07).
+- **Komórek między B1 a B3 i poza nimi** (przedział VR z 020 to [1,72; 2,81]; powyżej 2,81 nie badałem; K-a maleje z VR, ale nie ekstrapoluję).
+- **Testu odpornego na zależne trafienia** (bootstrap blokowy): reguła K go nie ma, więc nie wiadomo, jak wyglądałby K-a z poprawnym błędem standardowym.
+
+### Przegląd kodu (bramka `engineering:code-review`)
+
+Przeglądu dokonał podagent tylko do odczytu, któremu polecono wczytać skill `engineering:code-review` (bez wglądu w moje rozumowanie); uruchomił dozwolone testy (91 zielonych) i przeliczył wartości z różnic ręcznie
+na wydruku rejestrowym. **Krytyczne: brak** (nic, co zmieniałoby lub przekłamywało wynik). **Werdykt przeglądu: zatwierdzam z uwagami.** Uwagi i co z nimi zrobiłem (commity `2aa73e6`, `5056050`;
+poprawki nie zmieniają żadnej liczby przebiegu rejestrowego):
+
+- *Ważne 1 — kontrole „niezależne” są mniej niezależne, niż sugerował opis.* Słusznie: druga droga używa tego samego generatora i estymatora i nie rusza testu zbiorczego; przeliczenie sumuje te same
+  tablice, a kolejność kolumn jest przepisana ręcznie. **Poprawione opisem** (sekcja „Kontrole”, „Co na minus”) i w skrypcie dodałem niezmienniki kolumn; zamiany A ↔ B ↔ C skrypt dalej nie wyłapie.
+- *Ważne 2 — test „rozkład jednej monety nie zależy od ρ i ρ_szok” przepuszczał błąd rzędu 30 % (`rtol = 0,35`, dwa różne ziarna).* **Poprawione:** to samo ziarno (ta sama ścieżka poziomu), trzy ziarna ×
+  trzy wartości ρ_szok, `rtol = 0,08` (zmierzone najwyżej 0,03) i kontrola negatywna (skala × 1,15 jest wykrywana).
+- *Drobne:* stała „n = 1 691” w wydruku (nieprawdziwa w trybie smoke) → liczona z konfiguracji (+ test na obu wartościach); `SEED_DRUGA` nieużywane → test sprawdza zgodność ze stałą `ZIARNO` w `druga_droga.py`;
+  `n_days = 0` dawało `IndexError`, a NaN w `amplituda` / `dlugosc` przechodził walidację → czytelny `ValueError` (+ testy); `przewidywania()` i `wypisz_porownanie()` bez testów → 4 nowe testy
+  (kontrola z–różnicy liczona osobno z definicji SE różnicy); brak sekcji „Wynik” i „Przegląd kodu” w README → ta sekcja; oba skrypty pomocnicze były w chwili przeglądu nieśledzone → są w repo (commit `7150147`).
+- *Zbieżność VR 2,698 / ρ̂ 0,5660 na ścieżkach S i R↑ (Dodatek 1, „Sprawdzenie anomalii”)*: tekst Dodatku zostaje bez zmian (pre-rejestracja jest tylko dopisywana), korekta tutaj: z błędów standardowych
+  kalibracji (SE VR ≈ 0,015 w każdej z dwóch ścieżek, SE różnicy ≈ 0,021) szansa na zgodność do trzech miejsc po przecinku to ok. 2 %, przegląd szacuje ok. 4 %; w obu wersjach to przypadek (ziarna rozłączne,
+  odsetek przy granicy i ν̂ różne), nie wpływa na dobór parametrów.
+- *Niezweryfikowane przez przegląd:* determinizm rejestru od początku do końca (nie powtarzałem przebiegu 2 023 s; determinizm opiera się na testach jednostkowych: wynik panelu nie zależy od liczby
+  paneli, ziarna komórek są rozłączne i deterministyczne, R19).
+
+### Werdykt (podpisuje Claude, R14)
+
+**Caveats.** Jako wynik laboratoryjny jest solidny (kontrole, przegląd kodu bez uwag krytycznych, przeliczenie, druga droga, jedno przejście). Jako odpowiedź dla prawdziwych danych jest warunkowy: obowiązuje, jeśli dane
+zachowują się jak komórki B. Bezwarunkowo ustalone jest tyle: **(i)** reguła K ma moc przy K = 4 (85,5–98,1 % wobec σ − 10 % u wyroczni); **(ii)** przy zamrożonym K-a ≤ 10 % GARCH-t nie przechodzi w żadnej
+z trzech komórek z liczbami jak w 020 (17–29 %), więc 018 w obecnej postaci nie startuje; **(iii)** źródło tej porażki jest mieszane: małe prawdziwe zaniżenie ryzyka i zbyt wąski błąd testu przy
+zależnych trafieniach (rozrzut 1,4–1,6 raza większy niż dla niezależnych dni); nie umiem ich rozdzielić bez zmiany reguły K.
+
+### Opcje i moja rekomendacja (decyzje badawcze rozstrzygam sam, zapisane w `STATUS.md`; zmiana zamrożonej reguły K, progów i szerszy koszyk zostają dla użytkownika)
+
+- **(a′) Reguła K′ z bootstrapem blokowym w teście A (i odpowiednikiem dla B i C) — rekomenduję jako następny krok, jako diagnostykę.** Cel: sprawdzić, ile z K-a w B to wada testu. Zmienia zamrożoną regułę po
+  obejrzeniu wyniku, więc **wymaga Twojej zgody** i osobnej pre-rejestracji z własnym licznikiem; pliku K nie ruszam, kodu nie zaczynam. Uczciwa uwaga o oczekiwanym wyniku (rachunek na odwrocie koperty, nie
+  wynik): jeśli błąd testu dla GARCH-t urośnie o te 1,4–1,6 raza, to w rachunku z n_eff (z SE większym o 1,64 / 1,46 / 1,40) moc K-b spadnie z 94 / 90 / 86 % do ok. 71 / 68 / 62 %, a ten rachunek zawyżał moc o ok. 6 pp, czyli w każdym razie poniżej progu 80 %; współczynniki rozrzutu zmierzyłem dla modelu bez zaniżenia, nie dla σ̂ × 0,90. (a′) może więc tylko przenieść
+  porażkę z K-a na K-b i potwierdzić, że przy kilku niezależnych fazach poziomu w 1 691 dniach GARCH-t na realnych danych nie da się zwalidować — wynik wart wiedzieć, tani (jeden przebieg tego samego
+  laboratorium), ale nie „naprawa”.
+- **(d) Prognoza, która widzi poziom wariancji** (nowa runda, własny licznik, reguła K bez zmian, laboratorium LV2d bez zmian): mieści się w mojej autonomii, ale to program badawczy (estymator musi wykrywać skoki
+  poziomu tylko z przeszłości, R6), a jego ocena na danych natrafi na to samo ograniczenie liczby faz. Wracam do niego, jeśli (a′) pokaże, że po poprawce błędu K-a przechodzi, a model dalej zawodzi.
+- **(b)** Zamknięcie rundy VaR/ES na danych — rozsądne, jeśli (a′) potwierdzi, że niemierzalność wynika z liczby faz. **(c)** Szerszy koszyk (zmiana Twojej decyzji o czterech monetach) **nie leczy tego
+  problemu**: poziom jest wspólny dla monet, więc 20 monet to nadal te same kilka faz (R12). Tylko za Twoją zgodą i raczej nie ma sensu z tego powodu.
+- **018** pozostaje wstrzymana do rozstrzygnięcia (a′) albo (b). Zapisałem propozycję jako kartę 022 (`czeka_na_decyzje`); nic z niej nie wykonuję.
+
+### Użyte skille
+
+- `data:statistical-analysis` — SE dwóch odsetków i różnicy w jednostkach SE, rząd wielkości mocy z n_eff, rozbicie odrzuceń na składowe A/B/C, rachunek na z (średnia kontra rozrzut), uwaga o wielokrotnych porównaniach
+  (Bonferroni α/3 jest częścią reguły K) i o fałszywej precyzji.
+- `data:validate-data` — lista kontrolna: źródło liczby, przeliczenie z surowych tablic i druga droga (z granicami niezależności), „kogo nie ma w zbiorze”, red-flagi (wynik nie potwierdza hipotezy), spójność
+  mianowników i liczby paneli.
+- `engineering:code-review` — przegląd diffu generatora, runnera i testów (sekcja „Przegląd kodu”), wczytany przed przeglądem.
+- `clas5-runda` — procedura rundy: pre-rejestracja przed wynikiem, jedno przejście, wpis w pamięci projektu (`runs/INDEX.md`), reguły STOP.
+  (Rejestr `runs/skille/` z alpha nie istnieje w beta; użycia wpisane ręcznie.)
+- Nie wczytano: `clas5-quant` (metodologia kierunkowa; runda jest laboratoryjna i syntetyczna, reguły R1–R28 stosowane z `CLAUDE.md`), `quant-strategy-catalog` (brak nowej hipotezy handlowej),
+  `dataviz` (brak wykresu).

@@ -1,0 +1,219 @@
+021 — LV2d: laboratorium VaR/ES dla K = 4 z poziomem wariancji (karta 021)
+Wersje: python 3.12.3, numpy 2.5.3, scipy 1.18.1, pandas 3.0.6.
+Kalibracja: runs/2026-10-08_021-lv2d-regimy-wariancji/kalibracja.json (sha256 cced579c8c56fa02)
+  s* = 1.086, D* = 300.0 (interpolacja do środka celu (51,3 %)); ziarno pilotażu 20262101
+  N2 (opis, ρ = 0, ρ_szok = 0, z poziomem): VR 1.052 ± 0.005, przy granicy 51.0 %
+  B1: ok, ścieżka R_dol, parametry {'rho': 0.666, 'rho_szok': 0.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}
+  B2: ok, ścieżka S, parametry {'rho': 0.8, 'rho_szok': 0.504, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}
+  B3: ok, ścieżka R_gora, parametry {'rho': 0.828, 'rho_szok': 1.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}
+Ziarno rejestrowe 20262021 (komórka i = SeedSequence(ziarno, spawn_key=(i,))), konfig {'n_dni': 2091, 'start': 400, 'boot': 999}, poziom testów 5 %, B = 999.
+  A0: {'rho': 0.8, 'rho_szok': 0.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 0.0, 'dlugosc': 300.0}, 4000 paneli
+  B1: {'rho': 0.666, 'rho_szok': 0.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}, 4000 paneli
+  B2: {'rho': 0.8, 'rho_szok': 0.504, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}, 4000 paneli
+  B3: {'rho': 0.828, 'rho_szok': 1.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}, 4000 paneli
+  komórka A0: 4000 paneli w 232 s
+  komórka B1: 4000 paneli w 599 s
+  komórka B2: 4000 paneli w 596 s
+  komórka B3: 4000 paneli w 595 s
+
+=== Komórka A0: scenariusz LV2 dla K = 4 (bez poziomu wariancji) ===
+parametry generatora: {'rho': 0.8, 'rho_szok': 0.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 0.0, 'dlugosc': 300.0}; 4000 paneli, K = 4
+  diagnostyka GARCH-t: ν̂ 5.236, persystencja 0.9719, niezbieżne 0.00 %, przy granicy 2.18 % (± 0.07 pp); stare okno 019 [46.3; 56.3] %: NIE
+  VR trafień garch_tnu: 1.855 ± 0.003; ρ̂ = (VR − 1)/(K − 1): średnia 0.2851, kwantyle 5/50/95 % po panelach: 0.189 / 0.283 / 0.387
+  odsetek trafień garch_tnu: 5.05 % (cel 5 %)
+  parytet VR runnera z `vr_rho`: max |różnica| = 0.00e+00
+  REGUŁA K, p = 5 %, K = 4, n = 1 691
+  kontrole i kryteria
+    K1   KONTROLA NEGATYWNA  rozmiar testu zbiorczego, prognoza wyroczni: 4.5 % — odsetek ∈ [2.5; 7.5] %: TAK
+    K2   KONTROLA POZYTYWNA  moc testu zbiorczego wobec σ wyroczni zaniżonego o 30 %: 100.0 % — odsetek ≥ 95 %: TAK
+    K7a  KONTROLA ESTYMATORA średnia ν̂ GARCH-t (prawda 5): 5.24 — ∈ [4.0; 6.5]: TAK
+    K7b  KONTROLA ESTYMATORA średnia persystencja α̂ + β̂ (prawda 0,98): 0.972 — ∈ [0.95; 0.995]: TAK
+    K7c  KONTROLA ESTYMATORA odsetek dopasowań bez zbieżności: 0.0 % — ≤ 2 %: TAK
+    K7d  KONTROLA ESTYMATORA odsetek dopasowań przy granicy zakresu parametrów: 2.2 % — ≤ 5 %: TAK
+    K-a  KALIBRACJA          rozmiar testu zbiorczego, GARCH-t estymowany (poprawny model): 5.4 % — odsetek ≤ 10 %: TAK
+    K-b  KALIBRACJA          moc testu zbiorczego, GARCH-t estymowany ze σ zaniżonym o 10 %: 96.9 % — odsetek ≥ 80 %: TAK
+    WYNIK reguły: MIERZALNE
+  MOC WYROCZNI [opis] zan10 (σ wyroczni × 0,90): 95.9 % ± 0.31 pp
+  MOC WYROCZNI [opis] zan20 (σ wyroczni × 0,80): 100.0 % ± 0.00 pp
+  KRZYWA MOCY garch_tnu × (1 − x) [opis]: x =  0.00  0.05  0.10  0.15  0.20  0.30
+                                  moc % =   5.4  49.3  96.9 100.0 100.0 100.0
+                                  SE pp =  0.36  0.79  0.28  0.00  0.00  0.00
+  MDE (najmniejsze x z mocą ≥ 80 %): 0.082
+  prognoza        hit      U |   A     B     C  | zbiorczy ± SE |  A>0    VR
+  wyr_t5         5.00  1.001 |   1.8   1.7   1.9 |   4.5 ± 0.33 |   1.0  1.84
+  zan30         10.88  2.402 | 100.0   1.5 100.0 | 100.0 ± 0.00 | 100.0  4.49
+  garch_x1.00    5.05  1.014 |   1.8   1.9   2.8 |   5.4 ± 0.36 |   1.2  1.86
+  garch_x0.95    5.74  1.167 |  32.7   1.8  47.8 |  49.3 ± 0.79 |  32.7  2.16
+  garch_x0.90    6.52  1.344 |  92.3   1.6  96.7 |  96.9 ± 0.28 |  92.3  2.50
+  garch_x0.85    7.42  1.552 | 100.0   1.5 100.0 | 100.0 ± 0.00 | 100.0  2.91
+  garch_x0.80    8.44  1.796 | 100.0   1.8 100.0 | 100.0 ± 0.00 | 100.0  3.37
+  garch_x0.70   10.91  2.421 | 100.0   1.8 100.0 | 100.0 ± 0.00 | 100.0  4.49
+  zan10          6.48  1.329 |  91.2   1.6  95.8 |  95.9 ± 0.31 |  91.2  2.50
+  zan20          8.40  1.778 | 100.0   1.6 100.0 | 100.0 ± 0.00 | 100.0  3.36
+
+=== Komórka B1: dół przedziału z 020 (VR 1,717) ===
+parametry generatora: {'rho': 0.666, 'rho_szok': 0.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}; 4000 paneli, K = 4
+  diagnostyka GARCH-t: ν̂ 4.985, persystencja 0.9909, niezbieżne 0.00 %, przy granicy 52.77 % (± 0.51 pp); stare okno 019 [46.3; 56.3] %: TAK
+  VR trafień garch_tnu: 1.722 ± 0.004; ρ̂ = (VR − 1)/(K − 1): średnia 0.2408, kwantyle 5/50/95 % po panelach: 0.119 / 0.240 / 0.367
+  odsetek trafień garch_tnu: 5.22 % (cel 5 %)
+  parytet VR runnera z `vr_rho`: max |różnica| = 0.00e+00
+  REGUŁA K, p = 5 %, K = 4, n = 1 691
+  kontrole i kryteria
+    K1   KONTROLA NEGATYWNA  rozmiar testu zbiorczego, prognoza wyroczni: 4.5 % — odsetek ∈ [2.5; 7.5] %: TAK
+    K2   KONTROLA POZYTYWNA  moc testu zbiorczego wobec σ wyroczni zaniżonego o 30 %: 100.0 % — odsetek ≥ 95 %: TAK
+    K7c  KONTROLA ESTYMATORA odsetek dopasowań bez zbieżności: 0.0 % — ≤ 2 %: TAK
+    KAL-VR ZGODNOŚĆ KALIBRACJI średnie VR trafień garch_tnu (cel 1.717): 1.722 — ∈ [1.577; 1.857]: TAK
+    KAL-BRZEG ZGODNOŚĆ KALIBRACJI odsetek dopasowań przy granicy (cel 51,3 %): 52.8 % — ∈ [41.3; 61.3] %: TAK
+    K-a  KALIBRACJA          rozmiar testu zbiorczego, GARCH-t estymowany (poprawny model): 28.7 % — odsetek ≤ 10 %: NIE
+    K-b  KALIBRACJA          moc testu zbiorczego, GARCH-t estymowany ze σ zaniżonym o 10 %: 93.7 % — odsetek ≥ 80 %: TAK
+    WYNIK reguły: NIEMIERZALNE
+    K7a (opis, nie bramkuje w tej komórce): 4.985 — ∈ [4.0; 6.5]
+    K7b (opis, nie bramkuje w tej komórce): 0.991 — ∈ [0.95; 0.995]
+    K7d (opis, nie bramkuje w tej komórce): 52.8 % — ≤ 5 %
+  MOC WYROCZNI [opis] zan10 (σ wyroczni × 0,90): 98.1 % ± 0.22 pp
+  MOC WYROCZNI [opis] zan20 (σ wyroczni × 0,80): 100.0 % ± 0.00 pp
+  KRZYWA MOCY garch_tnu × (1 − x) [opis]: x =  0.00  0.05  0.10  0.15  0.20  0.30
+                                  moc % =  28.7  65.4  93.7 100.0 100.0 100.0
+                                  SE pp =  0.72  0.75  0.38  0.02  0.00  0.00
+  MDE (najmniejsze x z mocą ≥ 80 %): 0.076
+  prognoza        hit      U |   A     B     C  | zbiorczy ± SE |  A>0    VR
+  wyr_t5         5.01  1.002 |   1.8   1.6   2.1 |   4.5 ± 0.33 |   1.0  1.63
+  zan30         10.89  2.404 | 100.0   1.6 100.0 | 100.0 ± 0.00 | 100.0  3.91
+  garch_x1.00    5.22  1.057 |  16.8   5.7  21.2 |  28.7 ± 0.72 |  14.2  1.72
+  garch_x0.95    5.90  1.210 |  52.5   6.2  62.0 |  65.4 ± 0.75 |  52.5  1.98
+  garch_x0.90    6.68  1.388 |  88.9   6.3  93.2 |  93.7 ± 0.38 |  88.9  2.28
+  garch_x0.85    7.57  1.596 |  99.8   6.9 100.0 | 100.0 ± 0.02 |  99.8  2.63
+  garch_x0.80    8.57  1.840 | 100.0   6.6 100.0 | 100.0 ± 0.00 | 100.0  3.02
+  garch_x0.70   11.01  2.463 | 100.0   7.3 100.0 | 100.0 ± 0.00 | 100.0  3.97
+  zan10          6.49  1.330 |  95.1   1.7  98.0 |  98.1 ± 0.22 |  95.1  2.19
+  zan20          8.41  1.780 | 100.0   1.7 100.0 | 100.0 ± 0.00 | 100.0  2.94
+
+=== Komórka B2: środek przedziału z 020 (komórka główna, VR 2,264) ===
+parametry generatora: {'rho': 0.8, 'rho_szok': 0.504, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}; 4000 paneli, K = 4
+  diagnostyka GARCH-t: ν̂ 4.980, persystencja 0.9909, niezbieżne 0.00 %, przy granicy 52.12 % (± 0.53 pp); stare okno 019 [46.3; 56.3] %: TAK
+  VR trafień garch_tnu: 2.272 ± 0.005; ρ̂ = (VR − 1)/(K − 1): średnia 0.4241, kwantyle 5/50/95 % po panelach: 0.263 / 0.424 / 0.584
+  odsetek trafień garch_tnu: 5.20 % (cel 5 %)
+  parytet VR runnera z `vr_rho`: max |różnica| = 0.00e+00
+  REGUŁA K, p = 5 %, K = 4, n = 1 691
+  kontrole i kryteria
+    K1   KONTROLA NEGATYWNA  rozmiar testu zbiorczego, prognoza wyroczni: 4.3 % — odsetek ∈ [2.5; 7.5] %: TAK
+    K2   KONTROLA POZYTYWNA  moc testu zbiorczego wobec σ wyroczni zaniżonego o 30 %: 100.0 % — odsetek ≥ 95 %: TAK
+    K7c  KONTROLA ESTYMATORA odsetek dopasowań bez zbieżności: 0.0 % — ≤ 2 %: TAK
+    KAL-VR ZGODNOŚĆ KALIBRACJI średnie VR trafień garch_tnu (cel 2.264): 2.272 — ∈ [2.124; 2.404]: TAK
+    KAL-BRZEG ZGODNOŚĆ KALIBRACJI odsetek dopasowań przy granicy (cel 51,3 %): 52.1 % — ∈ [41.3; 61.3] %: TAK
+    K-a  KALIBRACJA          rozmiar testu zbiorczego, GARCH-t estymowany (poprawny model): 20.3 % — odsetek ≤ 10 %: NIE
+    K-b  KALIBRACJA          moc testu zbiorczego, GARCH-t estymowany ze σ zaniżonym o 10 %: 90.2 % — odsetek ≥ 80 %: TAK
+    WYNIK reguły: NIEMIERZALNE
+    K7a (opis, nie bramkuje w tej komórce): 4.980 — ∈ [4.0; 6.5]
+    K7b (opis, nie bramkuje w tej komórce): 0.991 — ∈ [0.95; 0.995]
+    K7d (opis, nie bramkuje w tej komórce): 52.1 % — ≤ 5 %
+  MOC WYROCZNI [opis] zan10 (σ wyroczni × 0,90): 92.5 % ± 0.42 pp
+  MOC WYROCZNI [opis] zan20 (σ wyroczni × 0,80): 100.0 % ± 0.00 pp
+  KRZYWA MOCY garch_tnu × (1 − x) [opis]: x =  0.00  0.05  0.10  0.15  0.20  0.30
+                                  moc % =  20.3  56.3  90.2  99.6 100.0 100.0
+                                  SE pp =  0.64  0.78  0.47  0.10  0.00  0.00
+  MDE (najmniejsze x z mocą ≥ 80 %): 0.085
+  prognoza        hit      U |   A     B     C  | zbiorczy ± SE |  A>0    VR
+  wyr_t5         5.00  1.001 |   1.7   1.9   1.8 |   4.3 ± 0.32 |   1.0  2.17
+  zan30         10.88  2.403 | 100.0   1.6 100.0 | 100.0 ± 0.00 | 100.0  4.93
+  garch_x1.00    5.20  1.054 |  11.7   4.0  14.4 |  20.3 ± 0.64 |   9.4  2.27
+  garch_x0.95    5.89  1.207 |  44.6   3.7  53.9 |  56.3 ± 0.78 |  44.6  2.60
+  garch_x0.90    6.67  1.385 |  84.1   3.9  89.3 |  90.2 ± 0.47 |  84.1  2.97
+  garch_x0.85    7.55  1.593 |  98.9   4.3  99.5 |  99.6 ± 0.10 |  98.9  3.39
+  garch_x0.80    8.56  1.836 | 100.0   5.0 100.0 | 100.0 ± 0.00 | 100.0  3.86
+  garch_x0.70   10.99  2.458 | 100.0   5.3 100.0 | 100.0 ± 0.00 | 100.0  4.99
+  zan10          6.48  1.329 |  86.8   1.6  92.2 |  92.5 ± 0.42 |  86.8  2.87
+  zan20          8.40  1.779 | 100.0   1.8 100.0 | 100.0 ± 0.00 | 100.0  3.78
+
+=== Komórka B3: góra przedziału z 020 (VR 2,811) ===
+parametry generatora: {'rho': 0.828, 'rho_szok': 1.0, 'persystencja': None, 'alpha': 0.08, 'amplituda': 1.086, 'dlugosc': 300.0}; 4000 paneli, K = 4
+  diagnostyka GARCH-t: ν̂ 4.984, persystencja 0.9907, niezbieżne 0.00 %, przy granicy 51.89 % (± 0.54 pp); stare okno 019 [46.3; 56.3] %: TAK
+  VR trafień garch_tnu: 2.795 ± 0.006; ρ̂ = (VR − 1)/(K − 1): średnia 0.5983, kwantyle 5/50/95 % po panelach: 0.406 / 0.597 / 0.797
+  odsetek trafień garch_tnu: 5.21 % (cel 5 %)
+  parytet VR runnera z `vr_rho`: max |różnica| = 0.00e+00
+  REGUŁA K, p = 5 %, K = 4, n = 1 691
+  kontrole i kryteria
+    K1   KONTROLA NEGATYWNA  rozmiar testu zbiorczego, prognoza wyroczni: 3.9 % — odsetek ∈ [2.5; 7.5] %: TAK
+    K2   KONTROLA POZYTYWNA  moc testu zbiorczego wobec σ wyroczni zaniżonego o 30 %: 100.0 % — odsetek ≥ 95 %: TAK
+    K7c  KONTROLA ESTYMATORA odsetek dopasowań bez zbieżności: 0.0 % — ≤ 2 %: TAK
+    KAL-VR ZGODNOŚĆ KALIBRACJI średnie VR trafień garch_tnu (cel 2.811): 2.795 — ∈ [2.671; 2.951]: TAK
+    KAL-BRZEG ZGODNOŚĆ KALIBRACJI odsetek dopasowań przy granicy (cel 51,3 %): 51.9 % — ∈ [41.3; 61.3] %: TAK
+    K-a  KALIBRACJA          rozmiar testu zbiorczego, GARCH-t estymowany (poprawny model): 17.0 % — odsetek ≤ 10 %: NIE
+    K-b  KALIBRACJA          moc testu zbiorczego, GARCH-t estymowany ze σ zaniżonym o 10 %: 86.1 % — odsetek ≥ 80 %: TAK
+    WYNIK reguły: NIEMIERZALNE
+    K7a (opis, nie bramkuje w tej komórce): 4.984 — ∈ [4.0; 6.5]
+    K7b (opis, nie bramkuje w tej komórce): 0.991 — ∈ [0.95; 0.995]
+    K7d (opis, nie bramkuje w tej komórce): 51.9 % — ≤ 5 %
+  MOC WYROCZNI [opis] zan10 (σ wyroczni × 0,90): 85.5 % ± 0.56 pp
+  MOC WYROCZNI [opis] zan20 (σ wyroczni × 0,80): 100.0 % ± 0.00 pp
+  KRZYWA MOCY garch_tnu × (1 − x) [opis]: x =  0.00  0.05  0.10  0.15  0.20  0.30
+                                  moc % =  17.0  49.5  86.1  98.9 100.0 100.0
+                                  SE pp =  0.59  0.79  0.55  0.17  0.02  0.00
+  MDE (najmniejsze x z mocą ≥ 80 %): 0.092
+  prognoza        hit      U |   A     B     C  | zbiorczy ± SE |  A>0    VR
+  wyr_t5         5.00  1.000 |   1.4   1.6   1.5 |   3.9 ± 0.31 |   0.7  2.69
+  zan30         10.88  2.402 | 100.0   1.7 100.0 | 100.0 ± 0.00 | 100.0  5.63
+  garch_x1.00    5.21  1.056 |  10.1   2.9  12.6 |  17.0 ± 0.59 |   8.6  2.79
+  garch_x0.95    5.90  1.209 |  38.7   2.7  47.1 |  49.5 ± 0.79 |  38.6  3.15
+  garch_x0.90    6.68  1.387 |  79.2   3.0  85.1 |  86.1 ± 0.55 |  79.2  3.55
+  garch_x0.85    7.56  1.595 |  98.0   3.4  98.7 |  98.9 ± 0.17 |  98.0  4.01
+  garch_x0.80    8.57  1.839 | 100.0   3.8 100.0 | 100.0 ± 0.02 | 100.0  4.51
+  garch_x0.70   11.01  2.462 | 100.0   4.2 100.0 | 100.0 ± 0.00 | 100.0  5.68
+  zan10          6.48  1.328 |  78.9   1.9  84.5 |  85.5 ± 0.56 |  78.9  3.46
+  zan20          8.40  1.779 | 100.0   2.1 100.0 | 100.0 ± 0.00 | 100.0  4.43
+
+PORÓWNANIE Z A0 (opis): różnica w jednostkach SE różnicy; |z| > 3 = wyraźna różnica
+  B1 − A0, K-a: +29.19  [> 3 SE]
+  B1 − A0, K-b: -6.70  [> 3 SE]
+  B1 − A0, zan10: +5.83  [> 3 SE]
+  B2 − A0, K-a: +20.39  [> 3 SE]
+  B2 − A0, K-b: -12.23  [> 3 SE]
+  B2 − A0, zan10: -6.51  [> 3 SE]
+  B3 − A0, K-a: +16.73  [> 3 SE]
+  B3 − A0, K-b: -17.57  [> 3 SE]
+  B3 − A0, zan10: -16.22  [> 3 SE]
+
+K-gen-D (R8, dodatnia): średnie VR komórki A0 = 1.855; wymaganie 1.846 ± 0.09: ZALICZONA
+
+WERDYKTY KOMÓREK (zamrożony `_werdykt`):
+  A0: TAK (MIERZALNE)
+  B1: NIE (NIEMIERZALNE)
+  B2: NIE (NIEMIERZALNE)
+  B3: NIE (NIEMIERZALNE)
+
+PRZEWIDYWANIA z pre-rejestracji (NIE kryteria):
+  kalibracja odsetka możliwa (nie STOP 1): TAK
+  D* = 300 (przewidywane): TAK
+  s* ∈ [0,5; 1,25]: TAK
+  B2 przeszła potwierdzenie VR: TAK
+  B1 osiągalna: TAK
+  B3 na ścieżce R↑: TAK
+  odsetek przy granicy w ogóle sięga 51,3 % (surowy punkt siatki): TAK
+  N2: sam poziom daje VR ∈ [1,3; 1,9]: NIE
+  A0: K-a ∈ [5%; 8%]: TAK
+  A0: K-b ∈ [40%; 75%]: NIE
+  A0: K1 ∈ [2,5; 7,5] %: TAK
+  A0: K2 ≥ 95 %: TAK
+  B1: K-a ∈ [7%; 14%]: NIE
+  B1: K-b ∈ [35%; 72%]: NIE
+  B1: K1 ∈ [2,5; 7,5] %: TAK
+  B1: K2 ≥ 95 %: TAK
+  B1: K7c niezbieżne ≤ 2 %: TAK
+  B2: K-a ∈ [8%; 16%]: NIE
+  B2: K-b ∈ [30%; 68%]: NIE
+  B2: K1 ∈ [2,5; 7,5] %: TAK
+  B2: K2 ≥ 95 %: TAK
+  B2: K7c niezbieżne ≤ 2 %: TAK
+  B3: K-a ∈ [9%; 18%]: TAK
+  B3: K-b ∈ [25%; 62%]: NIE
+  B3: K1 ∈ [2,5; 7,5] %: TAK
+  B3: K2 ≥ 95 %: TAK
+  B3: K7c niezbieżne ≤ 2 %: TAK
+  B2: moc wyroczni zan10 ∈ [35; 68] %: NIE
+  B2: K-a ≤ 10 % (przewidywane 40 %): NIE
+  B2: K-b ≥ 80 % (przewidywane 7 %): TAK
+  K-gen-D zaliczona: TAK
+  werdykt A0 = NIE: NIE
+  werdykt B2 = NIE: TAK
+Czas 2023 s (28 procesów)
+exit=0

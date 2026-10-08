@@ -2,9 +2,9 @@
 id: 021
 tytul: LV2d — nowa pre-rejestracja po STOP 1 karty 019 (laboratorium z przesunięciami poziomu wariancji; scenariusz LV2 dla K = 4)
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: orkiestrator
-decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; kartę otworzył Claude po STOP 1 w karcie 019 (README rundy 019, „Wynik”); wykonanie nie jest jeszcze zlecone"
+decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; kartę otworzył Claude po STOP 1 w karcie 019 (README rundy 019, „Wynik”); wykonanie zlecone: 2026-10-08 „Wykonaj i realizuj kolejne kroki”"
 utworzono: 2026-10-08
 zalezy_od: [019, 020]
 budzet: "Opus, 1–2 sesje (nowa pre-rejestracja, kalibracja, przebieg rejestrowy)"
@@ -77,4 +77,14 @@ Pre-rejestracja 019 zabrania zmiany generatora i progów po STOP 1, więc dalszy
 
 ## Wynik
 
-(dopisuje orkiestrator)
+**Werdykt: Caveats** (Claude, 2026-10-08). Runda: `runs/2026-10-08_021-lv2d-regimy-wariancji/` (README, `raw_output.txt`, `kalibracja.json`, `druga_droga.py`,
+`przeliczenie_niezalezne.py`); wiersz w `runs/INDEX.md`; decyzja #14 w `STATUS.md`. Pre-rejestracja `380c765` poprzedza kalibrację (`68270b2`) i przebieg rejestrowy (`3c1a02f`).
+
+- Kalibracja: *D* = 300, amplituda 1,086; B1/B2/B3 w tolerancji (VR 1,72 / 2,27 / 2,80, przy granicy 52–53 % wobec 2,2 % w A0).
+- Przebieg rejestrowy (jedno przejście, ziarno 20 262 021, 4 000 paneli po 1 691 dni oceny): **A0 TAK** (K-a 5,4 %, K-b 96,9 %, K1 4,5 %, K2 100 %);
+  **B1–B3 NIE** przez K-a 28,7 / 20,3 / 17,0 % > 10 % (K-b 93,7 / 90,2 / 86,1 %, K1 3,9–4,5 %, K2 100 %).
+- Test ma moc przy K = 4 (wyrocznia 85,5–98,1 % wobec σ − 10 %); zawodzi rozmiar testu dla estymowanego GARCH-t. Diagnostyka po fakcie: rozrzut odsetka trafień
+  1,40–1,64 raza ponad błąd dla niezależnych dni (wyrocznia 1,00–1,01); sam średni błąd dałby 2,5–3,2 % odrzuceń. Źródło mieszane, nierozdzielone.
+- Kontrole: przeliczenie z surowych tablic ✓ (arytmetyka), druga droga ✓ (ten sam generator i estymator, test zbiorczy nietknięty), przegląd kodu bez uwag krytycznych;
+  przewidywania z pre-rejestracji 23/33.
+- Konsekwencja: 018 wstrzymana (niemierzalna pod zamrożoną regułą K); propozycja dalszego kroku w karcie 022 (`czeka_na_decyzje`).

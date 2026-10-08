@@ -52,6 +52,7 @@ GitHub i klucze), zostały po Twojej stronie.
 | 11 | Projekt pre-rejestracji 019 (2026-10-08) | **(i)** α jako pokrętło odsetka dopasowań przy granicy (karta mówiła tylko „α + β do 0,9999”); **(ii)** trzy scenariusze zależności A0/A1/A2 i dwie komórki opisowe A3/A4 zamiast jednego punktu; **(iii)** K7b i K7d nie bramkują w komórkach z trwałością przy granicy (bramkuje KAL); **(iv)** krzywa mocy `garch_tnu` jako opis. | Rozpoznanie (112 paneli) pokazało nasycenie odsetka przy α = 0,08 na ≈ 40 %; 020 dała SE ρ̂ = 0,091 z dolnym końcem poniżej LV2, a tabela decyzji z 020 wymaga scenariusza LV2 dla K = 4; K7b/K7d są sprzeczne z celem 27 → 51 % przy granicy. Dane syntetyczne, bez licznika. | (i) zostać przy α = 0,08 i uznać cel odsetka za nieosiągalny; (ii) werdykt tylko z A1; (iii) raportować K7b/K7d jako opis; (iv) pominąć. Szczegóły: README rundy 019. |
 | 12 | Po STOP 1 w 019 (2026-10-08): co dalej | **019 zamknięta z werdyktem Revision** (reguła STOP 1 z pre-rejestracji; przebiegu rejestrowego nie ma, runner odmawia). **Otwieram kartę 021** (nowa pre-rejestracja: generator z przesunięciami poziomu wariancji + komórka A0), **nie wykonuję jej w tej sesji.** **Nie luzuję** progu 46,3 % po fakcie. 018 zostaje wstrzymana. Licznik „ryzyko 2021+” zostaje 0. | Najlepszy punkt kalibracji 44,5 % ± 1,3 pp < 46,3 % (druga droga: 37–44 %), płaskowyż od α = 0,12; VR w tolerancji. Pre-rejestracja zabrania zmiany generatora i progów po STOP 1, a przesunięcie progu po obejrzeniu wyniku byłoby przesunięciem słupków. Mechanizm (przesunięcia poziomu wariancji) to hipoteza, jeszcze niemierzona. Dane syntetyczne, bez licznika. | Kartę 021 zmienić na `odrzucone` albo wskazać inny kierunek: (a) luzowanie celu odsetka (jawnie jako przesunięcie słupków), (b) generator z reżimami, (c) sama komórka A0; 018 zostaje wstrzymana (albo `odrzucone`). |
 | 13 | Projekt pre-rejestracji 021 (2026-10-08) | **(i)** mechanizm = wspólny poziom wariancji w reżimach (średnia długość *D* = 300 dni, zapasowo 150) nałożony na bazę LV2 (α + β = 0,98), **nie** na trwałość 0,9999 z 019; **(ii)** okno celu odsetka dopasowań przy granicy [41,3; 61,3] % zamiast [46,3; 56,3] % (jawnie po fakcie, środek celu 51,3 % bez zmian); **(iii)** komórki A0 (scenariusz LV2 dla K = 4) i B1/B2/B3 (dół/środek/góra przedziału VR z 020, B2 główna); **(iv)** K7a bramkuje tylko w A0; **(v)** kolumny wyroczni `zan10`/`zan20` jako opis; **(vi)** 1 000 paneli na punkt kalibracji, kalibracja dwuetapowa (odsetek, potem VR); **(vii)** nowe ziarna; poprawki z przeglądu 019 w nowym runnerze `run_lv2d.py`. Karta 021 → `w_toku`. Licznik „ryzyko 2021+” zostaje 0. | Przegląd 019 pokazał, że przy trwałości 0,9999 panel jest „zapadniętym IGARCH” (mediana |r| ≈ 0,12 %), a SD pojedynczego panelu odsetka to ok. 26 pp, więc okno ± 5 pp było fałszywie dokładne. Okno luzuję jawnie, bo mechanizm ma być sprawdzony na realistycznej bazie; jeśli B2 przejdzie tylko dolną częścią okna, wniosek brzmi „poziom wariancji nic nie dodał do LV2c”. Dane syntetyczne, bez licznika. | (i) komórki B z α + β = 0,9999 jak w 019; (ii) stare okno i próg STOP 1 = 46,3 %; (iii) werdykt tylko z B2 i A0; (iv) bramka K7a także w B; (vi) 400 paneli jak w 019. Szczegóły: README rundy 021. |
+| 14 | Po wyniku 021 (2026-10-08): co dalej | **021 zamknięta z werdyktem Caveats** (A0 TAK; B1–B3 NIE przez K-a 28,7 / 20,3 / 17,0 % > 10 %); karta → `do_przegladu`. **Reguły K nie zmieniam** (ani progów, ani estymatora). **018 zostaje wstrzymana** (przy zamrożonej K runda na danych byłaby NIEMIERZALNA w scenariuszu jak w danych, R3). **Otwieram kartę 022** (propozycja: K′ z bootstrapem blokowym jako diagnostyka, potem ewentualnie prognoza widząca poziom wariancji) jako `czeka_na_decyzje`, **nie wykonuję jej** — zmiana zamrożonej reguły po obejrzeniu wyniku należy do Ciebie. Szerszego koszyka nie proponuję. Licznik „ryzyko 2021+” zostaje 0. | Test ma moc przy K = 4 (wyrocznia 85,5–98,1 %), a zawodzi K-a: rozrzut odsetka trafień GARCH-t jest 1,40–1,64 raza większy niż zakłada błąd dla niezależnych dni, a sam średni błąd (5,2 % zamiast 5,0 %) dałby tylko 2,5–3,2 % odrzuceń; źródło mieszane (małe prawdziwe zaniżenie + za wąski błąd testu), nierozdzielone. Zmiana reguły po fakcie byłaby przesunięciem słupków, więc idzie przez Ciebie i nową pre-rejestrację. Poziom wariancji jest wspólny dla monet, więc więcej monet nie leczy (R12). Dane syntetyczne, bez licznika. | Kartę 022 zmienić na `odrzucone` (018 zostaje wstrzymana albo `odrzucone`), albo wskazać kierunek: (a′) K′ z bootstrapem blokowym, (d) prognoza z poziomem wariancji, (b) zamknięcie rundy VaR/ES na danych. Szczegóły: README rundy 021. |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -67,8 +68,10 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
 
 - **018** — pierwsza runda VaR/ES na danych: pytanie bezwzględne, `dopasuj_garch_t`, p = 5 %, od 2026-10-07 **4 monety** (BTC, ETH, SOL, BNB) × ok. 1 690 dni
   zamiast 15 × 1 700. **Wstrzymana** po wyniku 017 (zależność ponad laboratorium, okno 2 091 < 2 100). Wznowienie:
-  LV2c dla K = 4 (019 skończona STOP 1 bez odpowiedzi; dalej 021) mierzalne przy VR ≈ 2,26 (020) + dane za październik 2026 + powtórka 020 na końcowym oknie +
+  LV2d dla K = 4 (021: reguła K odrzuca estymowany GARCH-t w B, więc przy zamrożonej K niemierzalna; dalej 022 — decyzja użytkownika) mierzalne przy VR ≈ 2,26 (020) + dane za październik 2026 + powtórka 020 na końcowym oknie +
   własna pre-rejestracja (licznik 0 → 1).
+- **022** — po wyniku 021: (a′) reguła K′ z bootstrapem blokowym w teście A jako diagnostyka na laboratorium LV2d (zmiana zamrożonej reguły → Twoja zgoda
+  i osobna pre-rejestracja), potem ewentualnie (d) prognoza widząca poziom wariancji. Propozycja, nie wykonana.
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
@@ -99,26 +102,25 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
   mierzalność reguły K przy K = 4 pozostaje niezmierzona. K-gen-N ✓. Przegląd kodu (niezależny recenzent): bez błędu wysokiej wagi, żaden błąd nie zmienia
   liczb STOP 1; dopisane testy (14 + 2 znane braki `xfail`), poprawki runnera odłożone do 021. Ujawnione w README: wcześniejsza próba dymna `--smoke` (4 panele
   po 700 dni) wydrukowała szum odrzuceń testu K — bez wpływu na decyzje, ale 021 dostaje nowe ziarno. Licznik „ryzyko 2021+” = 0. Konsekwencja: karta 021, 018 wstrzymana.
+- **021** — LV2d dla K = 4 (**Caveats**): zamrożona reguła K ma moc (wyrocznia 85,5–98,1 % wobec σ − 10 %), ale rozmiar testu dla estymowanego GARCH-t (K-a) to 5,4 % w A0 (TAK)
+  i 28,7 / 20,3 / 17,0 % w B1–B3 przy progu 10 % (NIE); diagnostyka po fakcie: rozrzut trafień 1,40–1,64 raza ponad błąd dla niezależnych dni, sam średni błąd dałby 2,5–3,2 %
+  (źródło mieszane, nierozdzielone). Druga droga ✓ (granice niezależności opisane), przegląd kodu bez uwag krytycznych, przewidywania 23/33. Licznik „ryzyko 2021+” = 0.
+  Konsekwencja: 018 wstrzymana (niemierzalna pod zamrożoną K), karta 022 czeka na decyzję.
 - **016** — LV2: **MIERZALNA, ale tylko z pytaniem bezwzględnym** (Caveats). Dobry, lecz estymowany GARCH-t test
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
 
 **Odłożone (`odrzucone`):** 013 — repo bundla na GitHubie (pkt 7 wyżej).
 
-**W toku (`w_toku`):**
-
-- **021** — LV2d: generator ze wspólnymi przesunięciami poziomu wariancji (commit `1d1f90c`) + komórki A0 i B1/B2/B3 dla K = 4; reguła K i progi bez zmian.
-  Pre-rejestracja zapisana w gicie przed pilotażami (`runs/2026-10-08_021-lv2d-regimy-wariancji/README.md`). Dalej: runner `run_lv2d.py` z poprawkami
-  z przeglądu 019 → kalibracja → przebieg rejestrowy (jeden). Dane syntetyczne, bez licznika.
+**W toku (`w_toku`):** nic.
 
 ## Kolejka
 
 0. ~~**020**~~ — zrobiona 2026-10-07 (`do_przegladu`).
-1. ~~**019**~~ — zrobiona 2026-10-08, werdykt Revision (STOP 1; `do_przegladu`). **021** w toku (LV2d: pre-rejestracja zapisana → runner → kalibracja generatora
-   z przesunięciami poziomu wariancji → przebieg rejestrowy z komórką A0 i B1–B3). Dalej, dopiero po jej wyniku i po danych za październik 2026
-   (spodziewane ok. 2026-11-01): powtórka 020 na końcowym oknie → decyzja o **018** (pierwsza runda VaR/ES na danych; pre-rejestracja
-   przed uruchomieniem). Jeśli 021 wyjdzie NIEMIERZALNA przy K = 4 albo znów zatrzyma się na kalibracji, wracam do Ciebie z opcjami (inna
-   reguła K′, szerszy koszyk albo zamknięcie rundy VaR/ES na danych).
+1. ~~**019**~~ — zrobiona 2026-10-08, werdykt Revision (STOP 1; `do_przegladu`). ~~**021**~~ — zrobiona 2026-10-08, werdykt Caveats (`do_przegladu`): reguła K ma moc, ale
+   odrzuca estymowany GARCH-t w komórkach B (K-a 17–29 % > 10 %). Dalej czeka na **Twoją decyzję** karta **022** (K′ z bootstrapem blokowym jako diagnostyka albo prognoza
+   widząca poziom wariancji, albo zamknięcie rundy VaR/ES na danych). **018** zostaje wstrzymana; po danych za październik 2026 (spodziewane ok. 2026-11-01) i po
+   decyzji: powtórka 020 na końcowym oknie → decyzja o 018 (pre-rejestracja przed uruchomieniem).
 2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 3. E3: reporter sekwencyjny gotowy przed 2026-12-24 (D3-a).
 
@@ -127,9 +129,10 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
 Z zasady po Twojej stronie (nie mogę ich podjąć za Ciebie):
 
 1. **Scalenie do `main`** — praca leży na gałęzi `claude/fervent-fermi-vfctk6`; na `main` trafia nowym PR.
-2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 019, 020) — przegląd i przeniesienie na `zrobione`.
-3. **Zmiana któregokolwiek z dwunastu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 12: kierunek po STOP 1 w 019).
+2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 019, 020, 021) — przegląd i przeniesienie na `zrobione`.
+3. **Zmiana któregokolwiek z czternastu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 14: co dalej po wyniku 021).
 4. **Konto GitHub i klucze** — tylko jeśli wznowisz 013.
+5. **Karta 022** — czy wolno zmienić zamrożoną regułę K (K′ z bootstrapem blokowym, jako diagnostyka z osobną pre-rejestracją i własnym licznikiem), czy pójść w prognozę widzącą poziom wariancji (d), czy zamknąć rundę VaR/ES na danych (b).
 
 Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i niczego nie ruszałem.
 

@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import math
 import sys
 
 import numpy as np
@@ -102,13 +103,27 @@ def main() -> None:
             hit, vr_p = s[:, j["hit"]], s[:, j["vr"]]
             se = np.sqrt(vr_p * P * (1 - P) / (N_OCENY * K))
             zn = (hit - P) / se
+            tylko_srednia = sum(
+                0.5 * math.erfc(x / math.sqrt(2)) for x in (KRYT - zn.mean(), KRYT + zn.mean())
+            )
             print(
                 f"  rozrzut odsetka trafień {nazwa}: SD po panelach {hit.std(ddof=1) * 100:.3f} pp, "
                 f"SE przy niezależnych dniach {se.mean() * 100:.3f} pp, iloraz {hit.std(ddof=1) / se.mean():.2f}; "
                 f"z naiwne: średnia {zn.mean():.2f}, SD {zn.std(ddof=1):.2f}, "
                 f"P(z > {KRYT:.2f}) {np.mean(zn > KRYT) * 100:.1f} %, P(z < −{KRYT:.2f}) {np.mean(zn < -KRYT) * 100:.1f} %; "
-                f"zapisane A: {s[:, j['zb_a']].mean() * 100:.1f} % (prawa {s[:, j['zb_a_prawa']].mean() * 100:.1f} %)"
+                f"zapisane A: {s[:, j['zb_a']].mean() * 100:.1f} % (prawa {s[:, j['zb_a_prawa']].mean() * 100:.1f} %); "
+                f"gdyby SD z było 1 (tylko średnia): {tylko_srednia * 100:.1f} %"
             )
+            a_, b_, c_, o_ = (s[:, j[n]] for n in ("zb_a", "zb_b", "zb_c", "zb_bonf"))
+            print(
+                f"  składowe testu zbiorczego {nazwa}: A {a_.mean() * 100:.1f} %, B {b_.mean() * 100:.1f} %, "
+                f"C {c_.mean() * 100:.1f} %, razem {o_.mean() * 100:.1f} %; "
+                f"U: średnia {s[:, j['u_sr']].mean():.3f}, SD po panelach {s[:, j['u_sr']].std(ddof=1):.3f}"
+            )
+        u_g, u_w = stat[:, i["garch_x1.00"], j["u_sr"]], stat[:, i["wyr_t5"], j["u_sr"]]
+        print(
+            f"  iloraz SD wskaźnika U po panelach, GARCH-t / wyrocznia: {u_g.std(ddof=1) / u_w.std(ddof=1):.2f}"
+        )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,28 @@
+Panel: 2091 dni; wpisów 1691, z pełnym oknem 1671 (98.8%)
+Dane high/low kompletne i spójne (low <= close <= high) dla wszystkich dni panelu.
+
+Opis (nakładające się okna, 4 monety razem; bez klastrów):
+  L strona  trafień okien   E okien  iloraz  per moneta
+  3   long             89      61.9    1.44  {'BTCUSDT': 5, 'ETHUSDT': 24, 'SOLUSDT': 49, 'BNBUSDT': 11}
+  3  short            108     171.1    0.63  {'BTCUSDT': 3, 'ETHUSDT': 21, 'SOLUSDT': 78, 'BNBUSDT': 6}
+  5   long            431     365.0    1.18  {'BTCUSDT': 39, 'ETHUSDT': 118, 'SOLUSDT': 192, 'BNBUSDT': 82}
+  5  short            444     568.6    0.78  {'BTCUSDT': 43, 'ETHUSDT': 89, 'SOLUSDT': 243, 'BNBUSDT': 69}
+  8   long           1206    1121.6    1.08  {'BTCUSDT': 153, 'ETHUSDT': 328, 'SOLUSDT': 515, 'BNBUSDT': 210}
+  8  short           1290    1350.3    0.96  {'BTCUSDT': 173, 'ETHUSDT': 314, 'SOLUSDT': 554, 'BNBUSDT': 249}
+
+WYNIK (klastry: trafienia o dniach wpisu <= 7 dni od siebie = jeden klaster):
+        poziom    O  E niezal.    O/E  p (Poisson)   O/E przy VR 1 / 4
+ 3× long+short   23      14.37   1.60       0.0217   0.71 / 2.83  <- POZIOM GŁÓWNY
+       3× long   10       3.81   2.63       0.0059   1.16 / 4.64
+      3× short   18      10.56   1.70       0.0230   0.75 / 3.01
+ 5× long+short   52      58.02   0.90       0.8024   0.40 / 1.58
+       5× long   36      22.64   1.59       0.0058   0.70 / 2.81
+      5× short   49      35.38   1.39       0.0173   0.61 / 2.45
+ 8× long+short   23     154.57   0.15       1.0000   0.07 / 0.26
+       8× long   55      70.09   0.78       0.9724   0.35 / 1.39
+      8× short   54      84.48   0.64       0.9998   0.28 / 1.13
+
+Poziom główny: O = 23, E = 14.37, O/E = 1.60, p = 0.0217; progi: p < 0.05 ORAZ O/E >= 1.5  ->  MODEL ZANIŻA
+
+Dni wpisu klastrów poziomu głównego (pierwszy dzień każdego klastra):
+2022-05-04, 2022-06-06, 2022-07-11, 2022-11-01, 2022-12-22, 2023-03-10, 2023-06-03, 2023-07-06, 2023-10-14, 2023-12-15, 2024-02-22, 2024-03-05, 2024-04-06, 2024-05-14, 2024-07-29, 2024-11-03, 2025-01-11, 2025-01-27, 2025-02-26, 2025-05-02, 2025-09-30, 2026-01-29, 2026-08-14

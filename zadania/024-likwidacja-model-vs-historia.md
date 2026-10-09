@@ -2,7 +2,7 @@
 id: 024
 tytul: czy P likwidacji z kalkulatora zgadza się z rzeczywistymi dotknięciami progów 2021–2026
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-09: „Tak” (na propozycję porównania modelowego dystansu i P likwidacji z zapisem rzeczywistych dotknięć progów na historii)"
 utworzono: 2026-10-09
@@ -39,4 +39,6 @@ licznik „ryzyko 2021+” rośnie 0 → 1 przy uruchomieniu części z wynikami
 
 ## Wynik
 
-(po uruchomieniu)
+Werdykt **Caveats** (szczegóły: README rundy). 3× long+short: O = 23 klastrów wobec E = 14,37 (O/E 1,60, p 0,0217) → formalnie „model zaniża”;
+brzegowo: O/E 0,71 przy VR 1 i 2,83 przy VR 4, na surowych oknach 0,85, 64 % trafień to SOL, ceny last zamiast mark. Przeliczenie niezależne zgodne.
+Skutek: `modele/rozmiar_dzis.py` pokazuje też P 3× ×1,6; licznik „ryzyko 2021+” = 1.

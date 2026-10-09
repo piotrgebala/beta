@@ -20,6 +20,8 @@ from symulacje.garch_t import dopasuj_garch_t, filtr_sigma2
 
 KOSZYK = ("BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT")
 P_ES = 0.05
+# Karta 024 (poziom główny 3×, long+short): obserwowane klastry dotknięć / oczekiwane z modelu = 23 / 14,37 = 1,60.
+KOREKTA_P_3X = 1.6
 ZAPASY = (1.0, 1.25, 1.5)
 
 
@@ -65,6 +67,7 @@ def tabela_dzis(
             for dzw in (2.0, 3.0):
                 wiersz[f"dystans_{dzw:g}x_sigm"] = dystans_w_sigmach(dzw, mmr, s)
                 wiersz[f"P_likw_{dzw:g}x_7d_%"] = 100 * p_likwidacji(dzw, mmr, s, nu, dni=7)
+            wiersz["P_likw_3x_7d_kor_%"] = min(100.0, KOREKTA_P_3X * wiersz["P_likw_3x_7d_%"])
             wiersze.append(wiersz)
     return pd.DataFrame(wiersze)
 

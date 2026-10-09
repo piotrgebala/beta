@@ -65,8 +65,7 @@ Dystans do likwidacji 3× to ok. 16 σ dziennych, a modelowe P(likwidacja w 7 dn
    (α + β = 1,000; `dopasowanie_ok = False`), czyli σ to w praktyce silnie wygładzony poziom ostatnich dni.
 2. `P_likw` to przybliżenie modelowe: stała σ, bez cen śróddziennych, skoków σ, kaskad likwidacji, opłat, funduszu i stopni mmr giełdy.
    Należy je traktować jako **dolne oszacowanie** ryzyka; alpha zmierzyła na historii, że 3× na altach kosztuje ok. 3,6 pkt rocznie w likwidacjach (PRD §2.1), czego
-   ten model by nie przewidział. Porównanie z tym zapisem to osobny krok z pre-rejestracją.
+   ten model by nie przewidział. Porównanie z historią zrobiła karta 024 (Caveats): P 3× bywa zaniżone ok. 1,6× (wynik brzegowy) — tabela ma kolumnę `P_likw_3x_7d_kor_%`.
 3. Limit ES portfela (`skala_limitu_es`) liczy sumę ES nóg (bez dywersyfikacji); ERC/HRP i CVaR z PRD F4 nie są zbudowane (przy 2 nogach ERC = 1/σ).
 
-**Dalej (propozycje, nie wykonane):** (a) porównać modelowy dystans/P likwidacji z zapisem likwidacji alpha na historii — pytanie o ryzyko, więc licznik „ryzyko 2021+”
-0 → 1 i pre-rejestracja przed uruchomieniem; (b) wpiąć kalkulator w raport tygodniowy (karta 007) jako tabelę „na dziś”.
+**Dalej:** (a) wykonane jako karta 024; (b) wpiąć kalkulator w raport tygodniowy (karta 007) jako tabelę „na dziś”.

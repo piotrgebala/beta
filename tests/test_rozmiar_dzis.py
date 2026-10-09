@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from modele.rozmiar_dzis import prognoza_sigma_nu, tabela_dzis
+from modele.rozmiar_dzis import KOREKTA_P_3X, prognoza_sigma_nu, tabela_dzis
 from symulacje.garch_panel import generuj_panel
 
 
@@ -34,3 +34,11 @@ def test_tabela_ksztalt_i_monotonicznosc_po_zapasie():
     assert (tab["dzwignia_cel_20%"] <= 3.0 + 1e-12).all()
     assert (tab["dystans_2x_sigm"] > tab["dystans_3x_sigm"]).all()
     assert np.isfinite(tab.select_dtypes("number").to_numpy()).all()
+
+
+def test_korekta_p_3x_mnozy_i_nie_przekracza_100():
+    tab = tabela_dzis(_panel(), cele=(0.2,), zapasy=(1.0, 1.5))
+    assert (tab["P_likw_3x_7d_kor_%"] <= 100.0).all()
+    oczekiwane = np.minimum(100.0, KOREKTA_P_3X * tab["P_likw_3x_7d_%"])
+    assert tab["P_likw_3x_7d_kor_%"].to_numpy() == pytest.approx(oczekiwane.to_numpy())
+    assert (tab["P_likw_3x_7d_kor_%"] >= tab["P_likw_3x_7d_%"] - 1e-12).all()

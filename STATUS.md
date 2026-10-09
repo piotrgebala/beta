@@ -120,7 +120,7 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-09.
    więc **018 odrzucona** (cel σ −10 % za ambitny dla 4 monet × 1 691 dni). Tor VaR/ES na danych stoi do Twojej decyzji o celu σ −15 % albo do ok. 2028.
    Tor ryzyka pozycji (023, 024, sekcja w raporcie 007) działa i jest używany.
 2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
-3. E3: reporter sekwencyjny gotowy przed 2026-12-24 (D3-a).
+3. ~~E3~~ — reporter sekwencyjny gotowy (karta 004, D3-a); 2026-10-09 działa na dzienniku alpha (12 dni, wszystkie E ≈ 1, brak dowodu w żadną stronę) i jest w raporcie tygodniowym. Pierwszy odczyt ADR-09: 2026-12-24.
 
 ## Decyzje czekające na Ciebie
 

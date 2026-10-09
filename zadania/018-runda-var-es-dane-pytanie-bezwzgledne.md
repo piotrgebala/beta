@@ -2,7 +2,7 @@
 id: 018
 tytul: pierwsza runda VaR/ES na prawdziwych danych — pytanie bezwzględne, GARCH-t, p = 5 %
 typ: badawcze
-status: czeka_na_decyzje
+status: odrzucone
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-07: delegacja — „miejsca w których potrzebna jest moja decyzja sam sobie odpowiedz wedługo swojej najlepszej wiedzy”; otwarcie rundy rozstrzygnął Claude (STATUS.md, „Decyzje podjęte przez Claude”, pkt 1–4); uruchomienie dopiero po 017 i po zapisaniu pre-rejestracji w gicie"
 utworzono: 2026-10-07
@@ -85,3 +85,7 @@ Wznowienie wymaga łącznie:
 
 Dopiero wtedy status wraca na `nowe` (decyzja orkiestratora; licznik „ryzyko 2021+” rośnie z 0 do 1 dopiero przy
 przebiegu).
+
+**Odrzucona (2026-10-09, decyzja #17 w `STATUS.md`).** Karta 022 policzyła górną granicę mocy testu na laboratorium jak w danych (VR 2,26): nawet z idealnym
+błędem moc wobec σ −10 % to 65 % < 80 % → runda NIEMIERZALNA (R3). Dane za październik dodają ok. 2 % dni i tego nie zmienią.
+Wznowienie: (i) cel σ −15 % zamiast −10 % (zmiana zamrożonego progu = decyzja użytkownika; nowa pre-rejestracja z regułą K′ na laboratorium) albo (ii) ok. 2028.

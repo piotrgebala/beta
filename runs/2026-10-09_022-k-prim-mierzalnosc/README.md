@@ -1,6 +1,6 @@
 # 022 — czy reguła K′ (bootstrap blokowy) w ogóle może być mierzalna: górna granica mocy
 
-**Status: PRE-REJESTRACJA rachunku mierzalności (R3), zapisana przed liczeniem.** Typ: laboratorium (panele syntetyczne z 021, zero nowych
+**Status: ZAKOŃCZONA — K′ NIEMIERZALNA, runda K′ nie startuje; werdykt Ready.** Pre-rejestracja `bd11a21`, kod `37a73c9` (oba przed liczeniem). Typ: laboratorium (panele syntetyczne z 021, zero nowych
 symulacji, zero danych rynkowych) — **poza licznikami** („ryzyko 2021+” zostaje 1, rejestr alpha nietknięty).
 
 ## Skąd ta runda
@@ -40,3 +40,66 @@ to rozrzut statystyki między 4 000 paneli. Jeśli nawet z prawdziwym błędem m
 ## Przewidywanie (zapisane przed liczeniem)
 
 Rachunek z n_eff w karcie 022 dawał moc K-b ok. 62–71 %. Przewiduję **K-b* w B2 = 60–75 % → NIEMIERZALNA** (pewność 75 %), K-a* w B2 ≤ 10 % (pewność 70 %).
+
+## Wynik (`raw_output.txt`)
+
+| komórka | K-a* (x1.00, próg ≤ 10 %) | **K-b* (σ −10 %, próg ≥ 80 %)** | σ −15 % | zapisane K z 021 (K-a / K-b) | werdykt |
+|---|---|---|---|---|---|
+| A0 (bez przesunięć poziomu) | 5,4 % | 93,2 % | 100 % | 5,4 / 96,9 % | mierzalna |
+| B1 (VR 1,72) | 10,7 % | 68,0 % | 92,9 % | 28,7 / 93,7 % | NIEMIERZALNA |
+| **B2 (VR 2,26, jak w danych)** | **8,7 %** | **65,0 %** | **91,9 %** | 20,3 / 90,2 % | **NIEMIERZALNA** |
+| B3 (VR 2,81) | 7,4 % | 59,9 % | 88,7 % | 17,0 / 86,1 % | NIEMIERZALNA |
+
+Kontrole (R8): wyrocznia odrzucana 4,3–4,9 % (oczekiwane ok. 5 %), `zan30` 100 %. W A0 test idealny daje te same liczby co zapisany (K-a 5,4 % = 5,4 %) — tam
+błąd dla niezależnych dni jest dobry, więc rachunek nie „psuje” testu tam, gdzie nie trzeba.
+
+**Druga droga** (`raw_druga_droga.txt`, wzór dla rozkładu normalnego z samego średniego przesunięcia z̄, bez liczenia panel po panelu): B2, σ −10 %:
+moc A 53,6 % (po panelach 54,0 %), moc C 63,7 % (63,0 %); A i C są skorelowane 0,97, więc „A lub C” leży tuż nad mocą C — zgodne z 65,0 %.
+
+Opis: najmniejsze zaniżenie σ wykrywalne z mocą 80 % przy idealnym błędzie (interpolacja między 0,90 a 0,85): ok. **12,4 % (B1), 12,8 % (B2), 13,5 % (B3)**.
+Test z błędem szacowanym (bootstrap blokowy) będzie miał moc mniejszą, więc realnie raczej **ok. 15 %**. Potrzebna długość danych dla σ −10 % przy tym samym koszyku:
+z̄ musiałoby urosnąć z 2,48 do ok. 2,97 (próg C 2,13 + 0,84), czyli dni oceny ×1,43 → ok. 2 420 zamiast 1 691, **ok. 2 lata więcej danych (2028)** — i to przy idealnym błędzie.
+
+## Ocena przewidywań
+
+- „K-b* w B2 = 60–75 % → NIEMIERZALNA” (75 %): **trafione** (65,0 %).
+- „K-a* w B2 ≤ 10 %” (70 %): **trafione** (8,7 %). W B1 K-a* = 10,7 % — nawet idealny błąd nie mieści estymowanego GARCH-t w progu; to głównie składowa B (5,7 %) i C (5,1 %).
+
+## Co na plus (+)
+
+- Rozstrzygnięcie bez nowej symulacji i bez danych rynkowych: 4 000 paneli × 4 komórki z 021, liczba policzona dwiema drogami.
+- Górna granica jest konserwatywna w dobrą stronę: jeśli NIE wychodzi nawet z prawdziwym błędem, żadna sztuczka z błędem (blok, HAC, inna długość bloku) tego nie zmieni.
+- Odpowiada wprost na pytanie z 022: K-a w komórkach B to w większości wada błędu testu (zapisane 17–29 % → 7–11 % przy idealnym błędzie), ale po naprawie błędu
+  znika moc (90 % → 65 %). Naprawa błędu przenosi porażkę z K-a na K-b — dokładnie to, przed czym ostrzegała karta 022.
+
+## Co na minus (−)
+
+- Wszystko na laboratorium: generator z 021 (przesunięcia poziomu, D = 300) jest tylko jednym modelem danych; inny mechanizm zależności dałby inne liczby.
+- „Prawdziwy błąd” to rozrzut między panelami tego samego generatora — test na danych tego błędu nie zna; dlatego to górna granica, nie przewidywanie mocy K′.
+- Składowa B przyjęta z zapisu 021 (bootstrap dla niezależnych dni); w B1 sama B daje 5,7 % odrzuceń dobrego modelu.
+
+## Wniosek (prostym językiem)
+
+Mamy za mało danych, żeby sprawdzić prognozę ryzyka tak dokładnie, jak chcieliśmy. Na czterech monetach i ok. 4,6 roku historii test wychwyci zaniżenie zmienności
+dopiero od ok. 13–15 %, a nie od 10 %. Poprawianie samego testu (K′) nic tu nie da. Praktycznie: prognozę σ trzeba traktować z zapasem co najmniej ok. 15 %
+(tabela „na dziś” już pokazuje σ × 1,25 i × 1,5) i nie oczekiwać, że dane potwierdzą jej dokładność lepiej niż do tego poziomu.
+
+## Werdykt: **Ready**
+
+Rachunek z góry zapisany, wynik po złej stronie progu z dużym zapasem (65 % wobec 80 %), dwie drogi zgodne, kontrole zaliczone.
+
+## Skutki
+
+1. **Runda K′ na laboratorium nie startuje** (R3). Karta 022 → `do_przegladu`.
+2. **018 (VaR/ES na danych, cel σ −10 %) → `odrzucone`** jako NIEMIERZALNA przy zamrożonym celu; dane za październik tego nie zmienią (+2 % dni).
+   Wznowienie tylko przez: (i) cel mocy σ −15 % zamiast −10 % — to zmiana zamrożonego progu, **decyzja użytkownika**, i nowa pre-rejestracja z regułą K′ na laboratorium;
+   albo (ii) ok. 2028 przy tym samym celu.
+3. Kierunek (d) — prognoza widząca poziom wariancji — nie leczy mocy (moc zależy od liczby niezależnych faz, nie od prognozy); odkładam do backlogu.
+
+## Użyte skille
+
+- `clas5-runda` — procedura: rachunek mierzalności przed rundą, pre-rejestracja w gicie przed liczeniem, wiersz w INDEX i wniosek skumulowany.
+- `data:statistical-analysis` — moc testu, Bonferroni, interpretacja „górnej granicy”.
+- `data:validate-data` — druga droga (wzór dla normalnego), kontrole na wyroczni i `zan30`.
+- `engineering:code-review` — przegląd `symulacje/k_prim.py` i testów: progi `isf(α/6)` dla A (dwustronnie α/3) i `isf(α/3)` dla C (prawostronnie) zgodne z `p_boot`
+  („rowne” i „prawa”); SD z ddof = 1; wejścia sprawdzane. Bez uwag zmieniających liczby. Ready.

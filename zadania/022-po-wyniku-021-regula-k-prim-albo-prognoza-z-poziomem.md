@@ -2,7 +2,7 @@
 id: 022
 tytul: po wyniku 021 — reguła K′ (bootstrap blokowy) jako diagnostyka albo prognoza widząca poziom wariancji
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: orkiestrator
 decyzja_uzytkownika: "2026-10-09: „przejdź do aktualnych zadań i zacznij realizować” (po pytaniu: zamknąć 022 czy iść w (a′)) — przyjęte jako zgoda na (a′); start od rachunku mierzalności (R3)"
 utworzono: 2026-10-08
@@ -49,4 +49,7 @@ wydruku nie da się go rozdzielić. Przy zamrożonej regule runda 018 na danych 
 
 ## Wynik
 
-(dopisuje orkiestrator)
+2026-10-09, runda [022-k-prim-mierzalnosc](../runs/2026-10-09_022-k-prim-mierzalnosc/README.md), werdykt **Ready**: rachunek mierzalności (R3) przed budową K′ —
+górna granica mocy testu zbiorczego z PRAWDZIWYM błędem (rozrzut po 4 000 panelach 021). B2: K-a* 8,7 % (zapisane 20,3 %), **K-b* 65,0 % < 80 %**
+(B1 68,0 %, B3 59,9 %, A0 93,2 %); druga droga zgodna. → **K′ NIEMIERZALNA, runda K′ nie startuje.** Wykrywalne dopiero zaniżenie σ o ok. 13–15 %.
+Skutek: 018 → `odrzucone`; kierunek (d) do backlogu (nie leczy mocy). Pliki zamrożone nietknięte, nowe ziarna niepotrzebne (zero nowych symulacji).

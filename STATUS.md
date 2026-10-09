@@ -55,6 +55,7 @@ GitHub i klucze), zostały po Twojej stronie.
 | 14 | Po wyniku 021 (2026-10-08): co dalej | **021 zamknięta z werdyktem Caveats** (A0 TAK; B1–B3 NIE przez K-a 28,7 / 20,3 / 17,0 % > 10 %); karta → `do_przegladu`. **Reguły K nie zmieniam** (ani progów, ani estymatora). **018 zostaje wstrzymana** (przy zamrożonej K runda na danych byłaby NIEMIERZALNA w scenariuszu jak w danych, R3). **Otwieram kartę 022** (propozycja: K′ z bootstrapem blokowym jako diagnostyka, potem ewentualnie prognoza widząca poziom wariancji) jako `czeka_na_decyzje`, **nie wykonuję jej** — zmiana zamrożonej reguły po obejrzeniu wyniku należy do Ciebie. Szerszego koszyka nie proponuję. Licznik „ryzyko 2021+” zostaje 0. | Test ma moc przy K = 4 (wyrocznia 85,5–98,1 %), a zawodzi K-a: rozrzut odsetka trafień GARCH-t jest 1,40–1,64 raza większy niż zakłada błąd dla niezależnych dni, a sam średni błąd (5,2 % zamiast 5,0 %) dałby tylko 2,5–3,2 % odrzuceń; źródło mieszane (małe prawdziwe zaniżenie + za wąski błąd testu), nierozdzielone. Zmiana reguły po fakcie byłaby przesunięciem słupków, więc idzie przez Ciebie i nową pre-rejestrację. Poziom wariancji jest wspólny dla monet, więc więcej monet nie leczy (R12). Dane syntetyczne, bez licznika. | Kartę 022 zmienić na `odrzucone` (018 zostaje wstrzymana albo `odrzucone`), albo wskazać kierunek: (a′) K′ z bootstrapem blokowym, (d) prognoza z poziomem wariancji, (b) zamknięcie rundy VaR/ES na danych. Szczegóły: README rundy 021. |
 | 15 | Po pytaniu użytkownika (2026-10-09): czy z prac da się coś praktycznego | **Kontynuuję wątek ryzyka pozycji:** karta 023 (`do_przegladu`) — kalkulator wielkości pozycji, dystansu do likwidacji i limitu ES + tabela „na dziś” dla BTC/ETH/SOL/BNB. **Kartę 022 zostawiam bez ruchu** (decyzja Twoja). Licznik „ryzyko 2021+” zostaje 0, rejestr alpha nietknięty. | Użytkownik wskazał trzy zastosowania (wielkość pozycji, odległość od likwidacji przy 3×, limit portfela); to jedyna droga, na której prace zmienności mają praktyczny użytek, a nie wymaga oceny prognozy na historii (nic nie liczy zwrotu ani trafień). Modelowe P likwidacji jest dolnym oszacowaniem; prognoza σ nieskalibrowana na danych (BTC, ETH przy granicy α + β = 1). | Kartę 023 zmienić na `odrzucone` (moduły `modele/ryzyko_pozycji.py`, `modele/rozmiar_dzis.py` usunąć jednym commitem). Szczegóły: karta 023. |
 | 16 | Po „Tak” użytkownika (2026-10-09): porównanie P likwidacji z historią | **Karta 024 wykonana** (pre-rejestracja `6134ed0` przed odczytem high/low, kod `b5904a2`): 3× long+short O/E 1,60, p 0,022 → formalnie „model zaniża”, werdykt **Caveats** (brzegowo, zależy od VR i miary; surowe okna 0,85; 64 % to SOL). Wniosek zapisany w kalkulatorze: kolumna P×1,6 dla 3×, tylko do zmniejszania ekspozycji. **Licznik „ryzyko 2021+” = 1.** Alpha, dziennik i zamrożone pliki nietknięte. | Użytkownik wskazał kierunek („Tak”); reguły decyzji były w pre-rejestracji. | Wycofanie: usunąć `KOREKTA_P_3X` i kolumnę z `modele/rozmiar_dzis.py`; wynik zostaje w README rundy. |
+| 17 | Po „przejdź do aktualnych zadań i zacznij realizować” (2026-10-09): karta 022 | **Wybrałem (a′) i zacząłem od mierzalności (R3):** górna granica mocy K′ z prawdziwym błędem na panelach 021 (pre-rejestracja `bd11a21`). Wynik: B2 K-b* 65,0 % < 80 % → **K′ NIEMIERZALNA, runda K′ nie startuje**; 022 → `do_przegladu`. **018 → `odrzucone`** (NIEMIERZALNA przy celu σ −10 %; dane za październik dają +2 % dni). Kierunek (d) do backlogu. Progów nie zmieniałem. | Ty zapytany „zamknąć 022 czy (a′)” odpowiedziałeś „zacznij realizować” — przyjąłem rekomendację. Rachunek kosztował minuty i nie wymagał nowych danych. | Wycofanie: 018 z powrotem na `czeka_na_decyzje`; wynik 022 zostaje (to rachunek, nie decyzja). |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -62,21 +63,15 @@ Brak. D3 rozstrzygnięta na delegację (pkt 6 wyżej), D1, D2, D4, D5, D6 rozstr
 
 ## Bieżące zadania
 
-Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
+Tablica: [`zadania/`](zadania/). Stan na 2026-10-09.
 
 **Nowe — do wykonania (`nowe`):** nic.
 
-**Czekają na decyzję (`czeka_na_decyzje`):**
-
-- **018** — pierwsza runda VaR/ES na danych: pytanie bezwzględne, `dopasuj_garch_t`, p = 5 %, od 2026-10-07 **4 monety** (BTC, ETH, SOL, BNB) × ok. 1 690 dni
-  zamiast 15 × 1 700. **Wstrzymana** po wyniku 017 (zależność ponad laboratorium, okno 2 091 < 2 100). Wznowienie:
-  LV2d dla K = 4 (021: reguła K odrzuca estymowany GARCH-t w B, więc przy zamrożonej K niemierzalna; dalej 022 — decyzja użytkownika) mierzalne przy VR ≈ 2,26 (020) + dane za październik 2026 + powtórka 020 na końcowym oknie +
-  własna pre-rejestracja (licznik 0 → 1).
-- **022** — po wyniku 021: (a′) reguła K′ z bootstrapem blokowym w teście A jako diagnostyka na laboratorium LV2d (zmiana zamrożonej reguły → Twoja zgoda
-  i osobna pre-rejestracja), potem ewentualnie (d) prognoza widząca poziom wariancji. Propozycja, nie wykonana.
+**Czekają na decyzję (`czeka_na_decyzje`):** nic (018 odrzucona, 022 zakończona — decyzja #17).
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
+- **022** — mierzalność reguły K′ (**Ready**): nawet z idealnym błędem moc wobec σ −10 % to 65 % < 80 % (B2) → K′ NIEMIERZALNA; wykrywalne dopiero zaniżenie σ o ok. 13–15 %.
 - **024** — model P likwidacji kontra historia (**Caveats**): 3× long+short 23 klastry dotknięć wobec 14,37 z modelu (O/E 1,60, p 0,022), wynik brzegowy; kalkulator 023 pokazuje też P×1,6; licznik „ryzyko 2021+” = 1.
 - **023** — kalkulator ryzyka pozycji (dźwignia z celu zmienności, dystans do likwidacji, limit ES) + tabela „na dziś” dla koszyka 4 monet; zastrzeżenia w karcie.
 - **001** — fundament: przyrząd `miara` zgodny z alpha, loader z `min_start`, CI, NC1B zaliczona.
@@ -114,17 +109,16 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
 
-**Odłożone (`odrzucone`):** 013 — repo bundla na GitHubie (pkt 7 wyżej).
+**Odłożone (`odrzucone`):** 013 — repo bundla na GitHubie (pkt 7 wyżej). 018 — runda VaR/ES na danych: NIEMIERZALNA przy celu σ −10 % (022); wznowienie: cel σ −15 % (Twoja decyzja) albo ok. 2028.
 
 **W toku (`w_toku`):** nic.
 
 ## Kolejka
 
 0. ~~**020**~~ — zrobiona 2026-10-07 (`do_przegladu`).
-1. ~~**019**~~ — zrobiona 2026-10-08, werdykt Revision (STOP 1; `do_przegladu`). ~~**021**~~ — zrobiona 2026-10-08, werdykt Caveats (`do_przegladu`): reguła K ma moc, ale
-   odrzuca estymowany GARCH-t w komórkach B (K-a 17–29 % > 10 %). Dalej czeka na **Twoją decyzję** karta **022** (K′ z bootstrapem blokowym jako diagnostyka albo prognoza
-   widząca poziom wariancji, albo zamknięcie rundy VaR/ES na danych). **018** zostaje wstrzymana; po danych za październik 2026 (spodziewane ok. 2026-11-01) i po
-   decyzji: powtórka 020 na końcowym oknie → decyzja o 018 (pre-rejestracja przed uruchomieniem).
+1. ~~**019**~~, ~~**021**~~, ~~**022**~~ — zrobione (`do_przegladu`). 022 (2026-10-09): reguła K′ NIEMIERZALNA nawet z idealnym błędem (B2: moc 65 % < 80 %),
+   więc **018 odrzucona** (cel σ −10 % za ambitny dla 4 monet × 1 691 dni). Tor VaR/ES na danych stoi do Twojej decyzji o celu σ −15 % albo do ok. 2028.
+   Tor ryzyka pozycji (023, 024, sekcja w raporcie 007) działa i jest używany.
 2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
 3. E3: reporter sekwencyjny gotowy przed 2026-12-24 (D3-a).
 
@@ -132,11 +126,11 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-08.
 
 Z zasady po Twojej stronie (nie mogę ich podjąć za Ciebie):
 
-1. **Scalenie do `main`** — praca leży na gałęzi `claude/fervent-fermi-vfctk6`; na `main` trafia nowym PR.
-2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 019–021, 023, 024) — przegląd i przeniesienie na `zrobione`.
-3. **Zmiana któregokolwiek z szesnastu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 14: co dalej po wyniku 021).
+1. **Scalenie do `main`** — od 2026-10-09 („Merguj sam”) scalam sam fast-forwardem z gałęzi `claude/fervent-fermi-vfctk6`.
+2. **Odbiór kart `do_przegladu`** (001–012, 014–017, 019–024) — przegląd i przeniesienie na `zrobione`.
+3. **Zmiana któregokolwiek z siedemnastu wyborów wyżej**, jeśli się z nim nie zgadzasz — napisz numer (szczególnie pkt. 17: odrzucenie 018).
 4. **Konto GitHub i klucze** — tylko jeśli wznowisz 013.
-5. **Karta 022** — czy wolno zmienić zamrożoną regułę K (K′ z bootstrapem blokowym, jako diagnostyka z osobną pre-rejestracją i własnym licznikiem), czy pójść w prognozę widzącą poziom wariancji (d), czy zamknąć rundę VaR/ES na danych (b).
+5. **Cel mocy toru VaR/ES** — czy zgadzasz się testować prognozę ryzyka z celem „wykryć zaniżenie σ o 15 %” zamiast 10 % (zmiana zamrożonego progu; wtedy nowa pre-rejestracja z regułą K′ na laboratorium), czy zostawiamy tor zamknięty do ok. 2028.
 
 Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i niczego nie ruszałem.
 
@@ -154,6 +148,7 @@ Kapitał, dziennik papierowy alpha, nieodwracalne operacje: nic nie czeka i nicz
 - Top-50 (FR-01) — gdy runda będzie tego potrzebować (`--top 50`).
 - Tor F5 (likwidacje, Hyperliquid) — magazyn cech point-in-time; pierwszy odczyt najwcześniej 2027-09.
 - F4 portfel — po E2.
+- **Kierunek (d) z 022** — prognoza widząca poziom wariancji: nie leczy mocy testu (ograniczeniem jest liczba niezależnych faz); wyzwalacz: wznowienie toru VaR/ES.
 - Wolumen 5m vs 1d różny w 600 dniach (161 symboli) — przyczyny nie badano (karta 014).
 - Drobne uwagi do kodu LV2 (do poprawienia przy następnej zmianie kodu): etykieta „siatka X_GRID” w wydruku, zdublowane
   `POZIOMY`/`NU`, martwa stała `N_DNI`, kolejność argumentów `fz0`.

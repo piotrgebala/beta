@@ -1,0 +1,9 @@
+B1 garch_x1.00: z̄_A 0.38 → moc A 0.025; z̄_C 0.45 → moc C 0.047; A lub C ∈ [0.047; 0.072]; korelacja hit–u 0.98
+B1 garch_x0.90: z̄_A 2.55 → moc A 0.561; z̄_C 2.55 → moc C 0.662; A lub C ∈ [0.662; 1.000]; korelacja hit–u 0.98
+B1 garch_x0.85: z̄_A 3.65 → moc A 0.896; z̄_C 3.57 → moc C 0.925; A lub C ∈ [0.925; 1.000]; korelacja hit–u 0.98
+B2 garch_x1.00: z̄_A 0.35 → moc A 0.023; z̄_C 0.42 → moc C 0.044; A lub C ∈ [0.044; 0.067]; korelacja hit–u 0.98
+B2 garch_x0.90: z̄_A 2.48 → moc A 0.536; z̄_C 2.48 → moc C 0.637; A lub C ∈ [0.637; 1.000]; korelacja hit–u 0.97
+B2 garch_x0.85: z̄_A 3.54 → moc A 0.875; z̄_C 3.47 → moc C 0.910; A lub C ∈ [0.910; 1.000]; korelacja hit–u 0.97
+B3 garch_x1.00: z̄_A 0.34 → moc A 0.023; z̄_C 0.40 → moc C 0.042; A lub C ∈ [0.042; 0.065]; korelacja hit–u 0.97
+B3 garch_x0.90: z̄_A 2.37 → moc A 0.489; z̄_C 2.33 → moc C 0.579; A lub C ∈ [0.579; 1.000]; korelacja hit–u 0.96
+B3 garch_x0.85: z̄_A 3.39 → moc A 0.840; z̄_C 3.26 → moc C 0.872; A lub C ∈ [0.872; 1.000]; korelacja hit–u 0.96

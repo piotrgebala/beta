@@ -2,9 +2,9 @@
 id: 022
 tytul: po wyniku 021 — reguła K′ (bootstrap blokowy) jako diagnostyka albo prognoza widząca poziom wariancji
 typ: badawcze
-status: czeka_na_decyzje
+status: w_toku
 zlecil: orkiestrator
-decyzja_uzytkownika: "brak — propozycja Claude po wyniku karty 021; zmiana zamrożonej reguły K po obejrzeniu wyniku wymaga Twojej zgody (STATUS.md, decyzja #14)"
+decyzja_uzytkownika: "2026-10-09: „przejdź do aktualnych zadań i zacznij realizować” (po pytaniu: zamknąć 022 czy iść w (a′)) — przyjęte jako zgoda na (a′); start od rachunku mierzalności (R3)"
 utworzono: 2026-10-08
 zalezy_od: [021]
 budzet: "Opus, 1–2 sesje (pre-rejestracja, ewentualny przebieg rejestrowy na laboratorium LV2d)"

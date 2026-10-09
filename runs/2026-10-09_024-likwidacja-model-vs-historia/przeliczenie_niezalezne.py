@@ -7,6 +7,7 @@ z plików parquet i σ̂/ν̂ z `data/lq024_prognozy.npz`, bez importu `likwidac
 from __future__ import annotations
 
 import math
+from itertools import pairwise
 
 import numpy as np
 import pandas as pd
@@ -52,7 +53,7 @@ for strona in ("long", "short"):
                 e_blok += p
 
 zdarzenia = sorted(set(zdarzenia))
-o = 1 + sum(1 for a, b in zip(zdarzenia, zdarzenia[1:]) if b - a > H) if zdarzenia else 0
+o = 1 + sum(1 for a, b in pairwise(zdarzenia) if b - a > H) if zdarzenia else 0
 e = e_blok / VR
 print(
     f"3× long+short: O = {o}, E niezal. = {e:.2f}, O/E = {o / e:.2f}, p = {poisson.sf(o - 1, e):.4f}"

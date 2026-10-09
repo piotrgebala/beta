@@ -124,6 +124,45 @@ def dziennik_alpha() -> str:
     return buf.getvalue().rstrip()
 
 
+def ryzyko_markdown(panel) -> str:
+    """Tabela „na dziś” (karta 023/024) w markdown: σ, dźwignia z celu 18 %, dystans i P likwidacji 3× w 7 dni."""
+    from modele.rozmiar_dzis import KOREKTA_P_3X, tabela_dzis
+
+    tab = tabela_dzis(panel, cele=(0.18,), zapasy=(1.0, 1.5))
+    L = [
+        f"Stan na {panel.index[-1].date()} (ostatni wspólny dzień danych). Zapas 1,5 = σ razy 1,5.",
+        "",
+        "| moneta | zapas | σ roczna % | dźwignia (cel 18 %) | dystans 3× (σ) | P likwidacji 3×, 7 dni % | to ×"
+        + f"{KOREKTA_P_3X:g} (karta 024) % |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for _, w in tab.iterrows():
+        L.append(
+            f"| {w['moneta']} | {w['zapas']:g} | {w['sigma_rok_%']:.0f} | {w['dzwignia_cel_18%']:.2f} | "
+            f"{w['dystans_3x_sigm']:.1f} | {w['P_likw_3x_7d_%']:.2f} | {w['P_likw_3x_7d_kor_%']:.2f} |"
+        )
+    L += [
+        "",
+        (
+            "Kalkulator służy tylko do ZMNIEJSZANIA ekspozycji. Prognoza σ nie przeszła kalibracji, "
+            "P likwidacji to dolne oszacowanie (karta 024: ok. 1,6 raza zaniżone, wynik brzegowy)."
+        ),
+    ]
+    return "\n".join(L)
+
+
+def ryzyko_na_dzis(do: date) -> str:
+    """Tabela ryzyka pozycji dla koszyka albo informacja, czemu jej nie ma (jak `dziennik_alpha`)."""
+    from dane.zwroty_dzienne import panel_wspolny
+    from modele.rozmiar_dzis import KOSZYK
+
+    try:
+        panel, _, _ = panel_wspolny(KOSZYK, do=min(do, datetime.now(UTC).date()).isoformat())
+        return ryzyko_markdown(panel)
+    except (OSError, ValueError, KeyError) as e:
+        return f"(kalkulator ryzyka niedostępny: {type(e).__name__}: {e})"
+
+
 def komentarz(stary: str | None) -> str:
     """Blok komentarza Claude z poprzedniej wersji pliku albo pusty szablon."""
     if stary and KOM_START in stary and KOM_KONIEC in stary:
@@ -139,6 +178,7 @@ def zbuduj(
     decyzje: list[str],
     dziennik: str,
     kom: str,
+    ryzyko: str | None = None,
 ) -> str:
     L = [
         f"# Raport tygodniowy {t.etykieta} ({t.od} → {t.do})",
@@ -174,7 +214,9 @@ def zbuduj(
         "```",
         "",
     ]
-    L += ["## 3. Decyzje czekające na Ciebie", ""]
+    if ryzyko is not None:
+        L += ["## 3. Ryzyko pozycji na dziś (opis, nie sygnał)", "", ryzyko, ""]
+    L += [f"## {4 if ryzyko is not None else 3}. Decyzje czekające na Ciebie", ""]
     L += decyzje or ["- (brak otwartych decyzji w STATUS.md)"]
     czeka = po["czeka_na_decyzje"]
     L += [f"- Zadanie {z['id']}: {z['tytul']} (karta w `zadania/`)" for z in czeka]
@@ -199,6 +241,7 @@ def main(argv: list[str] | None = None) -> None:
         otwarte_decyzje((ROOT / "STATUS.md").read_text(encoding="utf-8")),
         dziennik_alpha(),
         komentarz(stary),
+        ryzyko_na_dzis(t.do),
     )
     a.out.mkdir(parents=True, exist_ok=True)
     path.write_text(txt, encoding="utf-8")

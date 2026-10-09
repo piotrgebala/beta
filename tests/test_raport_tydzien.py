@@ -66,3 +66,31 @@ def test_zbuduj_i_komentarz_przetrwa():
     moj = txt.replace(rt.KOM_PUSTY, "Mój komentarz.")
     txt2 = rt.zbuduj(t, *args, rt.komentarz(moj))
     assert "Mój komentarz." in txt2 and rt.KOM_PUSTY not in txt2
+
+
+def test_ryzyko_w_raporcie_i_awaria_danych(monkeypatch):
+    import numpy as np
+    import pandas as pd
+
+    from symulacje.garch_panel import generuj_panel
+
+    r = generuj_panel(1200, 2, seed=3)["r"].to_numpy()
+    panel = pd.DataFrame(
+        r, columns=["A", "B"], index=pd.date_range("2022-01-01", periods=len(r), tz="UTC")
+    )
+    md = rt.ryzyko_markdown(panel)
+    assert "| A | 1 |" in md and "| B | 1.5 |" in md and "ZMNIEJSZANIA" in md
+    assert np.isfinite(float(md.split("| A | 1 |")[1].split("|")[1]))
+
+    t = rt.tydzien_iso(date(2026, 10, 5))
+    txt = rt.zbuduj(t, [], [], [], [], "d", rt.komentarz(None), md)
+    assert "## 3. Ryzyko pozycji na dziś" in txt and "## 4. Decyzje czekające" in txt
+    assert "## 3. Decyzje czekające" in rt.zbuduj(t, [], [], [], [], "d", rt.komentarz(None))
+
+    def brak(*a, **k):
+        raise FileNotFoundError("brak parquet")
+
+    monkeypatch.setattr("dane.zwroty_dzienne.panel_wspolny", brak)
+    assert rt.ryzyko_na_dzis(date(2026, 10, 11)).startswith(
+        "(kalkulator ryzyka niedostępny: FileNotFoundError"
+    )

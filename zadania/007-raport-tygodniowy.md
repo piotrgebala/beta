@@ -38,3 +38,7 @@ Testy na atrapie repo (git log, INDEX, karty); pierwszy raport 2026-W41 wygenero
 2026-10-05: `raporty/tydzien.py` + 4 testy (`tests/test_raport_tydzien.py`: tydzień ISO, rundy z INDEX, karty,
 decyzje, komentarz przetrwa ponowne generowanie). Pierwszy raport: `raporty/tygodnie/2026-W41.md` z kartami
 decyzji E0, 011, D3 i PR #1. Uruchomienie: `python -m raporty.tydzien` (automat w niedzielę — zadanie 012).
+
+2026-10-09 (rozszerzenie, propozycja (b) z karty 023): sekcja „3. Ryzyko pozycji na dziś” w raporcie — tabela z `modele.rozmiar_dzis`
+(σ roczna, dźwignia z celu 18 %, dystans i P likwidacji 3× w 7 dni, kolumna ×1,6 z karty 024) dla BTC/ETH/SOL/BNB, stan na ostatni dzień danych;
+brak danych → jedna linia z powodem (jak reporter F3). Decyzje przesunięte do sekcji 4. Opis, nie sygnał; nic nie liczy zwrotu strategii ani nie podbija liczników.

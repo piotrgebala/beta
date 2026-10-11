@@ -2,11 +2,24 @@ name: CI
 
 on:
   push:
-  pull_request:
+    paths-ignore:
+      - "STATUS.md"
+      - "docs/**"
+      - "zadania/**"
+      - "raporty/tygodnie/**"
+      - "runs/*/*.md"
+      - "runs/*/raw_*.txt"
+      - "dane/manifest_*.json"
+      - "dane/sklad_top20.json"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   testy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

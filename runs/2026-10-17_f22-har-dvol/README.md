@@ -1,7 +1,7 @@
 # F2-2 — HAR + log DVOL vs czysty HAR (QLIKE, 1 dzień, BTC i ETH)
 
-> **STATUS: PRE-REJESTRACJA (przed przebiegiem).** Wynik, werdykt i „Co na plus / na minus” dopisane
-> pod koniec pliku po przebiegu; pre-rejestracja zostaje bez zmian.
+> **STATUS: ZAKOŃCZONA — NIEPOZYTYWNY (Caveats).** Pre-rejestracja (commit `f12d7ff`) zostaje bez zmian;
+> wynik i werdykt są w sekcji „Wynik” na końcu pliku.
 
 ## W skrócie (prostym językiem)
 
@@ -26,7 +26,7 @@ jest w stanie coś zobaczyć. Jeśli nie, kończy się bez testu i nic nie zuży
   (opóźnienie 1 dzień, test przecieku istnieje: `tests/test_cechy.py`).
 - Komendy: `python -m modele.run_f22 --tylko-dni` (dni OOS, bez strat; użyta do tej pre-rejestracji),
   `python -m modele.run_f22 > runs/2026-10-17_f22-har-dvol/raw_output.txt` (pełny przebieg po commicie).
-- **Hash commita pre-rejestracji:** uzupełniony w sekcji Wynik.
+- **Commit pre-rejestracji:** `f12d7ff` (kod, testy i ten plik, wypchnięty przed przebiegiem).
 
 ## Karta hipotezy (R1–R4)
 
@@ -93,3 +93,69 @@ jest w stanie coś zobaczyć. Jeśli nie, kończy się bez testu i nic nie zuży
   (R2) i wymaga własnej pre-rejestracji.
 - Log DVOL wchodzi liniowo; brak interakcji i brak funding / OI (każda dodatkowa zmienna = osobna runda, R4).
 - Dane syntetyczne w testach to kontrola mechaniki, nie dowód o rynku.
+
+## Wynik (przebieg po commicie `f12d7ff`; pełny wydruk: `raw_output.txt`)
+
+Zgodność z pre-rejestracją: tak (1 650 dni OOS na monetę, odcisk `f10ec282c39ae538`).
+
+**Krok 1, bramka (R3):** MDE kryterium **0,099** (1 moneta 0,088) wobec progu 0,10, czyli **MIERZALNA**,
+ale na samej granicy. Przewidywałem 0,098 (zakres 0,09–0,115): trafione. N_eff/n = 1,01, korelacja różnic
+strat BTC/ETH **0,63** (w pre-rejestracji zakładałem ok. 0,16 z F2-1b; pomyłka w założeniu, nie w progu:
+wyższa korelacja podnosi MDE dla „obu monet”, a mimo to MDE zmieściło się w 0,10, bo N_eff/n jest wyższe).
+
+**Krok 2, DM na QLIKE (t > 0 = HAR + DVOL lepszy):**
+
+| moneta | n | t QLIKE | δ (średnia różnica / odch. std.) | t MSE log RV (opis) |
+|---|---|---|---|---|
+| BTCUSDT | 1 650 | **+0,50** | +0,012 | +10,02 |
+| ETHUSDT | 1 650 | **−0,07** | −0,002 | +8,36 |
+
+Kryterium: t > 2,2414 w 0 z 2 monet (wymagane 2), t < −2,2414: 0 → **NIEPOZYTYWNY**.
+Licznik „zmienność 2021+”: **1 → 2** (test DM uruchomiony).
+
+**Przeliczenie drugą drogą (niezależne od `miara.dm`):** średnia różnicy strat QLIKE i błąd HAC liczone
+w statsmodels (OLS na stałą, `cov_type=HAC`, opóźnienia 7 / 14 / 30): BTC t = 0,50 / 0,50 / 0,49,
+ETH t = −0,07 / −0,07 / −0,07. Zgodne z `raw_output.txt`. Powtórny przebieg daje identyczny wydruk (R19).
+
+## Co na plus (+) / Co na minus (−)
+
+- (+) Runda zrobiła to, do czego służy: zamknęła pytanie jednym uczciwym testem, z bramką, progiem po
+  korekcie i przewidywaniem zapisanym przed wynikiem (MDE przewidziane 0,098, wyszło 0,099).
+- (+) Wynik jest wyraźnie nieistotny, nie brzegowy: t = 0,50 i −0,07 przy progu 2,24. Nie ma tu „prawie”.
+- (+) Wspólna próba obu modeli: różnica strat to wkład DVOL, nie dłuższy trening.
+- (−) Tylko dwie monety i jedna historia (korelacja różnic strat 0,63), więc to nie jest wniosek o rynku.
+- (−) Modele zagnieżdżone: HAR-X ma jeden parametr więcej, co lekko pogarsza OOS (kontrola negatywna), więc
+  test jest nieco niekorzystny dla HAR-X. Przy t bliskim zera to nie zmienia werdyktu, ale nie dowodzi,
+  że DVOL jest bezwartościowy, tylko że przy tym teście i 1 650 dniach nie widać poprawy większej niż MDE 0,10.
+- (−) **Rozbieżność QLIKE vs MSE log RV:** t QLIKE ok. 0, ale t MSE log RV = +10 i +8. To są dwie różne
+  miary (QLIKE karze niedoszacowanie zmienności; MSE log karze błąd w skali logarytmicznej), a miara
+  rozstrzygająca była zapisana przed wynikiem. MSE log liczę tylko opisowo (w F2-1b też t 6,5–9,6, więc
+  duże wartości są cechą tej miary i metody, nie dowodem poprawy). Nie zmieniam kryterium po fakcie.
+- (−) Opóźnienie DVOL 1 dzień i log DVOL liniowo to jedna z wielu możliwych postaci; inne postaci to
+  osobne warianty z osobnym licznikiem (R2, R4).
+
+## Wniosek
+
+DVOL dodany do HAR nie poprawia prognozy zmienności na QLIKE ponad czysty HAR ani dla BTC, ani dla ETH
+(t = +0,50 i −0,07 wobec progu 2,24). Szczebel 5 drabiny F2 nie przechodzi, więc **szczebel 6 (boosting) nie
+wchodzi**: według PRD wymaga przejścia szczebli 4–5, a szczebel 4 przeszedł tylko brzegowo (11 z 15 monet).
+
+## Rekomendacja
+
+STOP dla toru „HAR + DVOL”: bez F2-2b (inna postać DVOL, opóźnienie 0, dodatkowe zmienne). Proces ML
+na prognozie zmienności pozostaje niewystartowany i dlatego, że prosty model nie ma czego poprawiać;
+bardziej obiecujące są pytania, w których prosty model realnie nie wystarcza (tor F5 likwidacji, wrzesień 2027),
+oraz użycie tego, co już działa (HAR/GARCH-t do rozmiaru pozycji i dystansu do likwidacji).
+
+## Werdykt (R14, podpisuje Claude): **Caveats**
+
+Przyrząd, bramka i kryterium zadziałały zgodnie z pre-rejestracją, liczby zweryfikowane drugą drogą.
+Caveats: dwie monety, zależne; zagnieżdżone modele bez korekty Clarka–Westa; rozbieżność QLIKE vs MSE log
+opisana, nie rozstrzygnięta.
+
+## Użyte skille
+
+`clas5-runda` (procedura rundy), `data:statistical-analysis` (efekt + MDE zamiast samego p, wielokrotne
+porównania: Holm), `data:validate-data` (przeliczenie drugą drogą, „kogo nie ma”: SOL i BNB bez ciągłego DVOL),
+`engineering:code-review` (przegląd diffu przed commitem: zakres zmian `prognoza_har` i `moc_kryterium_braki`
+ograniczony do nowych parametrów z domyślnymi wartościami bez zmiany zachowania).

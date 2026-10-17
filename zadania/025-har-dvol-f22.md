@@ -2,7 +2,7 @@
 id: 025
 tytul: F2-2 — HAR + log DVOL vs czysty HAR na BTC i ETH (szczebel 5 drabiny F2, warunek wejścia do ML)
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-17: „tak” (na pytanie o HAR + DVOL jako pierwszy krok, po którym ML w ogóle ma sens)"
 utworzono: 2026-10-17
@@ -34,4 +34,6 @@ Testy i lint zielone; commit pre-rejestracji przed `raw_output.txt`; wiersz w `r
 
 ## Wynik
 
-(po przebiegu)
+2026-10-17, commit pre-rejestracji `f12d7ff`, wynik w `runs/2026-10-17_f22-har-dvol/README.md`.
+Bramka MIERZALNA (MDE 0,099 ≤ 0,10). t QLIKE +0,50 (BTC) i −0,07 (ETH) przy progu 2,24 → **NIEPOZYTYWNY (Caveats)**.
+Licznik „zmienność 2021+”: 1 → 2. Boosting nie wchodzi, bez F2-2b. Niezależne przeliczenie HAC zgodne.

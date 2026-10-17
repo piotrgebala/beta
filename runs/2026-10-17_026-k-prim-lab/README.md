@@ -1,6 +1,6 @@
 # 026 — laboratorium K′ (bootstrap blokowy) przy celu mocy σ −15 %
 
-**Status: PRE-REJESTRACJA (przed przebiegiem).** Typ: laboratorium na danych syntetycznych LV2d (K = 4) — **poza licznikami** („ryzyko 2021+” = 1, zwroty alpha N = 40).
+**Status: ZAKOŃCZONA — K′ NIEMIERZALNA (reguła STOP po kroku 1); werdykt Ready.** Pre-rejestracja `7dedf8c` (przed przebiegiem). Typ: laboratorium na danych syntetycznych LV2d (K = 4) — **poza licznikami** („ryzyko 2021+” = 1, zwroty alpha N = 40).
 Decyzja użytkownika 2026-10-17: cel mocy σ −15 % zamiast −10 % (pole `decyzja_uzytkownika` w `zadania/026-…`).
 
 ## Wnioski skumulowane, które dotyczą tej rundy (jedno zdanie)
@@ -59,3 +59,47 @@ Dane syntetyczne; jeden mechanizm przesunięć poziomu (reżimy ~300 dni), wybra
 ## Użyte skille
 
 `data:statistical-analysis` (rozmiar/moc, SE odsetków, wielokrotne testy: Bonferroni, jedna siatka L), `engineering:code-review` (przed scaleniem).
+
+## Wynik (`raw_output_wybor.txt`, krok 1: ziarno 20 262 601, 2 000 paneli/komórkę, 1 010 s)
+
+Odsetek odrzuceń testu zbiorczego (%), komórka główna **B2** (VR 2,26 jak w danych); SE 0,4–0,9 pp:
+
+| długość bloku L | wyr_t5 (kontrola −) | zan30 (kontrola +) | **K-a** (x1.00, ≤ 10 %) | x0.90 | **K-b σ −15 %** (x0.85, ≥ 80 %) |
+|---|---|---|---|---|---|
+| 1 (≡ zapisane K) | 3,1 | 100 | **21,3** | 88,4 | 99,6 |
+| 20 | 3,6 | 100 | **20,4** | 87,8 | 99,6 |
+| 60 | 4,0 | 100 | **20,8** | 87,2 | 99,1 |
+| 150 | 5,3 | 100 | **21,8** | 85,4 | 99,0 |
+
+Reguła wyboru (B2, L > 1, K-a ≤ 10 % i K-b ≥ 80 %): **brak** — K-a jest 20–22 % przy każdej długości. Inne komórki: B1 K-a 26–28 %, B3 18–21 %, A0 4,6–7,0 % (A0 rośnie z L: bootstrap
+z małą liczbą bloków robi się szumny). K-b wobec σ −15 % jest ≥ 98 % wszędzie, więc moc nie jest tu problemem — rozmiar jest. Zgodnie z regułą STOP krok 2 (potwierdzenie) **nie został uruchomiony**,
+siatki nie rozszerzam, progów nie ruszam.
+
+Kontrole (R8): wyrocznia `wyr_t5` 3,1–5,3 % (oczekiwane ok. 5 %), `zan30` 100 %; L = 1 odtwarza zapisane K z 021 (K-a 21,3 % wobec 20,3 %, różnica ok. 1 SE; rozbicie A/C/B 12,3 / 15,8 / 3,5 jak tam).
+
+**Diagnostyka opisowa po fakcie** (nie kryterium; `diagnostyka_se.py`, `raw_diagnostyka.txt`; B2, 120 paneli, garch_x1.00, dzienna liczba trafień z 4 monet):
+prawdziwy rozrzut średniej między panelami 0,0235, błąd iid (taki, jak w K) 0,0159 (stosunek 1,48), błąd z bootstrapu blokowego 0,0162 / 0,0165 / 0,0168 dla L = 20 / 60 / 150 (stosunek 1,02 / 1,03 / 1,05).
+Bootstrap blokowy odtwarza więc tylko ok. 10 % brakującego błędu. Średnia liczba trafień 0,2071 wobec 0,200 (5,18 % zamiast 5 %).
+
+## Co na plus (+) / Co na minus (−)
+
+(+) Wynik jednoznaczny i zgodny z rachunkiem 022: odpowiedź nie zależy od długości bloku, więc nie jest efektem szczęśliwego wyboru L. Kontrole dodatnia i ujemna oraz L = 1 ≡ K zaliczone.
+(+) Przy σ −15 % moc nie jest wąskim gardłem (≥ 98 %), więc cel zatwierdzony przez użytkownika był osiągalny; zawodzi rozmiar testu.
+(−) Przewidywania chybione: K-a miał spaść do 9–16 % (jest 20–22 %), K-b miał być 70–88 % (jest 99 %); trafione tylko kontrole i szansa „brak L”.
+(−) Jedna siatka L (4 wartości), jeden mechanizm przesunięć poziomu (reżimy ~300 dni), jeden estymator; blok > 150 dni miałby ok. 11 bloków na 1 691 dni, więc i tak nie byłby wiarygodnym bootstrapem.
+(−) Przyczyna (hipoteza, niezmierzona): rozrzut ponad błąd iid pochodzi z wolnych składników (fazy dłuższe niż blok i/lub różnice jakości dopasowania między panelami), których nie widać w jednej serii — żaden bootstrap
+w obrębie jednej historii ich nie odtworzy. Zgodne z 022: ograniczeniem jest liczba niezależnych faz, nie wzór testu.
+
+## Werdykt (Claude, R14): **Ready — K′ NIEMIERZALNA**
+
+Test z błędem szacowanym z danych (bootstrap blokowy, L do 150 dni) nie naprawia rozmiaru: K-a 20–22 % wobec progu 10 % w komórce o zależności jak w danych. Rundy 018′ na danych nie otwieram.
+
+## Konsekwencje
+
+- Karta 027 (runda na danych) **nie powstaje**; 018 zostaje `odrzucone`. Tor VaR/ES na danych: wznowienie dopiero przy ok. 2 420 dniach i celu σ −10 % (ok. 2028) albo po zmianie podejścia (np. prognoza widząca poziom wariancji (d) oceniona regułą K — tylko jako nowa decyzja, bo mierzalność oceny dalej ogranicza liczba faz).
+- Zasady: żadnych dalszych wariantów długości bloku ani HAC jako „naprawy” (wniosek skumulowany 026 + 022). Licznik „ryzyko 2021+” bez zmian (1); rejestr alpha nietknięty.
+- Kalkulator 023 zostaje bez zmian: nadal bez oceny prognozy σ na historii; kolumna P×1,6 wynika z 024, nie z tej rundy.
+
+## Użyte skille
+
+`data:statistical-analysis` (SE odsetków, rozrzut vs błąd iid, jedna siatka L = brak wielokrotnych testów poza zapisaną), `engineering:code-review` — przegląd kodu K′ (testy: indeksy blokowe, rozmiar na szumie, poprawa przy zależności, moc, wyrocznia, NaN) bez uwag krytycznych.

@@ -2,7 +2,7 @@
 id: 026
 tytul: laboratorium K′ (bootstrap blokowy) przy celu mocy σ −15 % — czy test z błędem szacowanym z danych jest mierzalny
 typ: badawcze
-status: w_toku
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-17: „tak Tor VaR/ES na danych: potrzebuje Twojej decyzji o celu σ −15 %.” — zgoda na cel mocy σ −15 % zamiast −10 % (zmiana zamrożonego progu mocy zatwierdzona przez użytkownika); kod K′ jest nowy, pliki zamrożone nietknięte"
 utworzono: 2026-10-17
@@ -36,3 +36,6 @@ Jeśli tak — karta 027 (runda 018′ na prawdziwych danych, osobna pre-rejestr
 - Pre-rejestracja w gicie przed przebiegiem; testy, ruff, black zielone; `raw_output_*.txt` w katalogu rundy; wiersz w INDEX.
 
 ## Wynik
+
+Wydana [runda 026](../runs/2026-10-17_026-k-prim-lab/README.md), werdykt **Ready — K′ NIEMIERZALNA**: krok 1 (2 000 paneli/komórkę) — w B2 K-a 20,4–21,8 % przy L = 20/60/150 (próg 10 %), K-b σ −15 % ≥ 99 %;
+reguła STOP, kroku 2 nie uruchomiono. Bootstrap blokowy odtwarza tylko ok. 10 % brakującego błędu (stosunek 1,05 wobec prawdziwego 1,48). Karta 027 nie powstaje, 018 zostaje `odrzucone`.

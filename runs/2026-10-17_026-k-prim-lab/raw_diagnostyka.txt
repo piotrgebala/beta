@@ -1,0 +1,7 @@
+B2, 120 paneli, garch_x1.00; dzienna liczba trafień (z 4 monet), oczekiwana H0 0.200
+średnia po panelach 0.2071
+prawdziwy rozrzut średniej między panelami 0.0235
+SE iid (jak w K) 0.0159  -> stosunek rozrzut/iid 1.48
+SE bootstrapu blokowego L=20  0.0162  -> stosunek do iid 1.02
+SE bootstrapu blokowego L=60  0.0165  -> stosunek do iid 1.03
+SE bootstrapu blokowego L=150 0.0168  -> stosunek do iid 1.05

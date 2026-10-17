@@ -1,0 +1,17 @@
+F2-2 — HAR + log DVOL vs czysty HAR (QLIKE, 1 dzień), BTC i ETH
+Z (kryterium, po korekcie na 2 pary) = 2.2414; bramka MDE ≤ 0.1
+  BTCUSDT     1650 dni OOS: 2022-03-26 … 2026-09-30
+  ETHUSDT     1650 dni OOS: 2022-03-26 … 2026-09-30
+  odcisk dni OOS f10ec282c39ae538
+  zgodność z pre-rejestracją (dni OOS, odcisk): tak
+
+Krok 1 — bramka mierzalności (R3): dni kalendarza 1650 (wspólne 1650), n (mediana) 1650, N_eff/n 1.01, korel. różnic strat 0.63
+  MDE kryterium 0.099 (1 moneta 0.088); próg 0.1; opis przy Z = 1,96: 0.090
+  → MIERZALNA: krok 2 (odczyt licznika „zmienność 2021+”: 1 → 2).
+
+Krok 2 — DM na QLIKE (t > 0: HAR+DVOL lepszy), per moneta:
+ symbol     |    n | od         | t QLIKE |  δ     | t MSE log
+ BTCUSDT    | 1650 | 2022-03-26 |   +0.50 | +0.012 |    +10.02
+ ETHUSDT    | 1650 | 2022-03-26 |   -0.07 | -0.002 |     +8.36
+
+Kryterium F2-2: t > 2.24 w 0/2 monet (wymagane ≥ 2), t < −2.24: 0 → NIEPOZYTYWNY

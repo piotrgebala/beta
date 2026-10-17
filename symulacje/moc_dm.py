@@ -100,6 +100,7 @@ def moc_kryterium_braki(
     seed: int = 0,
     share: float = 0.8,
     min_n: int = 30,
+    z: float = Z,
 ) -> dict:
     """
     `moc_kryterium` dla monet o RÓŻNYCH okresach OOS (F2-1, Poprawka 1 — część wspólna 20 monet pusta).
@@ -132,10 +133,10 @@ def moc_kryterium_braki(
             mean[j] = xj.mean()
             se[j] = np.sqrt(hac_variance(xj, newey_west_lag(len(xj))) / len(xj))
         t = (mean[None, :] + deltas[:, None] * sd[None, :]) / se[None, :]
-        good = (t > Z).sum(axis=1)
-        bad = (t < -Z).any(axis=1)
+        good = (t > z).sum(axis=1)
+        bad = (t < -z).any(axis=1)
         pass_c += (good >= need) & ~bad
-        pass_1 += (t > Z).mean(axis=1)
+        pass_1 += (t > z).mean(axis=1)
         worse += bad
     return {
         "deltas": deltas,

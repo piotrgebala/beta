@@ -63,8 +63,8 @@ cechy:
     formula: "dvol_close_d"
     opoznienie_dni: 1
     dodano: "2026-10-05"
-    runda_definicji: null
-    runda: null
+    runda_definicji: F2-2
+    runda: F2-2
     progi: percentylowe_dozwolone
     wariant: "dvol_1d|dvol_close_d|opoznienie=1"
 

@@ -87,6 +87,8 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-09.
 - **014** — `dane/dni.py::dni_wazne`: parytet z Poprawką 1 F2-1 20/20, martwe dni zgodne z DQ1.
 - **009** — LV1: **MIERZALNA** przy p = 1 % i 5 % (Caveats; realistyczne prognozy odrzucane → LV2).
 - **011** — F2-1b: MIERZALNA, **NIEPOZYTYWNY** (11/15 przy wymaganych 12); licznik „zmienność 2021+” = 1; HAR odłożony.
+- **025** — F2-2 (HAR + log DVOL vs HAR, BTC i ETH): MIERZALNA (MDE 0,099), **NIEPOZYTYWNY** (t QLIKE +0,50 i −0,07 przy progu 2,24);
+  licznik „zmienność 2021+” = 2; boosting (szczebel 6) nie wchodzi; ML na prognozie zmienności nie startuje.
 - **015** — pobieranie Binance przyrostowe: automat miesięczny pobiera tylko nowy miesiąc (bieg bez nowości 25 s).
 - **017** — inwentarz 15 monet i zależność trafień ρ_h (karta opisowa, Caveats): VR = 8,0 wobec 4,95 w LV2
   (ρ̂ 0,50; dolny koniec 0,36 > 0,282), bramka zależności NIE PRZECHODZI (ostrożna: nie przechodzi też w laboratorium),
@@ -119,7 +121,7 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-09.
 1. ~~**019**~~, ~~**021**~~, ~~**022**~~ — zrobione (`do_przegladu`). 022 (2026-10-09): reguła K′ NIEMIERZALNA nawet z idealnym błędem (B2: moc 65 % < 80 %),
    więc **018 odrzucona** (cel σ −10 % za ambitny dla 4 monet × 1 691 dni). Tor VaR/ES na danych stoi do Twojej decyzji o celu σ −15 % albo do ok. 2028.
    Tor ryzyka pozycji (023, 024, sekcja w raporcie 007) działa i jest używany.
-2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c).
+2. Tor likwidacji (F5) bez zmian. HAR odłożony po F2-1b (bez F2-1c); HAR + DVOL zamknięty po F2-2 (NIEPOZYTYWNY, bez F2-2b).
 3. ~~E3~~ — reporter sekwencyjny gotowy (karta 004, D3-a); 2026-10-09 działa na dzienniku alpha (12 dni, wszystkie E ≈ 1, brak dowodu w żadną stronę) i jest w raporcie tygodniowym. Pierwszy odczyt ADR-09: 2026-12-24.
 
 ## Decyzje czekające na Ciebie

@@ -28,12 +28,32 @@ def cechy_har(rv: pd.Series) -> pd.DataFrame:
     )
 
 
-def prognoza_har(rv: pd.Series, min_trening: int = 365, co_ile: int = 30) -> pd.Series:
-    """Prognoza wariancji dnia t+1 umieszczona w wierszu t+1; NaN przed pierwszym refitem."""
+def prognoza_har(
+    rv: pd.Series,
+    min_trening: int = 365,
+    co_ile: int = 30,
+    dodatkowe: pd.DataFrame | None = None,
+    uzyj_dodatkowych: bool = True,
+) -> pd.Series:
+    """
+    Prognoza wariancji dnia t+1 umieszczona w wierszu t+1; NaN przed pierwszym refitem.
+
+    `dodatkowe` (kolumny znane na koniec dnia t, indeks jak `rv`) dochodzą do cech HAR jako regresory
+    (HAR-X, F2-2). Wiersz bez któregokolwiek z nich jest poza próbą treningową i poza prognozą —
+    także gdy `uzyj_dodatkowych=False`: wtedy kolumny służą tylko do wspólnej próby, a model to
+    czysty HAR (baseline na DOKŁADNIE tych samych wierszach co HAR-X). Bez `dodatkowych` wynik
+    jest taki sam jak dotąd.
+    """
     X = cechy_har(rv)
+    if dodatkowe is not None:
+        d = dodatkowe.reindex(rv.index)
+        Xall = pd.concat([X, d], axis=1)
+        Xm = Xall if uzyj_dodatkowych else X
+    else:
+        Xall = Xm = X
     y_next = np.log(rv).shift(-1)  # cel dla wiersza t = log RV_{t+1}
-    ok = X.notna().all(axis=1).to_numpy() & y_next.notna().to_numpy()
-    Xv, yv = X.to_numpy(), y_next.to_numpy()
+    ok = Xall.notna().all(axis=1).to_numpy() & y_next.notna().to_numpy()
+    Xv, Xa, yv = Xm.to_numpy(), Xall.to_numpy(), y_next.to_numpy()
     n = len(rv)
     out = np.full(n, np.nan)
     first = np.nonzero(ok)[0]
@@ -50,6 +70,6 @@ def prognoza_har(rv: pd.Series, min_trening: int = 365, co_ile: int = 30) -> pd.
             beta, *_ = np.linalg.lstsq(Xv[tr], yv[tr], rcond=None)
             res = yv[tr] - Xv[tr] @ beta
             s2 = float(res.var(ddof=Xv.shape[1]))
-        if np.isfinite(Xv[t]).all():
+        if np.isfinite(Xa[t]).all():
             out[t + 1] = np.exp(Xv[t] @ beta + s2 / 2.0)
     return pd.Series(out, index=rv.index)

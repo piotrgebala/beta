@@ -56,6 +56,7 @@ GitHub i klucze), zostały po Twojej stronie.
 | 15 | Po pytaniu użytkownika (2026-10-09): czy z prac da się coś praktycznego | **Kontynuuję wątek ryzyka pozycji:** karta 023 (`do_przegladu`) — kalkulator wielkości pozycji, dystansu do likwidacji i limitu ES + tabela „na dziś” dla BTC/ETH/SOL/BNB. **Kartę 022 zostawiam bez ruchu** (decyzja Twoja). Licznik „ryzyko 2021+” zostaje 0, rejestr alpha nietknięty. | Użytkownik wskazał trzy zastosowania (wielkość pozycji, odległość od likwidacji przy 3×, limit portfela); to jedyna droga, na której prace zmienności mają praktyczny użytek, a nie wymaga oceny prognozy na historii (nic nie liczy zwrotu ani trafień). Modelowe P likwidacji jest dolnym oszacowaniem; prognoza σ nieskalibrowana na danych (BTC, ETH przy granicy α + β = 1). | Kartę 023 zmienić na `odrzucone` (moduły `modele/ryzyko_pozycji.py`, `modele/rozmiar_dzis.py` usunąć jednym commitem). Szczegóły: karta 023. |
 | 16 | Po „Tak” użytkownika (2026-10-09): porównanie P likwidacji z historią | **Karta 024 wykonana** (pre-rejestracja `6134ed0` przed odczytem high/low, kod `b5904a2`): 3× long+short O/E 1,60, p 0,022 → formalnie „model zaniża”, werdykt **Caveats** (brzegowo, zależy od VR i miary; surowe okna 0,85; 64 % to SOL). Wniosek zapisany w kalkulatorze: kolumna P×1,6 dla 3×, tylko do zmniejszania ekspozycji. **Licznik „ryzyko 2021+” = 1.** Alpha, dziennik i zamrożone pliki nietknięte. | Użytkownik wskazał kierunek („Tak”); reguły decyzji były w pre-rejestracji. | Wycofanie: usunąć `KOREKTA_P_3X` i kolumnę z `modele/rozmiar_dzis.py`; wynik zostaje w README rundy. |
 | 17 | Po „przejdź do aktualnych zadań i zacznij realizować” (2026-10-09): karta 022 | **Wybrałem (a′) i zacząłem od mierzalności (R3):** górna granica mocy K′ z prawdziwym błędem na panelach 021 (pre-rejestracja `bd11a21`). Wynik: B2 K-b* 65,0 % < 80 % → **K′ NIEMIERZALNA, runda K′ nie startuje**; 022 → `do_przegladu`. **018 → `odrzucone`** (NIEMIERZALNA przy celu σ −10 %; dane za październik dają +2 % dni). Kierunek (d) do backlogu. Progów nie zmieniałem. | Ty zapytany „zamknąć 022 czy (a′)” odpowiedziałeś „zacznij realizować” — przyjąłem rekomendację. Rachunek kosztował minuty i nie wymagał nowych danych. | Wycofanie: 018 z powrotem na `czeka_na_decyzje`; wynik 022 zostaje (to rachunek, nie decyzja). |
+| 18 | Po „tak” użytkownika (2026-10-17): tor VaR/ES z celem σ −15 % | **Karta 026 wykonana** (pre-rejestracja `7dedf8c` przed przebiegiem): K′ z bootstrapem blokowym na laboratorium LV2d. Wynik: **K′ NIEMIERZALNA** — K-a w B2 20,4–21,8 % (próg 10 %), moc wobec σ −15 % ≥ 99 %; reguła STOP, kroku 2 nie uruchomiono. **Karta 027 (018′) nie powstaje, 018 zostaje `odrzucone`.** Licznik „ryzyko 2021+” = 1. | Cel σ −15 % zatwierdziłeś; sprawdziłem go na laboratorium przed jakimkolwiek odczytem danych. Bootstrap blokowy odtwarza ok. 10 % brakującego błędu, więc rozmiaru testu nie da się naprawić z jednej historii. | Wycofanie: brak (rachunek, nie decyzja kapitałowa); nowy kierunek (prognoza widząca poziom wariancji) = Twoja decyzja. |
 
 ## Otwarte decyzje (z PRD §15)
 
@@ -67,10 +68,11 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-09.
 
 **Nowe — do wykonania (`nowe`):** nic.
 
-**Czekają na decyzję (`czeka_na_decyzje`):** nic (018 odrzucona, 022 zakończona — decyzja #17).
+**Czekają na decyzję (`czeka_na_decyzje`):** nic (018 odrzucona, 022 i 026 zakończone — decyzje #17, #18).
 
 **Zrobione — czekają na Twój przegląd (`do_przegladu`):**
 
+- **026** — laboratorium K′ przy celu σ −15 % (**Ready**): K′ NIEMIERZALNA — K-a w B2 20,4–21,8 % przy każdej długości bloku (próg 10 %), moc ≥ 99 %; bootstrap blokowy odtwarza ok. 10 % brakującego błędu; 018′ nie startuje.
 - **022** — mierzalność reguły K′ (**Ready**): nawet z idealnym błędem moc wobec σ −10 % to 65 % < 80 % (B2) → K′ NIEMIERZALNA; wykrywalne dopiero zaniżenie σ o ok. 13–15 %.
 - **024** — model P likwidacji kontra historia (**Caveats**): 3× long+short 23 klastry dotknięć wobec 14,37 z modelu (O/E 1,60, p 0,022), wynik brzegowy; kalkulator 023 pokazuje też P×1,6; licznik „ryzyko 2021+” = 1.
 - **023** — kalkulator ryzyka pozycji (dźwignia z celu zmienności, dystans do likwidacji, limit ES) + tabela „na dziś” dla koszyka 4 monet; zastrzeżenia w karcie.
@@ -111,7 +113,7 @@ Tablica: [`zadania/`](zadania/). Stan na 2026-10-09.
   zbiorczy odrzuca w 8,2 % / 5,5 % paneli (VaR 1 % / 5 %; próg 10 %), moc wobec σ − 10 % 98,8 / 99,5 %; test
   porównawczy DM jest za słaby (MDE 0,139 / 0,130 wobec 0,10). Licznik „ryzyko 2021+” = 0.
 
-**Odłożone (`odrzucone`):** 013 — repo bundla na GitHubie (pkt 7 wyżej). 018 — runda VaR/ES na danych: NIEMIERZALNA przy celu σ −10 % (022); wznowienie: cel σ −15 % (Twoja decyzja) albo ok. 2028.
+**Odłożone (`odrzucone`):** 013 — repo bundla na GitHubie (pkt 7 wyżej). 018 — runda VaR/ES na danych: NIEMIERZALNA przy celu σ −10 % (022); cel σ −15 % sprawdzony w 026 (K′ NIEMIERZALNA, rozmiar testu 20–22 %); wznowienie dopiero ok. 2028 albo po nowej decyzji (prognoza widząca poziom wariancji).
 
 **W toku (`w_toku`):** nic.
 

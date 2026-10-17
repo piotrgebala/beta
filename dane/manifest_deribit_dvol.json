@@ -2,53 +2,53 @@
  "zrodlo": "https://www.deribit.com/api/v2/public/get_volatility_index_data",
  "rozdzielczosc": "1D",
  "skrypt": "dane/deribit_dvol.py",
- "wersja_skryptu": "32788c204cd18ada20221ec4ae95bb10024f4b7c",
- "utworzono": "2026-10-16T06:10:02+00:00",
+ "wersja_skryptu": "56ecfce4272a2042203d120d6344830e59dfcc40",
+ "utworzono": "2026-10-17T06:10:02+00:00",
  "od": "2021-01-01",
- "do_wylacznie": "2026-10-16",
+ "do_wylacznie": "2026-10-17",
  "strony": [
   {
    "waluta": "BTC",
-   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1792108799999&resolution=1D",
-   "sha256": "5161c1c32ac684836504935b21f43b6154d82b50fb0df0ce47e074d9355be175",
+   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1792195199999&resolution=1D",
+   "sha256": "abee68e2e8b9946a55aae011cd38cc2e67bd7c0892665bfba2575151a3d8469d",
    "wiersze": 1000
   },
   {
    "waluta": "BTC",
-   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1705622400000&resolution=1D",
-   "sha256": "44af5eb7e5e587fee02a7e23651a698158cfd51c72dbbf7396bb8833d2688137",
+   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1705708800000&resolution=1D",
+   "sha256": "f5e90d5129c788c52962f94899a7eb7492d719c38c9b86f1d6b844f71dc4085e",
    "wiersze": 1000
   },
   {
    "waluta": "BTC",
-   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1619222400000&resolution=1D",
-   "sha256": "ed74da4643b63491f107435b80e981b6fe4100de55adeb10234ef1bec24bec34",
-   "wiersze": 32
+   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1609459200000&end_timestamp=1619308800000&resolution=1D",
+   "sha256": "a4a142fdecacd0fa956d11e54bfda73b8ffd229ee81a93dd5743f8adc88ceee6",
+   "wiersze": 33
   },
   {
    "waluta": "ETH",
-   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1792108799999&resolution=1D",
-   "sha256": "7dcf35095d41ec59124f47eabd256e8ad3aceb320accc1bdddd1290aed483638",
+   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1792195199999&resolution=1D",
+   "sha256": "43ec2280dbe1818d7d8d79361f12070fb789cd71ac98620f363a7a9ff2fc8298",
    "wiersze": 1000
   },
   {
    "waluta": "ETH",
-   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1705622400000&resolution=1D",
-   "sha256": "ec3ab930fdb97ca80f92ea2c29e93e7eaae4b280b50fb59d6c8204f2784dc1d7",
+   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1705708800000&resolution=1D",
+   "sha256": "a3eda544bdba56b037dcf7ff10743dab0bcb77f5ac90775353682ac741e66ad3",
    "wiersze": 1000
   },
   {
    "waluta": "ETH",
-   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1619222400000&resolution=1D",
-   "sha256": "859aec11d4b0ac68f61756990d69682c679931d97f56388237221cb70134b134",
-   "wiersze": 32
+   "url": "https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=ETH&start_timestamp=1609459200000&end_timestamp=1619308800000&resolution=1D",
+   "sha256": "5d37417dc312209cc8db846e199dd1bb62f5205a24cbf9aa1b1da2167524bbe2",
+   "wiersze": 33
   }
  ],
  "jakosc": {
   "BTC": {
-   "wiersze": 2032,
+   "wiersze": 2033,
    "od": "2021-03-24 00:00:00+00:00",
-   "do": "2026-10-15 00:00:00+00:00",
+   "do": "2026-10-16 00:00:00+00:00",
    "duplikaty": 0,
    "dziury": 0,
    "brakujace_dni": 0,
@@ -56,12 +56,12 @@
    "poza_zakresem": 0,
    "niespojne_ohlc": 0,
    "parquet": "BTC_1d.parquet",
-   "parquet_sha256": "80bba1dcee646d8059bb2709dd0ed20c3d2b6f121b93a40d7dd4bd4e3bff747c"
+   "parquet_sha256": "8aac10e8fcb70866ed5921d443e59ad7c3a1f94df5ebb406c583dee3719c60d5"
   },
   "ETH": {
-   "wiersze": 2032,
+   "wiersze": 2033,
    "od": "2021-03-24 00:00:00+00:00",
-   "do": "2026-10-15 00:00:00+00:00",
+   "do": "2026-10-16 00:00:00+00:00",
    "duplikaty": 0,
    "dziury": 0,
    "brakujace_dni": 0,
@@ -69,7 +69,7 @@
    "poza_zakresem": 0,
    "niespojne_ohlc": 0,
    "parquet": "ETH_1d.parquet",
-   "parquet_sha256": "90258dd80d17e5abdbc37a9ba25f6539029eef602a35d5173f86a85b1fcf8c25"
+   "parquet_sha256": "39841caf656709c9d07aee524e6ae824574f5ff4458950dd4a535d306d9e3c5e"
   }
  },
  "kontrola_pozytywna_btc_2021_05_19": {

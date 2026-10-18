@@ -1,8 +1,9 @@
 # Rejestr cech beta (FR-13). Cecha bez wpisu tu albo bez testu przecieku nie trafia do modelu (R7).
 #
 # funkcja              ścieżka `moduł.compute_<nazwa>`; musi istnieć i mieć podpis (df)
-# zbior_informacyjny   jakie dane wejściowe: swiece_5m | dvol_1d | funding. Dla swiece_5m funkcja
-#                      dostaje wynik `dane.rv.rv_dzienna`, a bramka przecieku liczy CAŁY łańcuch
+# zbior_informacyjny   jakie dane wejściowe: swiece_5m | swiece_5m_ohlc | dvol_1d | funding. Dla swiece_5m
+#                      funkcja dostaje wynik `dane.rv.rv_dzienna` (dla swiece_5m_ohlc: `dane.ohlc.ohlc_dzienne`),
+#                      a bramka przecieku liczy CAŁY łańcuch
 #                      od świec 5m (cięcia na końcu doby), więc obejmuje też agregację 5m → doba
 # formula              zapis formuły łącznie z regułą ważności danych (część definicji wariantu)
 # opoznienie_dni       po ilu dniach wartość dnia d trafia do wiersza; test przecieku zakłóca dane
@@ -78,3 +79,58 @@ cechy:
     runda: null
     progi: absolutne
     wariant: "funding|srednia_dzienna(funding_rate_8h)|opoznienie=1"
+
+  zakres_dzien:
+    funkcja: cechy.techniczne.compute_zakres_dzien
+    zbior_informacyjny: swiece_5m_ohlc
+    formula: "log(ln(high_d/low_d) | n_swiec>=274 & high>low>0)"
+    opoznienie_dni: 0
+    dodano: "2026-10-18"
+    runda_definicji: F2-3
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m_ohlc|log(ln(high_d/low_d) | n_swiec>=274 & high>low>0)|opoznienie=0"
+
+  atr14:
+    funkcja: cechy.techniczne.compute_atr14
+    zbior_informacyjny: swiece_5m_ohlc
+    formula: "log(srednia_14d(TR_d)/close_d | n_swiec>=274 & high>low>0; TR=max(h-l,|h-c_poprz|,|l-c_poprz|))"
+    opoznienie_dni: 0
+    dodano: "2026-10-18"
+    runda_definicji: F2-3
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m_ohlc|log(srednia_14d(TR_d)/close_d | n_swiec>=274 & high>low>0; TR=max(h-l,|h-c_poprz|,|l-c_poprz|))|opoznienie=0"
+
+  ema20_odl:
+    funkcja: cechy.techniczne.compute_ema20_odl
+    zbior_informacyjny: swiece_5m_ohlc
+    formula: "log(close_d/ewm_span20_adjust(close) | n_swiec>=274 & high>low>0; min 20 dni)"
+    opoznienie_dni: 0
+    dodano: "2026-10-18"
+    runda_definicji: F2-3
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m_ohlc|log(close_d/ewm_span20_adjust(close) | n_swiec>=274 & high>low>0; min 20 dni)|opoznienie=0"
+
+  bb20_szer:
+    funkcja: cechy.techniczne.compute_bb20_szer
+    zbior_informacyjny: swiece_5m_ohlc
+    formula: "log(4*std_20d(close)/srednia_20d(close) | n_swiec>=274 & high>low>0; ddof=1)"
+    opoznienie_dni: 0
+    dodano: "2026-10-18"
+    runda_definicji: F2-3
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m_ohlc|log(4*std_20d(close)/srednia_20d(close) | n_swiec>=274 & high>low>0; ddof=1)|opoznienie=0"
+
+  rsi14:
+    funkcja: cechy.techniczne.compute_rsi14
+    zbior_informacyjny: swiece_5m_ohlc
+    formula: "(100*G14/(G14+S14)-50)/50 | n_swiec>=274 & high>low>0; G,S=srednie proste 14 zmian close"
+    opoznienie_dni: 0
+    dodano: "2026-10-18"
+    runda_definicji: F2-3
+    runda: null
+    progi: percentylowe_dozwolone
+    wariant: "swiece_5m_ohlc|(100*G14/(G14+S14)-50)/50 | n_swiec>=274 & high>low>0; G,S=srednie proste 14 zmian close|opoznienie=0"

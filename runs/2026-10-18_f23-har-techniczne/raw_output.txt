@@ -1,0 +1,12 @@
+F2-3 — HAR + wskaźniki techniczne vs czysty HAR (QLIKE, 1 dzień), BTC, ETH, SOL, BNB
+Z (kryterium, po korekcie na 3 pary) = 2.3940; bramka MDE ≤ 0.1
+  BTCUSDT     1703 dni OOS: 2022-02-01 … 2026-09-30
+  ETHUSDT     1703 dni OOS: 2022-02-01 … 2026-09-30
+  SOLUSDT     1636 dni OOS: 2022-02-01 … 2026-09-30
+  BNBUSDT     1703 dni OOS: 2022-02-01 … 2026-09-30
+  odcisk dni OOS 8c22047ed61fb1b6
+  zgodność z pre-rejestracją (dni OOS, odcisk): tak
+
+Krok 1 — bramka mierzalności (R3): dni kalendarza 1703 (wspólne 1636), n (mediana) 1703, N_eff/n 0.99, korel. różnic strat 0.37
+  MDE kryterium 0.106 (1 moneta 0.083); próg 0.1; opis przy Z = 1,96: 0.092
+  → NIEMIERZALNA: test DM NIE jest uruchamiany (licznik „zmienność 2021+” bez zmian).

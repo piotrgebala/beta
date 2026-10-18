@@ -1,8 +1,8 @@
 # F2-3 — HAR + pięć wskaźników technicznych vs czysty HAR (QLIKE, 1 dzień, BTC, ETH, SOL, BNB)
 
-> **STATUS: PRE-REJESTRACJA — przebieg na stratach NIE uruchomiony.** Ten plik, kod i testy wchodzą do gita
-> przed jakimkolwiek odczytem strat. Wynik i werdykt dopisze Claude pod tą linią, nie zmieniając tego, co
-> powyżej sekcji „Wynik”.
+> **STATUS: ZAMKNIĘTA — bramka mierzalności NIEMIERZALNA (MDE 0,106 > 0,10), test DM nie uruchomiony.**
+> Pre-rejestracja (commit `bb8085c`, scalony PR #4) powstała przed przebiegiem; sekcje powyżej „Wynik” nie
+> zostały zmienione.
 
 ## W skrócie (prostym językiem)
 
@@ -131,3 +131,47 @@ sukcesie tej rundy (R17, R21).
 
 `clas5-runda` (procedura), `data:statistical-analysis` i `data:validate-data` (bramki przy wyniku),
 `engineering:code-review` (przed scaleniem). `ta-toolkit` niedostępny w sesji.
+
+## Wynik (przebieg 2026-10-18, `python -m modele.run_f23`, 2,4 s; `raw_output.txt`)
+
+| pozycja | wartość |
+|---|---|
+| zgodność z pre-rejestracją (dni OOS, odcisk `8c22047ed61fb1b6`) | tak (BTC, ETH, BNB 1 703; SOL 1 636) |
+| N_eff / n | 0,99 |
+| korelacja różnic strat między monetami | 0,37 |
+| **MDE kryterium (4/4 monet, Z = 2,394)** | **0,106** (próg 0,10) |
+| MDE 1 moneta | 0,083 |
+| opis przy Z = 1,96 | 0,092 |
+| bramka | **NIEMIERZALNA** |
+
+**Test DM nie został uruchomiony, strat nie odczytano. Licznik „zmienność 2021+” zostaje 2.**
+Rejestr zwrotów alpha nietknięty (N = 40).
+
+Przewidywanie z pre-rejestracji: MDE 0,10 (0,09–0,12), P(MIERZALNA) ≈ 45 %. Wynik 0,106 mieści się w
+zakresie i po stronie niemierzalnej.
+
+## Co na plus / na minus
+
+- (+) Reguła STOP zadziałała tak, jak zapisano: nie ma testu na niewykrywalnej próbie, nic nie zużyto.
+- (+) Wynik zgodny z przewidywaniem (MDE w zakresie), więc bramka jest dobrze skalibrowana względem F2-1b/F2-2.
+- (−) Wymóg 4/4 monet przy Z po korekcie na 3 pary przesuwa MDE ponad 0,10 mimo że pojedyncza moneta ma
+  0,083. Nie znaczy to, że wskaźniki nie pomagają, tylko że test tego nie rozstrzygnie.
+- (−) Korelacja różnic strat 0,37 jest umiarkowana, więc dodatkowe monety dają mało dodatkowej informacji (R12).
+- (−) Zastrzeżenie: bramka NIEMIERZALNA to brak dowodu, nie dowód braku.
+
+## Wniosek (prosty język)
+
+Przy tych czterech monetach i tym progu nie da się wiarygodnie wykryć poprawy HAR z wskaźników technicznych:
+test byłby za mało czuły. Nie wiemy więc, czy wskaźniki pomagają. Zgodnie z regułami nie obniżam progu, nie
+zmniejszam liczby wymaganych monet i nie zawężam listy cech po fakcie. Boosting nie wchodzi.
+
+## Rekomendacja
+
+Temat prognozy zmienności z cechami z cen zamykam (F2-1b: HAR brzegowo, F2-2: DVOL niepozytywny, F2-3:
+niemierzalne). Dalszy kierunek ML wymaga nowej decyzji i nowego pytania (np. inne dane o wyższej mocy).
+
+## Werdykt (R14)
+
+**Caveats** — runda wykonana zgodnie z pre-rejestracją; wynik to NIEMIERZALNA, nie negatywny dowód.
+Walidacja (`data:validate-data`, ręcznie): dni OOS i odcisk zgodne z `--tylko-dni`; MDE pojedynczej monety
+0,083 < MDE kryterium 0,106 (kierunek zgodny z wymogiem 4/4 i niższym progiem Z), przewidywanie MDE w zakresie.

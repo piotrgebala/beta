@@ -2,7 +2,7 @@
 id: 027
 tytul: F2-3 — HAR + pięć wskaźników technicznych vs czysty HAR na BTC, ETH, SOL, BNB (zmienność, nie kierunek)
 typ: badawcze
-status: czeka_na_decyzje
+status: do_przegladu
 zlecil: uzytkownik
 decyzja_uzytkownika: "2026-10-18: „przygotuj” (na pytanie, czy przygotować kartę; start przebiegu osobno)"
 utworzono: 2026-10-18
@@ -36,5 +36,4 @@ i licznik „zmienność 2021+” 2 → 3 tylko jeśli bramka MIERZALNA.
 
 ## Wynik
 
-Pre-rejestracja gotowa, przebieg na stratach NIE uruchomiony (czeka na zielone światło użytkownika).
-Przewidywane MDE 0,10 (0,09–0,12), P(MIERZALNA) ≈ 45 %, P(POZYTYWNY) ≈ 4 %.
+Przebieg 2026-10-18 („uruchom F2-3”): bramka **NIEMIERZALNA** (MDE kryterium 0,106 > 0,10; 1 moneta 0,083). Test DM nie uruchomiony, licznik „zmienność 2021+” = 2. Szczegóły: `runs/2026-10-18_f23-har-techniczne/README.md`.

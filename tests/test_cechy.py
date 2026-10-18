@@ -50,6 +50,7 @@ from cechy.przeciek import (
     sprawdz_przeciek,
     walidacja_progu_percentylowego,
 )
+from dane.ohlc import ohlc_dzienne
 from dane.rv import rv_dzienna
 from modele.run_f21 import MIN_SWIEC
 from modele.zmiennosc import cechy_har
@@ -134,6 +135,19 @@ def _swiece_5m(dziury: bool = False, dni: int = 110, seed: int = 0) -> pd.DataFr
         | ((dzien == DZIEN_273) & (slot < SLOTY_5M - 273))
     )
     return df[~usun].reset_index(drop=True)
+
+
+def _swiece_5m_ohlc(dziury: bool = False, dni: int = 110, seed: int = 0) -> pd.DataFrame:
+    """Te same świece i dziury co `_swiece_5m`, z kolumnami open/high/low; doba martwa ma high = low."""
+    df = _swiece_5m(dziury, dni, seed)
+    rng = np.random.default_rng(seed + 1)
+    c = df["close"].to_numpy()
+    otw = np.r_[c[0], c[:-1]]
+    szer = np.abs(rng.normal(0.0, 0.0015, len(df))) * (c != otw)
+    df["open"] = otw
+    df["high"] = np.maximum(otw, c) * (1.0 + szer)
+    df["low"] = np.minimum(otw, c) * (1.0 - szer)
+    return df
 
 
 def _dvol_1d(dziury: bool = False, dni: int = 200, seed: int = 0) -> pd.DataFrame:
@@ -222,8 +236,18 @@ def _lancuch_5m(compute: Callable) -> Callable:
     return przez_rv_dzienna
 
 
+def _lancuch_ohlc(compute: Callable) -> Callable:
+    """Surowe świece 5m → doba (`dane.ohlc.ohlc_dzienne`) → cecha: cała droga pod bramką."""
+
+    def przez_ohlc_dzienne(df5m: pd.DataFrame) -> pd.Series:
+        return compute(ohlc_dzienne(df5m))
+
+    return przez_ohlc_dzienne
+
+
 ZBIORY = {
     "swiece_5m": Zbior(_swiece_5m, _punkty_5m, _lancuch_5m),
+    "swiece_5m_ohlc": Zbior(_swiece_5m_ohlc, _punkty_5m, _lancuch_ohlc),
     "dvol_1d": Zbior(_dvol_1d, _punkty_dvol),
     "funding": Zbior(_funding, _punkty_funding),
 }
